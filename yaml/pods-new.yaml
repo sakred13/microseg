@@ -1,0 +1,216 @@
+# Controller Pods
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ControllerService1
+  labels:
+    app: ControllerService
+spec:
+  nodeName: Controller
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ControllerService2
+  labels:
+    app: ControllerService
+spec:
+  nodeName: Controller
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ControllerService3
+  labels:
+    app: ControllerService
+spec:
+  nodeName: Controller
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+# Drone1 Pods
+apiVersion: v1
+kind: Pod
+metadata:
+  name: Drone1Service1
+  labels:
+    app: DroneService
+spec:
+  nodeName: Drone1
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: Drone1Service2
+  labels:
+    app: DroneService
+spec:
+  nodeName: Drone1
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: Drone2Service1
+  labels:
+    app: DroneService
+spec:
+  nodeName: Drone2
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: Drone2Service2
+  labels:
+    app: DroneService
+spec:
+  nodeName: Drone2
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: Drone3Service1
+  labels:
+    app: DroneService
+spec:
+  nodeName: Drone3
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: Drone3Service2
+  labels:
+    app: DroneService
+spec:
+  nodeName: Drone3
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: Drone4Service1
+  labels:
+    app: DroneService
+spec:
+  nodeName: Drone4
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: Drone4Service2
+  labels:
+    app: DroneService
+spec:
+  nodeName: Drone4
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+# Ground Pods
+apiVersion: v1
+kind: Pod
+metadata:
+  name: GroundService1
+  labels:
+    app: GroundService
+spec:
+  nodeName: Ground
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: GroundService2
+  labels:
+    app: GroundService
+spec:
+  nodeName: Ground
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
