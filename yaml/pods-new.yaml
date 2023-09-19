@@ -1,12 +1,12 @@
-# Controller Pods
+# controller Pods
 apiVersion: v1
 kind: Pod
 metadata:
-  name: ControllerService1
+  name: controllerservice1
   labels:
-    app: ControllerService
+    app: controllerservice
 spec:
-  nodeName: Controller
+  nodeName: controller
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -19,11 +19,11 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: ControllerService2
+  name: controllerservice2
   labels:
-    app: ControllerService
+    app: controllerservice
 spec:
-  nodeName: Controller
+  nodeName: controller
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -36,11 +36,11 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: ControllerService3
+  name: controllerservice3
   labels:
-    app: ControllerService
+    app: controllerservice
 spec:
-  nodeName: Controller
+  nodeName: controller
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -49,48 +49,15 @@ spec:
       - "3600000"
 
 ---
-# Drone1 Pods
+# drone1 Pods
 apiVersion: v1
 kind: Pod
 metadata:
-  name: Drone1Service1
+  name: drone1service1
   labels:
-    app: DroneService
+    app: droneservice
 spec:
-  nodeName: Drone1
-  containers:
-  - name: busybox
-    image: 39dj29dl2d9l2/vcc:latest
-    command:
-      - sleep
-      - "3600000"
-
----
-
-apiVersion: v1
-kind: Pod
-metadata:
-  name: Drone1Service2
-  labels:
-    app: DroneService
-spec:
-  nodeName: Drone1
-  containers:
-  - name: busybox
-    image: 39dj29dl2d9l2/vcc:latest
-    command:
-      - sleep
-      - "3600000"
-
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: Drone2Service1
-  labels:
-    app: DroneService
-spec:
-  nodeName: Drone2
+  nodeName: drone1
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -103,11 +70,11 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: Drone2Service2
+  name: drone1service2
   labels:
-    app: DroneService
+    app: droneservice
 spec:
-  nodeName: Drone2
+  nodeName: drone1
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -119,44 +86,11 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: Drone3Service1
+  name: drone2service1
   labels:
-    app: DroneService
+    app: droneservice
 spec:
-  nodeName: Drone3
-  containers:
-  - name: busybox
-    image: 39dj29dl2d9l2/vcc:latest
-    command:
-      - sleep
-      - "3600000"
-
----
-
-apiVersion: v1
-kind: Pod
-metadata:
-  name: Drone3Service2
-  labels:
-    app: DroneService
-spec:
-  nodeName: Drone3
-  containers:
-  - name: busybox
-    image: 39dj29dl2d9l2/vcc:latest
-    command:
-      - sleep
-      - "3600000"
-
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: Drone4Service1
-  labels:
-    app: DroneService
-spec:
-  nodeName: Drone4
+  nodeName: drone2
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -169,11 +103,11 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: Drone4Service2
+  name: drone2service2
   labels:
-    app: DroneService
+    app: droneservice
 spec:
-  nodeName: Drone4
+  nodeName: drone2
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -182,15 +116,14 @@ spec:
       - "3600000"
 
 ---
-# Ground Pods
 apiVersion: v1
 kind: Pod
 metadata:
-  name: GroundService1
+  name: drone3service1
   labels:
-    app: GroundService
+    app: droneservice
 spec:
-  nodeName: Ground
+  nodeName: drone3
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -203,11 +136,78 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: GroundService2
+  name: drone3service2
   labels:
-    app: GroundService
+    app: droneservice
 spec:
-  nodeName: Ground
+  nodeName: drone3
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: drone4service1
+  labels:
+    app: droneservice
+spec:
+  nodeName: drone4
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: drone4service2
+  labels:
+    app: droneservice
+spec:
+  nodeName: drone4
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+# ground Pods
+apiVersion: v1
+kind: Pod
+metadata:
+  name: groundservice1
+  labels:
+    app: groundservice
+spec:
+  nodeName: ground
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: groundservice2
+  labels:
+    app: groundservice
+spec:
+  nodeName: ground
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
