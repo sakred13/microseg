@@ -5,6 +5,7 @@ metadata:
   name: controllerservice1
   labels:
     app: controllerservice
+    task: all
 spec:
   nodeName: controller
   containers:
@@ -13,41 +14,6 @@ spec:
     command:
       - sleep
       - "3600000"
-
----
-
-apiVersion: v1
-kind: Pod
-metadata:
-  name: controllerservice2
-  labels:
-    app: controllerservice
-spec:
-  nodeName: controller
-  containers:
-  - name: busybox
-    image: 39dj29dl2d9l2/vcc:latest
-    command:
-      - sleep
-      - "3600000"
-
----
-
-apiVersion: v1
-kind: Pod
-metadata:
-  name: controllerservice3
-  labels:
-    app: controllerservice
-spec:
-  nodeName: controller
-  containers:
-  - name: busybox
-    image: 39dj29dl2d9l2/vcc:latest
-    command:
-      - sleep
-      - "3600000"
-
 ---
 # drone1 Pods
 apiVersion: v1
@@ -56,6 +22,7 @@ metadata:
   name: drone1service1
   labels:
     app: droneservice
+    task: transmit
 spec:
   nodeName: drone1
   containers:
@@ -73,6 +40,7 @@ metadata:
   name: drone1service2
   labels:
     app: droneservice
+    task: analyze_transmit
 spec:
   nodeName: drone1
   containers:
@@ -89,6 +57,7 @@ metadata:
   name: drone2service1
   labels:
     app: droneservice
+    task: analyze
 spec:
   nodeName: drone2
   containers:
@@ -106,6 +75,7 @@ metadata:
   name: drone2service2
   labels:
     app: droneservice
+    task: analyze_preprocess
 spec:
   nodeName: drone2
   containers:
@@ -122,6 +92,7 @@ metadata:
   name: drone3service1
   labels:
     app: droneservice
+    task: analyze_command
 spec:
   nodeName: drone3
   containers:
@@ -139,6 +110,7 @@ metadata:
   name: drone3service2
   labels:
     app: droneservice
+    task: command
 spec:
   nodeName: drone3
   containers:
@@ -155,6 +127,7 @@ metadata:
   name: drone4service1
   labels:
     app: droneservice
+    task: command_preprocess
 spec:
   nodeName: drone4
   containers:
@@ -172,6 +145,7 @@ metadata:
   name: drone4service2
   labels:
     app: droneservice
+    task: command_preprocess
 spec:
   nodeName: drone4
   containers:
@@ -189,6 +163,7 @@ metadata:
   name: groundservice1
   labels:
     app: groundservice
+    task: all
 spec:
   nodeName: ground
   containers:
@@ -206,6 +181,7 @@ metadata:
   name: groundservice2
   labels:
     app: groundservice
+    task: all
 spec:
   nodeName: ground
   containers:
