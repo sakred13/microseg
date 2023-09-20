@@ -92,7 +92,7 @@ metadata:
   name: drone3service1
   labels:
     app: droneservice
-    task: analyze_command
+    task: command_transmit
 spec:
   nodeName: drone3
   containers:
@@ -145,7 +145,7 @@ metadata:
   name: drone4service2
   labels:
     app: droneservice
-    task: command_preprocess
+    task: preprocess
 spec:
   nodeName: drone4
   containers:
