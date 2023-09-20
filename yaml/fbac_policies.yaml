@@ -14,7 +14,32 @@ spec:
           matchLabels:
             app: droneservice
             name: drone1service1
+  egress:
+    - to:
       - podSelector:
           matchLabels:
             app: droneservice
             name: drone3service1
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-drone1-to-drone3
+spec:
+  podSelector:
+    matchLabels:
+      app: droneservice
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: droneservice
+            name: drone3service1
+  egress:
+    - to:
+      - podSelector:
+          matchLabels:
+            app: droneservice
+            name: drone1service1
