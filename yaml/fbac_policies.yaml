@@ -20,6 +20,20 @@ spec:
       - podSelector:
           matchLabels:
             task: all
+  egress:
+    - to:
+      - podSelector:
+          matchLabels:
+            task: transmit
+      - podSelector:
+          matchLabels:
+            task: analyze_transmit
+      - podSelector:
+          matchLabels:
+            task: command_transmit
+      - podSelector:
+          matchLabels:
+            task: all
 
 ---
 
@@ -33,6 +47,26 @@ spec:
       app: drone1service2
   ingress:
     - from:
+      - podSelector:
+          matchLabels:
+            task: transmit
+      - podSelector:
+          matchLabels:
+            task: analyze
+      - podSelector:
+          matchLabels:
+            task: analyze_transmit
+      - podSelector:
+          matchLabels:
+            task: command_transmit
+      - podSelector:
+          matchLabels:
+            task: analyze_preprocess
+      - podSelector:
+          matchLabels:
+            task: all
+  egress:
+    - to:
       - podSelector:
           matchLabels:
             task: transmit
@@ -76,6 +110,20 @@ spec:
       - podSelector:
           matchLabels:
             task: all
+  egress:
+    - to:
+      - podSelector:
+          matchLabels:
+            task: analyze
+      - podSelector:
+          matchLabels:
+            task: analyze_preprocess
+      - podSelector:
+          matchLabels:
+            task: analyze_transmit
+      - podSelector:
+          matchLabels:
+            task: all
 
 ---
 
@@ -107,7 +155,26 @@ spec:
       - podSelector:
           matchLabels:
             task: all
-
+  egress:
+    - to:
+      - podSelector:
+          matchLabels:
+            task: analyze
+      - podSelector:
+          matchLabels:
+            task: preprocess
+      - podSelector:
+          matchLabels:
+            task: analyze_transmit
+      - podSelector:
+          matchLabels:
+            task: analyze_preprocess
+      - podSelector:
+          matchLabels:
+            task: command_preprocess
+      - podSelector:
+          matchLabels:
+            task: all
 ---
 
 apiVersion: networking.k8s.io/v1
@@ -138,7 +205,26 @@ spec:
       - podSelector:
           matchLabels:
             task: all
-
+  egress:
+    - to:
+      - podSelector:
+          matchLabels:
+            task: transmit
+      - podSelector:
+          matchLabels:
+            task: command
+      - podSelector:
+          matchLabels:
+            task: analyze_transmit
+      - podSelector:
+          matchLabels:
+            task: command_transmit
+      - podSelector:
+          matchLabels:
+            task: command_preprocess
+      - podSelector:
+          matchLabels:
+            task: all
 ---
 
 apiVersion: networking.k8s.io/v1
@@ -163,7 +249,20 @@ spec:
       - podSelector:
           matchLabels:
             task: all
-
+  egress:
+    - to:
+      - podSelector:
+          matchLabels:
+            task: command
+      - podSelector:
+          matchLabels:
+            task: command_transmit      
+      - podSelector:
+          matchLabels:
+            task: command_preprocess
+      - podSelector:
+          matchLabels:
+            task: all
 ---
 
 apiVersion: networking.k8s.io/v1
@@ -194,7 +293,26 @@ spec:
       - podSelector:
           matchLabels:
             task: all
-
+  egress:
+    - to:
+      - podSelector:
+          matchLabels:
+            task: command
+      - podSelector:
+          matchLabels:
+            task: preprocess
+      - podSelector:
+          matchLabels:
+            task: command_preprocess
+      - podSelector:
+          matchLabels:
+            task: command_transmit
+      - podSelector:
+          matchLabels:
+            task: analyze_preprocess
+      - podSelector:
+          matchLabels:
+            task: all
 ---
 
 apiVersion: networking.k8s.io/v1
@@ -219,6 +337,19 @@ spec:
       - podSelector:
           matchLabels:
             task: all
-      
+  egress:
+    - to:
+      - podSelector:
+          matchLabels:
+            task: preprocess
+      - podSelector:
+          matchLabels:
+            task: analyze_preprocess
+      - podSelector:
+          matchLabels:
+            task: command_preprocess
+      - podSelector:
+          matchLabels:
+            task: all      
 
 ---
