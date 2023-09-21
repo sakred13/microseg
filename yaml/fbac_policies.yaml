@@ -1,355 +1,279 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: d1s1policy
+  name: transmit_policy
 spec:
   podSelector:
     matchLabels:
-      name: drone1service1
+      task: transmit
   ingress:
     - from:
       - podSelector:
           matchLabels:
-            task: transmit
-      - podSelector:
-          matchLabels:
-            task: analyze_transmit
-      - podSelector:
-          matchLabels:
-            task: command_transmit
-      - podSelector:
-          matchLabels:
-            task: all
+            task: 
+            - transmit
+            - analyze_transmit
+            - command_transmit
+            - all
   egress:
     - to:
       - podSelector:
           matchLabels:
-            task: transmit
-      - podSelector:
-          matchLabels:
-            task: analyze_transmit
-      - podSelector:
-          matchLabels:
-            task: command_transmit
-      - podSelector:
-          matchLabels:
-            task: all
+            task: 
+            - transmit
+            - analyze_transmit
+            - command_transmit
+            - all
 
 ---
 
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: d1s2policy
+  name: analyze_policy
 spec:
   podSelector:
     matchLabels:
-      name: drone1service2
+      task: analyze
   ingress:
     - from:
       - podSelector:
           matchLabels:
-            task: transmit
-      - podSelector:
-          matchLabels:
-            task: analyze
-      - podSelector:
-          matchLabels:
-            task: analyze_transmit
-      - podSelector:
-          matchLabels:
-            task: command_transmit
-      - podSelector:
-          matchLabels:
-            task: analyze_preprocess
-      - podSelector:
-          matchLabels:
-            task: all
+            task: 
+            - analyze
+            - analyze_transmit
+            - analyze_preprocess
+            - all
   egress:
     - to:
       - podSelector:
           matchLabels:
-            task: transmit
-      - podSelector:
-          matchLabels:
-            task: analyze
-      - podSelector:
-          matchLabels:
-            task: analyze_transmit
-      - podSelector:
-          matchLabels:
-            task: command_transmit
-      - podSelector:
-          matchLabels:
-            task: analyze_preprocess
-      - podSelector:
-          matchLabels:
-            task: all
-
+            task: 
+            - analyze
+            - analyze_transmit
+            - analyze_preprocess
+            - all
 ---
 
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: d2s1policy
+  name: command_policy
 spec:
   podSelector:
     matchLabels:
-      name: drone2service1
+      task: command
   ingress:
     - from:
       - podSelector:
           matchLabels:
-            task: analyze
-      - podSelector:
-          matchLabels:
-            task: analyze_preprocess
-      - podSelector:
-          matchLabels:
-            task: analyze_transmit
-      - podSelector:
-          matchLabels:
-            task: all
+            task: 
+            - command
+            - command_transmit
+            - command_preprocess
+            - all
   egress:
     - to:
       - podSelector:
           matchLabels:
-            task: analyze
-      - podSelector:
-          matchLabels:
-            task: analyze_preprocess
-      - podSelector:
-          matchLabels:
-            task: analyze_transmit
-      - podSelector:
-          matchLabels:
-            task: all
-
+            task: 
+            - command
+            - command_transmit
+            - command_preprocess
+            - all
 ---
 
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: d2s2policy
+  name: preprocess_policy
 spec:
   podSelector:
     matchLabels:
-      name: drone2service2
+      task: preprocess
   ingress:
     - from:
       - podSelector:
           matchLabels:
-            task: analyze
-      - podSelector:
-          matchLabels:
-            task: preprocess
-      - podSelector:
-          matchLabels:
-            task: analyze_transmit
-      - podSelector:
-          matchLabels:
-            task: analyze_preprocess
-      - podSelector:
-          matchLabels:
-            task: command_preprocess
-      - podSelector:
-          matchLabels:
-            task: all
+            task: 
+            - preprocess
+            - analyze_preprocess
+            - command_preprocess
+            - all
   egress:
     - to:
       - podSelector:
           matchLabels:
-            task: analyze
-      - podSelector:
-          matchLabels:
-            task: preprocess
-      - podSelector:
-          matchLabels:
-            task: analyze_transmit
-      - podSelector:
-          matchLabels:
-            task: analyze_preprocess
-      - podSelector:
-          matchLabels:
-            task: command_preprocess
-      - podSelector:
-          matchLabels:
-            task: all
+            task: 
+            - preprocess
+            - analyze_preprocess
+            - command_preprocess
+            - all
 ---
 
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: d3s1policy
+  name: at_policy
 spec:
   podSelector:
     matchLabels:
-      name: drone3service1
+      task: analyze_transmit
   ingress:
     - from:
       - podSelector:
           matchLabels:
-            task: transmit
-      - podSelector:
-          matchLabels:
-            task: command
-      - podSelector:
-          matchLabels:
-            task: analyze_transmit
-      - podSelector:
-          matchLabels:
-            task: command_transmit
-      - podSelector:
-          matchLabels:
-            task: command_preprocess
-      - podSelector:
-          matchLabels:
-            task: all
+            task: 
+            - transmit
+            - analyze
+            - analyze_transmit
+            - analyze_preprocess
+            - command_transmit
+            - all
   egress:
     - to:
       - podSelector:
           matchLabels:
-            task: transmit
-      - podSelector:
-          matchLabels:
-            task: command
-      - podSelector:
-          matchLabels:
-            task: analyze_transmit
-      - podSelector:
-          matchLabels:
-            task: command_transmit
-      - podSelector:
-          matchLabels:
-            task: command_preprocess
-      - podSelector:
-          matchLabels:
-            task: all
+            task: 
+            - transmit
+            - analyze
+            - analyze_transmit
+            - analyze_preprocess
+            - command_transmit
+            - all
 ---
 
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: d3s2policy
+  name: ap_policy
 spec:
   podSelector:
     matchLabels:
-      name: drone3service2
+      task: analyze_preprocess
   ingress:
     - from:
       - podSelector:
           matchLabels:
-            task: command
-      - podSelector:
-          matchLabels:
-            task: command_transmit      
-      - podSelector:
-          matchLabels:
-            task: command_preprocess
-      - podSelector:
-          matchLabels:
-            task: all
+            task: 
+            - analyze
+            - preprocess
+            - analyze_transmit
+            - analyze_preprocess
+            - command_preprocess
+            - all
   egress:
     - to:
       - podSelector:
           matchLabels:
-            task: command
-      - podSelector:
-          matchLabels:
-            task: command_transmit      
-      - podSelector:
-          matchLabels:
-            task: command_preprocess
-      - podSelector:
-          matchLabels:
-            task: all
+            task: 
+            - analyze
+            - preprocess
+            - analyze_transmit
+            - analyze_preprocess
+            - command_preprocess
+            - all
 ---
 
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: d4s1policy
+  name: ct_policy
 spec:
   podSelector:
     matchLabels:
-      name: drone4service1
+      name: command_transmit
   ingress:
     - from:
       - podSelector:
           matchLabels:
-            task: command
-      - podSelector:
-          matchLabels:
-            task: preprocess
-      - podSelector:
-          matchLabels:
-            task: command_preprocess
-      - podSelector:
-          matchLabels:
-            task: command_transmit
-      - podSelector:
-          matchLabels:
-            task: analyze_preprocess
-      - podSelector:
-          matchLabels:
-            task: all
+            task: 
+            - command
+            - transmit
+            - command_transmit
+            - analyze_transmit
+            - command_preprocess
+            - all
   egress:
     - to:
       - podSelector:
           matchLabels:
-            task: command
-      - podSelector:
-          matchLabels:
-            task: preprocess
-      - podSelector:
-          matchLabels:
-            task: command_preprocess
-      - podSelector:
-          matchLabels:
-            task: command_transmit
-      - podSelector:
-          matchLabels:
-            task: analyze_preprocess
-      - podSelector:
-          matchLabels:
-            task: all
+            task: 
+            - command
+            - transmit
+            - command_transmit
+            - analyze_transmit
+            - command_preprocess
+            - all
 ---
 
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: d4s2policy
+  name: cp_policy
 spec:
   podSelector:
     matchLabels:
-      name: drone4service2
+      name: command_preprocess
   ingress:
     - from:
       - podSelector:
           matchLabels:
-            task: preprocess
-      - podSelector:
-          matchLabels:
-            task: analyze_preprocess
-      - podSelector:
-          matchLabels:
-            task: command_preprocess
-      - podSelector:
-          matchLabels:
-            task: all
+            task: 
+            - preprocess
+            - command
+            - command_preprocess
+            - analyze_preprocess
+            - command_transmit
+            - all
   egress:
     - to:
       - podSelector:
           matchLabels:
-            task: preprocess
+            task: 
+            - preprocess
+            - command
+            - command_preprocess
+            - analyze_preprocess
+            - command_transmit
+            - all
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: global_policy
+spec:
+  podSelector:
+    matchLabels:
+      name: all
+  ingress:
+    - from:
       - podSelector:
           matchLabels:
-            task: analyze_preprocess
+            task: 
+            - preprocess
+            - command
+            - analyze
+            - transmit
+            - analyze_transmit
+            - command_preprocess
+            - command_preprocess
+            - analyze_preprocess
+            - command_transmit
+            - all
+  egress:
+    - to:
       - podSelector:
           matchLabels:
-            task: command_preprocess
-      - podSelector:
-          matchLabels:
-            task: all      
-
+            task: 
+            - preprocess
+            - command
+            - analyze
+            - transmit
+            - analyze_transmit
+            - command_preprocess
+            - command_preprocess
+            - analyze_preprocess
+            - command_transmit
+            - all
 ---
