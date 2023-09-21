@@ -9,21 +9,13 @@ spec:
   ingress:
     - from:
       - podSelector:
-          matchLabels:
-            task: 
-            - transmit
-            - analyze_transmit
-            - command_transmit
-            - all
+          matchExpressions:
+            - {key: task, operator: In, values: [transmit, analyze_transmit, command_transmit, all]}
   egress:
     - to:
       - podSelector:
-          matchLabels:
-            task: 
-            - transmit
-            - analyze_transmit
-            - command_transmit
-            - all
+          matchExpressions:
+            - {key: task, operator: In, values: [transmit, analyze_transmit, command_transmit, all]}
 
 ---
 
@@ -33,26 +25,18 @@ metadata:
   name: analyze_policy
 spec:
   podSelector:
-    matchLabels:
-      task: analyze
+    matchExpressions:
+      - {key: task, operator: In, values: [analyze, analyze_transmit, analyze_preprocess, all]}
   ingress:
     - from:
       - podSelector:
-          matchLabels:
-            task: 
-            - analyze
-            - analyze_transmit
-            - analyze_preprocess
-            - all
+          matchExpressions:
+            - {key: task, operator: In, values: [analyze, analyze_transmit, analyze_preprocess, all]}
   egress:
     - to:
       - podSelector:
-          matchLabels:
-            task: 
-            - analyze
-            - analyze_transmit
-            - analyze_preprocess
-            - all
+          matchExpressions:
+            - {key: task, operator: In, values: [analyze, analyze_transmit, analyze_preprocess, all]}
 ---
 
 apiVersion: networking.k8s.io/v1
@@ -61,26 +45,19 @@ metadata:
   name: command_policy
 spec:
   podSelector:
-    matchLabels:
-      task: command
+    matchExpressions:
+      - {key: task, operator: In, values: [command, command_transmit, command_preprocess, all]}
   ingress:
     - from:
       - podSelector:
-          matchLabels:
-            task: 
-            - command
-            - command_transmit
-            - command_preprocess
-            - all
+          matchExpressions:
+            - {key: task, operator: In, values: [command, command_transmit, command_preprocess, all]}
   egress:
     - to:
       - podSelector:
-          matchLabels:
-            task: 
-            - command
-            - command_transmit
-            - command_preprocess
-            - all
+          matchExpressions:
+            - {key: task, operator: In, values: [command, command_transmit, command_preprocess, all]}
+
 ---
 
 apiVersion: networking.k8s.io/v1
@@ -89,26 +66,19 @@ metadata:
   name: preprocess_policy
 spec:
   podSelector:
-    matchLabels:
-      task: preprocess
+    matchExpressions:
+      - {key: task, operator: In, values: [preprocess, analyze_preprocess, command_preprocess, all]}
   ingress:
     - from:
       - podSelector:
-          matchLabels:
-            task: 
-            - preprocess
-            - analyze_preprocess
-            - command_preprocess
-            - all
+          matchExpressions:
+            - {key: task, operator: In, values: [preprocess, analyze_preprocess, command_preprocess, all]}
   egress:
     - to:
       - podSelector:
-          matchLabels:
-            task: 
-            - preprocess
-            - analyze_preprocess
-            - command_preprocess
-            - all
+          matchExpressions:
+            - {key: task, operator: In, values: [preprocess, analyze_preprocess, command_preprocess, all]}
+
 ---
 
 apiVersion: networking.k8s.io/v1
@@ -117,30 +87,19 @@ metadata:
   name: at_policy
 spec:
   podSelector:
-    matchLabels:
-      task: analyze_transmit
+    matchExpressions:
+      - {key: task, operator: In, values: [analyze_transmit]}
   ingress:
     - from:
       - podSelector:
-          matchLabels:
-            task: 
-            - transmit
-            - analyze
-            - analyze_transmit
-            - analyze_preprocess
-            - command_transmit
-            - all
+          matchExpressions:
+            - {key: task, operator: In, values: [transmit, analyze, analyze_transmit, analyze_preprocess, command_transmit, all]}
   egress:
     - to:
       - podSelector:
-          matchLabels:
-            task: 
-            - transmit
-            - analyze
-            - analyze_transmit
-            - analyze_preprocess
-            - command_transmit
-            - all
+          matchExpressions:
+            - {key: task, operator: In, values: [transmit, analyze, analyze_transmit, analyze_preprocess, command_transmit, all]}
+
 ---
 
 apiVersion: networking.k8s.io/v1
@@ -149,30 +108,19 @@ metadata:
   name: ap_policy
 spec:
   podSelector:
-    matchLabels:
-      task: analyze_preprocess
+    matchExpressions:
+      - {key: task, operator: In, values: [analyze_preprocess]}
   ingress:
     - from:
       - podSelector:
-          matchLabels:
-            task: 
-            - analyze
-            - preprocess
-            - analyze_transmit
-            - analyze_preprocess
-            - command_preprocess
-            - all
+          matchExpressions:
+            - {key: task, operator: In, values: [analyze, preprocess, analyze_transmit, analyze_preprocess, command_preprocess, all]}
   egress:
     - to:
       - podSelector:
-          matchLabels:
-            task: 
-            - analyze
-            - preprocess
-            - analyze_transmit
-            - analyze_preprocess
-            - command_preprocess
-            - all
+          matchExpressions:
+            - {key: task, operator: In, values: [analyze, preprocess, analyze_transmit, analyze_preprocess, command_preprocess, all]}
+
 ---
 
 apiVersion: networking.k8s.io/v1
@@ -186,25 +134,14 @@ spec:
   ingress:
     - from:
       - podSelector:
-          matchLabels:
-            task: 
-            - command
-            - transmit
-            - command_transmit
-            - analyze_transmit
-            - command_preprocess
-            - all
+          matchExpressions:
+            - {key: task, operator: In, values: [command, transmit, command_transmit, analyze_transmit, command_preprocess, all]}
   egress:
     - to:
       - podSelector:
-          matchLabels:
-            task: 
-            - command
-            - transmit
-            - command_transmit
-            - analyze_transmit
-            - command_preprocess
-            - all
+          matchExpressions:
+            - {key: task, operator: In, values: [command, transmit, command_transmit, analyze_transmit, command_preprocess, all]}
+
 ---
 
 apiVersion: networking.k8s.io/v1
@@ -213,67 +150,38 @@ metadata:
   name: cp_policy
 spec:
   podSelector:
-    matchLabels:
-      name: command_preprocess
+    matchExpressions:
+      - {key: name, operator: In, values: [command_preprocess]}
   ingress:
     - from:
       - podSelector:
-          matchLabels:
-            task: 
-            - preprocess
-            - command
-            - command_preprocess
-            - analyze_preprocess
-            - command_transmit
-            - all
+          matchExpressions:
+            - {key: task, operator: In, values: [preprocess, command, command_preprocess, analyze_preprocess, command_transmit, all]}
   egress:
     - to:
       - podSelector:
-          matchLabels:
-            task: 
-            - preprocess
-            - command
-            - command_preprocess
-            - analyze_preprocess
-            - command_transmit
-            - all
+          matchExpressions:
+            - {key: task, operator: In, values: [preprocess, command, command_preprocess, analyze_preprocess, command_transmit, all]}
+
 ---
+
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: global_policy
 spec:
   podSelector:
-    matchLabels:
-      name: all
+    matchExpressions:
+      - {key: name, operator: In, values: [all]}
   ingress:
     - from:
       - podSelector:
-          matchLabels:
-            task: 
-            - preprocess
-            - command
-            - analyze
-            - transmit
-            - analyze_transmit
-            - command_preprocess
-            - command_preprocess
-            - analyze_preprocess
-            - command_transmit
-            - all
+          matchExpressions:
+            - {key: task, operator: In, values: [preprocess, command, analyze, transmit, analyze_transmit, command_preprocess, analyze_preprocess, command_transmit, all]}
   egress:
     - to:
       - podSelector:
-          matchLabels:
-            task: 
-            - preprocess
-            - command
-            - analyze
-            - transmit
-            - analyze_transmit
-            - command_preprocess
-            - command_preprocess
-            - analyze_preprocess
-            - command_transmit
-            - all
+          matchExpressions:
+            - {key: task, operator: In, values: [preprocess, command, analyze, transmit, analyze_transmit, command_preprocess, analyze_preprocess, command_transmit, all]}
+
 ---
