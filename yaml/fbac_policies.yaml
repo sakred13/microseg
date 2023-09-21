@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: transmit_policy
+  name: transmit-policy
 spec:
   podSelector:
     matchLabels:
@@ -22,7 +22,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: analyze_policy
+  name: analyze-policy
 spec:
   podSelector:
     matchExpressions:
@@ -42,7 +42,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: command_policy
+  name: command-policy
 spec:
   podSelector:
     matchExpressions:
@@ -63,7 +63,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: preprocess_policy
+  name: preprocess-policy
 spec:
   podSelector:
     matchExpressions:
@@ -84,7 +84,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: at_policy
+  name: at-policy
 spec:
   podSelector:
     matchExpressions:
@@ -105,7 +105,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: ap_policy
+  name: ap-policy
 spec:
   podSelector:
     matchExpressions:
@@ -126,7 +126,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: ct_policy
+  name: ct-policy
 spec:
   podSelector:
     matchLabels:
@@ -147,7 +147,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: cp_policy
+  name: cp-policy
 spec:
   podSelector:
     matchExpressions:
@@ -168,7 +168,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: global_policy
+  name: global-policy
 spec:
   podSelector:
     matchExpressions:
