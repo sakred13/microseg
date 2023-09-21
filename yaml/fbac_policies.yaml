@@ -25,8 +25,8 @@ metadata:
   name: analyze-policy
 spec:
   podSelector:
-    matchExpressions:
-      - {key: task, operator: In, values: [analyze, analyze_transmit, analyze_preprocess, all]}
+    matchLabels:
+      task: analyze
   ingress:
     - from:
       - podSelector:
@@ -45,8 +45,8 @@ metadata:
   name: command-policy
 spec:
   podSelector:
-    matchExpressions:
-      - {key: task, operator: In, values: [command, command_transmit, command_preprocess, all]}
+    matchLabels:
+      task: command
   ingress:
     - from:
       - podSelector:
@@ -66,8 +66,8 @@ metadata:
   name: preprocess-policy
 spec:
   podSelector:
-    matchExpressions:
-      - {key: task, operator: In, values: [preprocess, analyze_preprocess, command_preprocess, all]}
+    matchLabels:
+      task: preprocess
   ingress:
     - from:
       - podSelector:
@@ -87,8 +87,8 @@ metadata:
   name: at-policy
 spec:
   podSelector:
-    matchExpressions:
-      - {key: task, operator: In, values: [analyze_transmit]}
+    matchLabels:
+      task: analyze_transmit
   ingress:
     - from:
       - podSelector:
@@ -108,8 +108,8 @@ metadata:
   name: ap-policy
 spec:
   podSelector:
-    matchExpressions:
-      - {key: task, operator: In, values: [analyze_preprocess]}
+    matchLabels:
+      task: analyze_preprocess
   ingress:
     - from:
       - podSelector:
@@ -130,7 +130,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      name: command_transmit
+      task: command_transmit
   ingress:
     - from:
       - podSelector:
@@ -150,8 +150,8 @@ metadata:
   name: cp-policy
 spec:
   podSelector:
-    matchExpressions:
-      - {key: name, operator: In, values: [command_preprocess]}
+    matchLabels:
+      task: command_preprocess
   ingress:
     - from:
       - podSelector:
@@ -171,8 +171,8 @@ metadata:
   name: global-policy
 spec:
   podSelector:
-    matchExpressions:
-      - {key: name, operator: In, values: [all]}
+    matchLabels:
+      task: all
   ingress:
     - from:
       - podSelector:
