@@ -5,7 +5,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: drone1service1
+      name: drone1service1
   ingress:
     - from:
       - podSelector:
@@ -44,7 +44,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: drone1service2
+      name: drone1service2
   ingress:
     - from:
       - podSelector:
@@ -95,7 +95,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: drone2service1
+      name: drone2service1
   ingress:
     - from:
       - podSelector:
@@ -134,7 +134,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: drone2service2
+      name: drone2service2
   ingress:
     - from:
       - podSelector:
@@ -184,7 +184,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: drone3service1
+      name: drone3service1
   ingress:
     - from:
       - podSelector:
@@ -234,7 +234,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: drone3service2
+      name: drone3service2
   ingress:
     - from:
       - podSelector:
@@ -272,7 +272,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: drone4service1
+      name: drone4service1
   ingress:
     - from:
       - podSelector:
@@ -322,7 +322,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: drone4service2
+      name: drone4service2
   ingress:
     - from:
       - podSelector:
