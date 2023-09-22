@@ -5,7 +5,7 @@ metadata:
   name: drone1service1
   labels:
     app: droneservice
-    task: transmit
+    transmit: allowed
 spec:
   nodeName: drone1
   containers:
@@ -23,7 +23,8 @@ metadata:
   name: drone1service2
   labels:
     app: droneservice
-    task: analyze_transmit
+    analyze: allowed
+    transmit: allowed
 spec:
   nodeName: drone1
   containers:
@@ -40,7 +41,7 @@ metadata:
   name: drone2service1
   labels:
     app: droneservice
-    task: analyze
+    analyze: allowed
 spec:
   nodeName: drone2
   containers:
@@ -58,7 +59,8 @@ metadata:
   name: drone2service2
   labels:
     app: droneservice
-    task: analyze_preprocess
+    analyze: allowed
+    preprocess: allowed
 spec:
   nodeName: drone2
   containers:
@@ -75,7 +77,8 @@ metadata:
   name: drone3service1
   labels:
     app: droneservice
-    task: command_transmit
+    command: allowed
+    transmit: allowed
 spec:
   nodeName: drone3
   containers:
@@ -93,7 +96,7 @@ metadata:
   name: drone3service2
   labels:
     app: droneservice
-    task: command
+    command: allowed
 spec:
   nodeName: drone3
   containers:
@@ -110,7 +113,8 @@ metadata:
   name: drone4service1
   labels:
     app: droneservice
-    task: command_preprocess
+    command: allowed
+    preprocess: allowed
 spec:
   nodeName: drone4
   containers:
@@ -128,7 +132,7 @@ metadata:
   name: drone4service2
   labels:
     app: droneservice
-    task: preprocess
+    preprocess: allowed
 spec:
   nodeName: drone4
   containers:
@@ -146,7 +150,7 @@ metadata:
   name: groundservice
   labels:
     app: groundservice
-    task: all
+    all: allowed
 spec:
   nodeName: ground
   containers:

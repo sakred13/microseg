@@ -5,17 +5,23 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      task: transmit
+      transmit: allowed
   ingress:
     - from:
       - podSelector:
-          matchExpressions:
-            - {key: task, operator: In, values: [transmit, analyze_transmit, command_transmit, all]}
+            matchLabels:
+              transmit: allowed
+      - podSelector:
+            matchLabels:
+              all: allowed    
   egress:
     - to:
       - podSelector:
-          matchExpressions:
-            - {key: task, operator: In, values: [transmit, analyze_transmit, command_transmit, all]}
+            matchLabels:
+              transmit: allowed
+      - podSelector:
+            matchLabels:
+              all: allowed  
 
 ---
 
@@ -26,17 +32,23 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      task: analyze
+      analyze: allowed
   ingress:
     - from:
       - podSelector:
-          matchExpressions:
-            - {key: task, operator: In, values: [analyze, analyze_transmit, analyze_preprocess, all]}
+            matchLabels:
+              analyze: allowed
+      - podSelector:
+            matchLabels:
+              all: allowed              
   egress:
     - to:
       - podSelector:
-          matchExpressions:
-            - {key: task, operator: In, values: [analyze, analyze_transmit, analyze_preprocess, all]}
+            matchLabels:
+              analyze: allowed
+      - podSelector:
+            matchLabels:
+              all: allowed         
 ---
 
 apiVersion: networking.k8s.io/v1
@@ -46,17 +58,23 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      task: command
+      command: allowed
   ingress:
     - from:
       - podSelector:
-          matchExpressions:
-            - {key: task, operator: In, values: [command, command_transmit, command_preprocess, all]}
+            matchLabels:
+              command: allowed
+      - podSelector:
+            matchLabels:
+              all: allowed    
   egress:
     - to:
       - podSelector:
-          matchExpressions:
-            - {key: task, operator: In, values: [command, command_transmit, command_preprocess, all]}
+            matchLabels:
+              command: allowed
+      - podSelector:
+            matchLabels:
+              all: allowed  
 
 ---
 
@@ -67,101 +85,23 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      task: preprocess
+      preprocess: allowed
   ingress:
     - from:
       - podSelector:
-          matchExpressions:
-            - {key: task, operator: In, values: [preprocess, analyze_preprocess, command_preprocess, all]}
+            matchLabels:
+              preprocess: allowed
+      - podSelector:
+            matchLabels:
+              all: allowed    
   egress:
     - to:
       - podSelector:
-          matchExpressions:
-            - {key: task, operator: In, values: [preprocess, analyze_preprocess, command_preprocess, all]}
-
----
-
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: at-policy
-spec:
-  podSelector:
-    matchLabels:
-      task: analyze_transmit
-  ingress:
-    - from:
+            matchLabels:
+              preprocess: allowed
       - podSelector:
-          matchExpressions:
-            - {key: task, operator: In, values: [transmit, analyze, analyze_transmit, analyze_preprocess, command_transmit, all]}
-  egress:
-    - to:
-      - podSelector:
-          matchExpressions:
-            - {key: task, operator: In, values: [transmit, analyze, analyze_transmit, analyze_preprocess, command_transmit, all]}
-
----
-
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: ap-policy
-spec:
-  podSelector:
-    matchLabels:
-      task: analyze_preprocess
-  ingress:
-    - from:
-      - podSelector:
-          matchExpressions:
-            - {key: task, operator: In, values: [analyze, preprocess, analyze_transmit, analyze_preprocess, command_preprocess, all]}
-  egress:
-    - to:
-      - podSelector:
-          matchExpressions:
-            - {key: task, operator: In, values: [analyze, preprocess, analyze_transmit, analyze_preprocess, command_preprocess, all]}
-
----
-
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: ct-policy
-spec:
-  podSelector:
-    matchLabels:
-      task: command_transmit
-  ingress:
-    - from:
-      - podSelector:
-          matchExpressions:
-            - {key: task, operator: In, values: [command, transmit, command_transmit, analyze_transmit, command_preprocess, all]}
-  egress:
-    - to:
-      - podSelector:
-          matchExpressions:
-            - {key: task, operator: In, values: [command, transmit, command_transmit, analyze_transmit, command_preprocess, all]}
-
----
-
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: cp-policy
-spec:
-  podSelector:
-    matchLabels:
-      task: command_preprocess
-  ingress:
-    - from:
-      - podSelector:
-          matchExpressions:
-            - {key: task, operator: In, values: [preprocess, command, command_preprocess, analyze_preprocess, command_transmit, all]}
-  egress:
-    - to:
-      - podSelector:
-          matchExpressions:
-            - {key: task, operator: In, values: [preprocess, command, command_preprocess, analyze_preprocess, command_transmit, all]}
+            matchLabels:
+              all: allowed  
 
 ---
 
@@ -172,16 +112,39 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      task: all
+      preprocess: allowed
   ingress:
     - from:
       - podSelector:
-          matchExpressions:
-            - {key: task, operator: In, values: [preprocess, command, analyze, transmit, analyze_transmit, command_preprocess, analyze_preprocess, command_transmit, all]}
+            matchLabels:
+              analyze: allowed
+      - podSelector:
+            matchLabels:
+              transmit: allowed   
+      - podSelector:
+            matchLabels:
+              command: allowed
+      - podSelector:
+            matchLabels:
+              preprocess: allowed
+      - podSelector:
+            matchLabels:
+              all: allowed    
   egress:
     - to:
       - podSelector:
-          matchExpressions:
-            - {key: task, operator: In, values: [preprocess, command, analyze, transmit, analyze_transmit, command_preprocess, analyze_preprocess, command_transmit, all]}
-
+            matchLabels:
+              analyze: allowed
+      - podSelector:
+            matchLabels:
+              transmit: allowed   
+      - podSelector:
+            matchLabels:
+              command: allowed
+      - podSelector:
+            matchLabels:
+              preprocess: allowed
+      - podSelector:
+            matchLabels:
+              all: allowed
 ---
