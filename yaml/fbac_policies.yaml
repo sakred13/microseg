@@ -11,14 +11,17 @@ spec:
       - podSelector:
             matchLabels:
               transmit: allowed
+        ports:
+          - protocol: TCP
       - podSelector:
             matchLabels:
               all: allowed    
   egress:
-    - to:
       - podSelector:
             matchLabels:
               transmit: allowed
+        ports:
+          - protocol: TCP
       - podSelector:
             matchLabels:
               all: allowed  
@@ -64,6 +67,8 @@ spec:
       - podSelector:
             matchLabels:
               command: allowed
+        ports:
+          - protocol: ICMP
       - podSelector:
             matchLabels:
               all: allowed    
@@ -72,6 +77,8 @@ spec:
       - podSelector:
             matchLabels:
               command: allowed
+        ports:
+          - protocol: ICMP
       - podSelector:
             matchLabels:
               all: allowed  
