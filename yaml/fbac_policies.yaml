@@ -78,8 +78,6 @@ spec:
       - podSelector:
             matchLabels:
               command: allowed
-        ports:
-          - protocol: ICMP
       - podSelector:
             matchLabels:
               all: allowed  
