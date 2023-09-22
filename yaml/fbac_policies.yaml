@@ -17,6 +17,7 @@ spec:
             matchLabels:
               all: allowed    
   egress:
+    - to:
       - podSelector:
             matchLabels:
               transmit: allowed
