@@ -8,23 +8,23 @@ spec:
       sensor-data: allowed
   ingress:
     - from:
-      - podSelector:
-            matchLabels:
-              sensor-data: allowed
-      - podSelector:
-            matchLabels:
-              all: allowed    
+        - podSelector:
+              matchLabels:
+                sensor-data: allowed
+        - podSelector:
+              matchLabels:
+                all: allowed    
       ports:
         - protocol: TCP
           port: 5002
   egress:
     - to:
-      - podSelector:
-            matchLabels:
-              sensor-data: allowed
-      - podSelector:
-            matchLabels:
-              all: allowed  
+        - podSelector:
+              matchLabels:
+                sensor-data: allowed
+        - podSelector:
+              matchLabels:
+                all: allowed  
       ports:
         - protocol: TCP
           port: 5002
@@ -41,10 +41,10 @@ spec:
       position-data: allowed
   ingress:
     - from:
-      - podSelector:
+        - podSelector:
             matchLabels:
               position-data: allowed
-      - podSelector:
+        - podSelector:
             matchLabels:
               all: allowed    
       ports:
@@ -52,12 +52,12 @@ spec:
           port: 53
   egress:
     - to:
-      - podSelector:
-            matchLabels:
-              position-data: allowed
-      - podSelector:
-            matchLabels:
-              all: allowed       
+        - podSelector:
+              matchLabels:
+                position-data: allowed
+        - podSelector:
+              matchLabels:
+                all: allowed       
       ports:
         - protocol: UDP
           port: 53
@@ -73,23 +73,23 @@ spec:
       command: allowed
   ingress:
     - from:
-      - podSelector:
-            matchLabels:
-              command: allowed
-      - podSelector:
-            matchLabels:
-              all: allowed    
+        - podSelector:
+              matchLabels:
+                command: allowed
+        - podSelector:
+              matchLabels:
+                all: allowed    
       ports:
         - protocol: TCP
           port: 5001
   egress:
     - to:
-      - podSelector:
-            matchLabels:
-              command: allowed
-      - podSelector:
-            matchLabels:
-              all: allowed  
+        - podSelector:
+              matchLabels:
+                command: allowed
+        - podSelector:
+              matchLabels:
+                all: allowed  
       ports:
         - protocol: TCP
           port: 5001
@@ -136,7 +136,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      all: allowed
+      video-data: allowed
   ingress:
     - from:
       - podSelector:
