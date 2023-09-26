@@ -1,58 +1,66 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: transmit-policy
+  name: sensor-data-policy
 spec:
   podSelector:
     matchLabels:
-      transmit: allowed
+      sensor-data: allowed
   ingress:
     - from:
       - podSelector:
             matchLabels:
-              transmit: allowed
+              sensor-data: allowed
       - podSelector:
             matchLabels:
               all: allowed    
       ports:
         - protocol: TCP
+          port: 5002
   egress:
     - to:
       - podSelector:
             matchLabels:
-              transmit: allowed
+              sensor-data: allowed
       - podSelector:
             matchLabels:
               all: allowed  
       ports:
         - protocol: TCP
+          port: 5002
 
 ---
 
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: analyze-policy
+  name: position-data-policy
 spec:
   podSelector:
     matchLabels:
-      analyze: allowed
+      position-data: allowed
   ingress:
     - from:
       - podSelector:
             matchLabels:
-              analyze: allowed
+              position-data: allowed
       - podSelector:
             matchLabels:
-              all: allowed              
+              all: allowed    
+      ports:
+        - protocol: UDP
+          port: 53
   egress:
     - to:
       - podSelector:
             matchLabels:
-              analyze: allowed
+              position-data: allowed
       - podSelector:
             matchLabels:
-              all: allowed         
+              all: allowed       
+      ports:
+        - protocol: UDP
+          port: 53
 ---
 
 apiVersion: networking.k8s.io/v1
@@ -72,7 +80,8 @@ spec:
             matchLabels:
               all: allowed    
       ports:
-        - protocol: ICMP
+        - protocol: TCP
+          port: 5001
   egress:
     - to:
       - podSelector:
@@ -82,34 +91,41 @@ spec:
             matchLabels:
               all: allowed  
       ports:
-        - protocol: ICMP
+        - protocol: TCP
+          port: 5001
 
 ---
 
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: preprocess-policy
+  name: video-data-policy
 spec:
   podSelector:
     matchLabels:
-      preprocess: allowed
+      video-data: allowed
   ingress:
     - from:
       - podSelector:
             matchLabels:
-              preprocess: allowed
+              video-data: allowed
       - podSelector:
             matchLabels:
               all: allowed    
+        ports:
+          - protocol: UDP
+            port: 67
   egress:
     - to:
       - podSelector:
             matchLabels:
-              preprocess: allowed
+              video-data: allowed
       - podSelector:
             matchLabels:
-              all: allowed  
+              all: allowed
+        ports:
+          - protocol: UDP
+            port: 67
 
 ---
 
@@ -120,21 +136,21 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      preprocess: allowed
+      video-data: allowed
   ingress:
     - from:
       - podSelector:
             matchLabels:
-              analyze: allowed
+              position-data: allowed
       - podSelector:
             matchLabels:
-              transmit: allowed   
+              sensor-data: allowed   
       - podSelector:
             matchLabels:
               command: allowed
       - podSelector:
             matchLabels:
-              preprocess: allowed
+              video-data: allowed
       - podSelector:
             matchLabels:
               all: allowed    
@@ -142,16 +158,16 @@ spec:
     - to:
       - podSelector:
             matchLabels:
-              analyze: allowed
+              position-data: allowed
       - podSelector:
             matchLabels:
-              transmit: allowed   
+              sensor-data: allowed   
       - podSelector:
             matchLabels:
               command: allowed
       - podSelector:
             matchLabels:
-              preprocess: allowed
+              video-data: allowed
       - podSelector:
             matchLabels:
               all: allowed

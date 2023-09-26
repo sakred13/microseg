@@ -1,13 +1,13 @@
-# drone1 Pods
+# zone1 Pods
 apiVersion: v1
 kind: Pod
 metadata:
-  name: drone1service1
+  name: zone1drone1
   labels:
-    app: droneservice
-    transmit: allowed
+    app: drone
+    sensor-data: allowed
 spec:
-  nodeName: drone1
+  nodeName: zone1
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -20,13 +20,13 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: drone1service2
+  name: zone1drone2
   labels:
-    app: droneservice
-    analyze: allowed
-    transmit: allowed
+    app: drone
+    position-data: allowed
+    sensor-data: allowed
 spec:
-  nodeName: drone1
+  nodeName: zone1
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -38,12 +38,12 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: drone2service1
+  name: zone2drone1
   labels:
-    app: droneservice
-    analyze: allowed
+    app: drone
+    position-data: allowed
 spec:
-  nodeName: drone2
+  nodeName: zone2
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -56,13 +56,13 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: drone2service2
+  name: zone2drone2
   labels:
-    app: droneservice
-    analyze: allowed
-    preprocess: allowed
+    app: drone
+    position-data: allowed
+    video-data: allowed
 spec:
-  nodeName: drone2
+  nodeName: zone2
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -74,13 +74,13 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: drone3service1
+  name: zone3drone1
   labels:
-    app: droneservice
+    app: drone
     command: allowed
-    transmit: allowed
+    sensor-data: allowed
 spec:
-  nodeName: drone3
+  nodeName: zone3
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -93,12 +93,12 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: drone3service2
+  name: zone3drone2
   labels:
-    app: droneservice
+    app: drone
     command: allowed
 spec:
-  nodeName: drone3
+  nodeName: zone3
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -110,13 +110,13 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: drone4service1
+  name: zone4drone1
   labels:
-    app: droneservice
+    app: drone
     command: allowed
-    preprocess: allowed
+    video-data: allowed
 spec:
-  nodeName: drone4
+  nodeName: zone4
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -129,12 +129,12 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: drone4service2
+  name: zone4drone2
   labels:
-    app: droneservice
-    preprocess: allowed
+    app: drone
+    video-data: allowed
 spec:
-  nodeName: drone4
+  nodeName: zone4
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
