@@ -136,7 +136,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      video-data: allowed
+      all: allowed
   ingress:
     - from:
       - podSelector:
