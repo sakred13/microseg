@@ -7,7 +7,7 @@ def detect_faces(mat):
 
   aabbs = classifier.detectMultiScale(mat) # Axis-Aligned Bounding Boxes
   for box in aabbs:
-    print(box)
+    # print(box)
     x, y, width, height = box
     x2, y2 = x + width, y + height
     cv2.rectangle(mat, (x,y), (x2,y2), (0,0,255), 1)
