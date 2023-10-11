@@ -5,6 +5,11 @@ import math
 import signal
 from threading import Thread, Event
 
+import os
+os.environ['MAVLINK20'] = "1" # Change to MAVLink 20 for video commands
+mavutil.set_dialect('common')
+
+
 # Wait until a connection is initiated by another node (receiver_node.py)
 conn = mavutil.mavlink_connection('tcp:localhost:14540')
 conn.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
@@ -12,6 +17,9 @@ conn.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
                         0, 0, 0)
 
 cam = cv2.VideoCapture(0)
+if not cam.isOpened():
+  print("Camera not opened!")
+  exit(1)
 
 should_stop = Event()
 
@@ -24,9 +32,7 @@ signal.signal(signal.SIGINT, sigint_handler)
 
 t0 = 0
 def handle_image_request():
-  if not cam.isOpened():
-    print("Camera not opened!")
-    return
+  print('loopy!')
   
   result, image = cam.read()
   
@@ -70,13 +76,29 @@ def handle_image_request():
   
 
 while not should_stop.is_set():
-    msg = conn.recv_msg()
-    if msg is None:
-      continue
-    if t0 == 0:
-      t0 = time.time()
-    if msg.get_type() == 'DATA_TRANSMISSION_HANDSHAKE':
-      handle_image_request()
+  print('loopytals')
+  msg = conn.recv_msg()
+  print('after')
+  if msg is None:
+    continue
+  if t0 == 0:
+    t0 = time.time()
+  if msg.get_type() == 'DATA_TRANSMISSION_HANDSHAKE':
+    handle_image_request()
+
+if t0 == 0:
+  t0 = time.time() - 1
+
+conn.mav.camera_capture_status_send(
+  (int) (1000 * (time.time() - t0)), # timestamp
+  0, # image capturing status = idle
+  0, # video capturing status = idle
+  0, # image capture interval
+  0, # elapsed time since recording started = unavailable
+  0, # available storage capacity
+  0, # num images captured
+
+)
 
 delta_t = time.time() - t0
 
