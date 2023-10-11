@@ -4,13 +4,12 @@ import numpy as np
 import time
 import signal
 from threading import Thread, Event
+from detect_faces import detect_faces
 
 import os
 os.environ['MAVLINK20'] = "1" # Change to MAVLink 20 for video commands
 
-# todo: run CV on images and host on AWS
-
-
+# todo: host on AWS
 
 should_stop = Event()
 
@@ -46,13 +45,16 @@ while not should_stop.is_set():
         break
     # print('heartbeat done')
     print("Heartbeat from system (system %u component %u)" % (conn.target_system, conn.target_component))
+
+    images_per_second = 4.0
+    fourcc = cv2.VideoWriter_fourcc(*'MP4V')
+    out = cv2.VideoWriter('output.mp4', fourcc, images_per_second, (1280,720))
     images_received = 0
     last_image_requested_at = 0
-    images_per_second = 4
     image_interval = 1 / images_per_second # second(s)
     t0 = time.time()
     connected = True
-    while images_received < 100 and not should_stop.is_set() and connected:
+    while not should_stop.is_set() and connected:
         if last_image_requested_at + image_interval > time.time():
             time.sleep(last_image_requested_at + image_interval - time.time())
         last_image_requested_at = time.time()
@@ -105,7 +107,10 @@ while not should_stop.is_set():
             exit(-1)
 
         buffer = buffer[:-padding_size]
-        cv2.imshow('Test', cv2.imdecode(np.asarray(buffer), cv2.IMREAD_COLOR))
+        mat = cv2.imdecode(np.asarray(buffer), cv2.IMREAD_COLOR)
+        detect_faces(mat)
+        cv2.imshow('Camera View', mat)
+        out.write(mat)
         cv2.waitKey(1)
 
         images_received += 1
@@ -113,6 +118,8 @@ while not should_stop.is_set():
 
 
     conn.port.close()
+    out.release()
+
     delta_t = time.time() - t0
 
     print("Received %d images at %.2f images/second" % (images_received, images_received/delta_t))
@@ -122,4 +129,6 @@ while not should_stop.is_set():
         conn.mav.total_receive_errors,
         0.001*(conn.mav.total_bytes_received)/delta_t,
         0.001*(conn.mav.total_bytes_sent)/delta_t))
+
+
 

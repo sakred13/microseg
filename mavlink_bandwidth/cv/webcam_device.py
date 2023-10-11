@@ -32,12 +32,11 @@ signal.signal(signal.SIGINT, sigint_handler)
 
 t0 = 0
 def handle_image_request():
-  print('loopy!')
-  
   result, image = cam.read()
   
   if not result:
     print("Failed!")
+    return
   
   b = bytearray(cv2.imencode('.jpg', image)[1])
   
@@ -76,9 +75,7 @@ def handle_image_request():
   
 
 while not should_stop.is_set():
-  print('loopytals')
   msg = conn.recv_msg()
-  print('after')
   if msg is None:
     continue
   if t0 == 0:
@@ -96,8 +93,7 @@ conn.mav.camera_capture_status_send(
   0, # image capture interval
   0, # elapsed time since recording started = unavailable
   0, # available storage capacity
-  0, # num images captured
-
+  0 # num images captured
 )
 
 delta_t = time.time() - t0
