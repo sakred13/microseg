@@ -8,6 +8,7 @@ from detect_faces import detect_faces
 
 import os
 os.environ['MAVLINK20'] = "1" # Change to MAVLink 20 for video commands
+mavutil.set_dialect('common')
 
 # todo: host on AWS
 
@@ -15,6 +16,8 @@ should_stop = Event()
 
 # Run postprocessing before exiting
 def sigint_handler(signum, frame):
+    if should_stop.is_set():
+        exit(0)
     should_stop.set()
     if conn.mav.total_bytes_received == 0:
         exit(0)
@@ -46,7 +49,7 @@ while not should_stop.is_set():
     print("Heartbeat from system (system %u component %u)" % (conn.target_system, conn.target_component))
 
     images_per_second = 4.0
-    fourcc = cv2.VideoWriter_fourcc(*'MP4V')
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter('output.mp4', fourcc, images_per_second, (1280,720))
     images_received = 0
     last_image_requested_at = 0
@@ -73,12 +76,15 @@ while not should_stop.is_set():
         img_size = 0
         last_seqnr = -1
         recvd = 0
+        looped = 0
         while recvd != 0 or not should_stop.is_set():
             msg = conn.recv_msg()
-            print('looping')
+            #print('looping')
+            looped += 1
             if msg:
-                print(msg.get_type())
+                #print(msg.get_type())
                 if msg.get_type() == 'ENCAPSULATED_DATA':
+                    # print('GOOD DATA %d' % msg.seqnr)
                     # print('Received', msg.seqnr)
                     if msg.seqnr <= last_seqnr:
                         print("Warning: sequence numbers not received in order!")
@@ -86,14 +92,26 @@ while not should_stop.is_set():
                     recvd += 1
                     buffer += bytearray(msg.data)
                 elif msg.get_type() == 'DATA_TRANSMISSION_HANDSHAKE':
+                    print('END OF IMAGE')
                     if msg.size == 0:
                         #print(f'Finished with seqnr={last_seqnr} and {recvd} packets')
                         break
                     img_size = msg.size
                     #print(f'Expecting {msg.packets} packets')
                 elif msg.get_type() == 'CAMERA_CAPTURE_STATUS':
+                    print('HALT')
                     connected = False
                     break
+                elif msg.get_type() == 'PING':
+                    print('PING')
+                    conn.mav.ping_send(
+                        int((time.time()-int(time.time())) * 1000000),
+                        0,
+                        0,
+                        0
+                    )
+                elif msg.get_type() == 'BAD_DATA':
+                    print('BAD DATA')
 
 
         if recvd == 0 or len(buffer) == 0:
@@ -111,6 +129,8 @@ while not should_stop.is_set():
         out.write(mat)
 
         images_received += 1
+
+        print('received %d images' % images_received)
 
 
 
