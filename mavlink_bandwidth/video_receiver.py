@@ -6,7 +6,7 @@ import time
 
 # Run sender_node.py first
 
-conn = mavutil.mavlink_connection('tcp:localhost:14540')
+conn = mavutil.mavlink_connection('tcp:3.19.237.42:14540')
 conn.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
                         mavutil.mavlink.MAV_AUTOPILOT_INVALID,
                         0, 0, 0)
@@ -31,7 +31,7 @@ while True:
     if msg:
         # print(msg.get_type()) # DATA_TRANSMISSION_HANDSHAKE
         if msg.get_type() == 'ENCAPSULATED_DATA':
-            print('Received', msg.seqnr)
+            # print('Received', msg.seqnr)
             if msg.seqnr <= last_seqnr:
                 print("Warning: sequence numbers not received in order!")
             last_seqnr = msg.seqnr
@@ -43,6 +43,8 @@ while True:
                 break
             img_size = msg.size
             print(f'Expecting {msg.packets} packets')
+        elif msg.get_type() == 'BAD_DATA':
+            print(msg.get_type())
 
 t0 = time.time() - t0
 print("Overall: %u sent, %u received, %u errors bwin=%.1f kB/s bwout=%.1f kB/s" % (

@@ -12,7 +12,7 @@ mavutil.set_dialect('common')
 
 # Wait until a connection is initiated by another node (receiver_node.py)
 # conn = mavutil.mavlink_connection('tcp:localhost:14540')
-conn = mavutil.mavlink_connection('tcp:18.222.133.197:14540')
+conn = mavutil.mavlink_connection('tcp:3.19.237.42:14540')
 conn.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
                         mavutil.mavlink.MAV_AUTOPILOT_INVALID,
                         0, 0, 0)
@@ -59,18 +59,45 @@ def handle_image_request():
     # print(len(b))
     #if len(b) < 253:
         #print(f'Padding with {253 - len(b)} bytes')
-    print(seqnr)
+    print('seqnr: %d, len(b): %d' % (seqnr, len(b[0:253])))
     conn.mav.encapsulated_data_send(
         seqnr,
         b[0:253] if len(b) > 253 else b + bytearray((253 - len(b)) * [0])
     )
+
+
     seqnr += 1
-    t2 = time.time()
     if len(b) >= 253:
         b = b[253:]
     else:
         break
+
+    if seqnr % 100 == 0:
+      conn.mav.ping_send(
+        int((time.time() - int(time.time())) * 1000000),
+        0,
+        0,
+        0
+      )
+      while True:
+        msg = conn.recv_msg()
+        if msg is None:
+          continue
+        print(msg.get_type())
+        if msg.get_type() == 'PING':
+          break
   
+  if should_stop.is_set():
+    conn.mav.camera_capture_status_send(
+      (int) (1000 * (time.time() - t0)), # timestamp
+      0, # image capturing status = idle
+      0, # video capturing status = idle
+      0, # image capture interval
+      0, # elapsed time since recording started = unavailable
+      0, # available storage capacity
+      0 # num images captured
+    )
+
   # All zero values to end transmission
   conn.mav.data_transmission_handshake_send(0,0,0,0,0,0,0)
   
