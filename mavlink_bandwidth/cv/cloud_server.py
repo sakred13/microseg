@@ -24,6 +24,7 @@ def sigint_handler(signum, frame):
     
 signal.signal(signal.SIGINT, sigint_handler)
 
+print('Starting server...')
 
 conn = mavutil.mavlink_connection('tcpin::14540')
 is_first_run = True

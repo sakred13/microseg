@@ -9,7 +9,7 @@ from detect_faces import detect_faces
 import os
 os.environ['MAVLINK20'] = "1" # Change to MAVLink 20 for video commands
 
-# todo: host on AWS
+# todo: getting BAD_DATA packages on cloud
 
 should_stop = Event()
 
@@ -47,7 +47,7 @@ while not should_stop.is_set():
     print("Heartbeat from system (system %u component %u)" % (conn.target_system, conn.target_component))
 
     images_per_second = 4.0
-    fourcc = cv2.VideoWriter_fourcc(*'MP4V')
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter('output.mp4', fourcc, images_per_second, (1280,720))
     images_received = 0
     last_image_requested_at = 0
@@ -76,9 +76,8 @@ while not should_stop.is_set():
         recvd = 0
         while recvd != 0 or not should_stop.is_set():
             msg = conn.recv_msg()
-            print('looping')
             if msg:
-                print(msg.get_type())
+                # print(msg.get_type())
                 if msg.get_type() == 'ENCAPSULATED_DATA':
                     # print('Received', msg.seqnr)
                     if msg.seqnr <= last_seqnr:
@@ -95,6 +94,9 @@ while not should_stop.is_set():
                 elif msg.get_type() == 'CAMERA_CAPTURE_STATUS':
                     connected = False
                     break
+                elif msg.get_type() == 'BAD_DATA':
+                    print("BAD DATA!")
+                    
 
 
         if recvd == 0 or len(buffer) == 0:
