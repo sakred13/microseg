@@ -8,6 +8,7 @@ from detect_faces import detect_faces
 
 import os
 os.environ['MAVLINK20'] = "1" # Change to MAVLink 20 for video commands
+mavutil.set_dialect('common')
 
 # todo: host on AWS
 
@@ -21,6 +22,7 @@ def sigint_handler(signum, frame):
     
 signal.signal(signal.SIGINT, sigint_handler)
 
+print('Starting server...')
 
 conn = mavutil.mavlink_connection('tcpin::14540')
 is_first_run = True
