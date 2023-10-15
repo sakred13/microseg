@@ -12,14 +12,16 @@ const archiver = require('archiver');
 const util = require('util');
 const stat = util.promisify(fs.stat);
 const multer = require("multer");
-const { exec } = require('child_process');
+const { exec, execSync } = require('child_process');
 
-const hostIp = process.env.HOST_IP;
-
-console.log('HOSTURL: ' + process.env.HOST_URL);
+// const hostIp = process.env.HOST_IP;
+const hostIp = execSync("ifconfig eth0 | grep 'inet ' | awk '{print $2}'").toString().trim();
+const publicIp = execSync("curl -s http://httpbin.org/ip | jq -r '.origin'").toString().trim();
+const allowCors = [`http://localhost:3000`, `http://127.0.0.1:3000`, `http://${hostIp}:3000`, `http://${publicIp}:3000`]
+console.log(`Allowing CORS: ${allowCors}`);
 const app = express();
 app.use(cors({
-    origin: [`http://localhost:3000`, `http://127.0.0.1:3000`, `${hostIp}:3000`],
+    origin: allowCors,
     credentials: true
 }));
 app.use(bodyParser.json());

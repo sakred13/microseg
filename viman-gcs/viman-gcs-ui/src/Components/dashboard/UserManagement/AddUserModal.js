@@ -12,6 +12,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { MenuItem } from '@mui/material';
 import Cookies from 'js-cookie';
+import { API_URL } from '../../../config';
 
 const customStyles = {
     position: 'absolute',
@@ -99,7 +100,7 @@ const AddUserModal = ({ isOpen, setIsOpen }) => {
 
             try {
                 // Make the API call to create a new user
-                const response = await fetch('http://localhost:3001/api/signup', {
+                const response = await fetch(`${API_URL}/api/signup`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

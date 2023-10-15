@@ -22,10 +22,11 @@ import EditDeviceModal from './EditDeviceModal';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import { API_URL } from '../../../config';
 
 const getTasks = async () => {
     try {
-        const url = `http://localhost:3001/api/getTasks?authToken=${encodeURIComponent(
+        const url = `${API_URL}/api/getTasks?authToken=${encodeURIComponent(
             Cookies.get('jwtToken')
         )}`;
 
@@ -50,7 +51,7 @@ const getTasks = async () => {
 
 const getTrustedDevices = async () => {
     try {
-        const url = `http://localhost:3001/api/getTrustedDevices?authToken=${encodeURIComponent(
+        const url = `${API_URL}/api/getTrustedDevices?authToken=${encodeURIComponent(
             Cookies.get('jwtToken')
         )}`;
 
@@ -75,7 +76,7 @@ const getTrustedDevices = async () => {
 
 const getMoreNodes = async () => {
     try {
-        const url = `http://localhost:3001/api/getMoreNodes?authToken=${encodeURIComponent(
+        const url = `${API_URL}/api/getMoreNodes?authToken=${encodeURIComponent(
             Cookies.get('jwtToken')
         )}`;
 
@@ -172,7 +173,7 @@ const DeviceManagement = () => {
     const handleDeleteDevice = async (deviceName) => {
         try {
             const response = await fetch(
-                `http://localhost:3001/api/removeTrustedDevice?authToken=${encodeURIComponent(
+                `${API_URL}/api/removeTrustedDevice?authToken=${encodeURIComponent(
                     Cookies.get('jwtToken')
                 )}&deviceName=${deviceName}`,
                 {

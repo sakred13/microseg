@@ -20,10 +20,11 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { API_URL } from '../../../config';
 
 const getUsers = async () => {
     try {
-        const url = `http://localhost:3001/api/getUsers?authToken=${encodeURIComponent(
+        const url = `${API_URL}/api/getUsers?authToken=${encodeURIComponent(
             Cookies.get('jwtToken')
         )}`;
 
@@ -89,7 +90,7 @@ const ManageUsers = () => {
     const handleDeleteUser = async () => {
         try {
             const response = await fetch(
-                `http://localhost:3001/api/deleteUser?username=${deleteUser}&authToken=${Cookies.get('jwtToken')}`,
+                `${API_URL}/api/deleteUser?username=${deleteUser}&authToken=${Cookies.get('jwtToken')}`,
                 {
                     method: 'DELETE',
                     headers: {

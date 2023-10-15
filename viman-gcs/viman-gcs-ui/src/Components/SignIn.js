@@ -14,20 +14,16 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from "react"
-
-const API_URL = `http://localhost:3001`;
-// console.log(`HOST: ${process.env.HOST} `);
+import { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 
 function SignIn() {
-
   const [jwtToken, setJwtToken] = useState(null);
-  const [error, setError] = useState(null);  // New state for error
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (jwtToken) {
-      // Use setTimeout to ensure navigation happens after the component has re-rendered
       setTimeout(() => {
         navigate('/loggedIn');
       }, 0);
@@ -57,13 +53,13 @@ function SignIn() {
         setJwtToken(result.jwtToken);
         Cookies.set('jwtToken', result.jwtToken);
         Cookies.set('user', result.user);
-        setError(null);  // Reset error state on successful login
+        setError(null);
       } else {
-        setError(result.message);  // Set error state on failed login
+        setError(result.message);
       }
     } catch (error) {
       console.error('Error during login:', error.message);
-      setError('An unexpected error occurred.');  // Set a generic error message
+      setError('An unexpected error occurred.');
     }
   };
 
@@ -73,13 +69,23 @@ function SignIn() {
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
+            marginTop: 8, // Adjusted marginTop
+            display: 'flex',
+            flexDirection: 'column',
+            // justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <img src="viman-lab.png" alt="Logo" style={{ width: '200px', height: '90px' }} />
+        </Box>
+        <Box
+          sx={{
+            marginTop: 7, // Adjusted marginTop
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
           }}
         >
-          <img src="viman-lab.png" alt="Logo" style={{ width: '200px', height: '90px' }} />
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
@@ -119,11 +125,32 @@ function SignIn() {
             >
               Sign In
             </Button>
+            <Box sx={{ mt: 2, mb: 2 }}>
+              <Typography variant="body2" align="center">
+                OR
+              </Typography>
+            </Box>
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2">
+                {/* <Link href="#" variant="body2">
                   Forgot password?
-                </Link>
+                </Link> */}
+                <Button
+                  fullWidth
+                  variant="contained"
+                  sx={{
+                    mt: 3,
+                    mb: 2,
+                    color: 'white',
+                    backgroundColor: '#4CAF50',
+                    '&:hover': {
+                      backgroundColor: '#45A049', // Change this to the desired hover color
+                    },
+                  }}
+                >
+                  Request to Add Node to Cluster
+                </Button>
+
               </Grid>
             </Grid>
           </Box>

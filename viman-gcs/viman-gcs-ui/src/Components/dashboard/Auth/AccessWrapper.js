@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import NoAccess from './NoAccess';// ... other imports ...
-import DeviceManagement from '../DeviceManagement/DeviceManagement';
 import Cookies from 'js-cookie';
+import { API_URL } from '../../../config';
 
 const AccessWrapper = (props) => {
     const [isAdmin, setIsAdmin] = useState(null);
@@ -9,7 +9,7 @@ const AccessWrapper = (props) => {
     useEffect(() => {
         const checkAdminStatus = async () => {
             try {
-                const response = await fetch(`http://localhost:3001/api/authorizeAdmin?authToken=${encodeURIComponent(Cookies.get('jwtToken'))}`);
+                const response = await fetch(`${API_URL}/api/authorizeAdmin?authToken=${encodeURIComponent(Cookies.get('jwtToken'))}`);
 
                 if (response.ok) {
                     setIsAdmin(true);

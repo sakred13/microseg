@@ -9,6 +9,7 @@ import Container from '@mui/material/Container';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { Autocomplete, Chip } from '@mui/material';
 import Cookies from 'js-cookie';
+import { API_URL } from '../../../config';
 
 const customStyles = {
     position: 'absolute',
@@ -57,7 +58,7 @@ const EditDeviceModal = ({ isOpen, setIsOpen, deviceDetails, allowedTasks }) => 
         const authToken = Cookies.get('jwtToken');
 
         try {
-            const response = await fetch('http://localhost:3001/api/updateTrustedDevice', {
+            const response = await fetch(`${API_URL}/api/updateTrustedDevice`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

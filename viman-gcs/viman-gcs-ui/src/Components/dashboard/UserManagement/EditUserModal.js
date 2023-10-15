@@ -12,6 +12,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { MenuItem } from '@mui/material';
 import Cookies from 'js-cookie';
+import { API_URL } from '../../../config';
 
 const customStyles = {
     position: 'absolute',
@@ -77,7 +78,7 @@ const EditUserModal = ({ isOpen, setIsOpen, username, email, role }) => {
         if (validateForm()) {
             try {
                 // Actual API call using fetch
-                const response = await fetch('http://localhost:3001/api/updateUser', {
+                const response = await fetch(`${API_URL}/api/updateUser`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

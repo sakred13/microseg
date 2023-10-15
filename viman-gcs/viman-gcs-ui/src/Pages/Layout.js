@@ -25,6 +25,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import HiveIcon from '@mui/icons-material/Hive';
 import EdgesensorHighIcon from '@mui/icons-material/EdgesensorHigh';
 import SecurityIcon from '@mui/icons-material/Security';
+import { API_URL } from '../config';
 
 const drawerWidth = 240;
 const pendingActions = ["pendingAction1", "pendingAction2", "pendingAction3", "pendingAction4", "pendingAction5"];
@@ -95,7 +96,7 @@ export function Layout(props) {
 
     const checkAdminStatus = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/authorizeAdmin?authToken=${encodeURIComponent(token)}`);
+        const response = await fetch(`${API_URL}/api/authorizeAdmin?authToken=${encodeURIComponent(token)}`);
 
         if (response.ok) {
           setIsAdmin(true);
