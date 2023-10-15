@@ -1,0 +1,163 @@
+# zone1 Pods
+apiVersion: v1
+kind: Pod
+metadata:
+  name: zone1drone1
+  labels:
+    app: drone
+    sensor-data: allowed
+spec:
+  nodeName: docker-desktop
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: zone1drone2
+  labels:
+    app: drone
+    position-data: allowed
+    sensor-data: allowed
+spec:
+  nodeName: docker-desktop
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: zone2drone1
+  labels:
+    app: drone
+    position-data: allowed
+spec:
+  nodeName: docker-desktop
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: zone2drone2
+  labels:
+    app: drone
+    position-data: allowed
+    video-data: allowed
+spec:
+  nodeName: docker-desktop
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: zone3drone1
+  labels:
+    app: drone
+    command: allowed
+    sensor-data: allowed
+spec:
+  nodeName: docker-desktop
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: zone3drone2
+  labels:
+    app: drone
+    command: allowed
+spec:
+  nodeName: docker-desktop
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: zone4drone1
+  labels:
+    app: drone
+    command: allowed
+    video-data: allowed
+spec:
+  nodeName: docker-desktop
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: zone4drone2
+  labels:
+    app: drone
+    video-data: allowed
+spec:
+  nodeName: docker-desktop
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    command:
+      - sleep
+      - "3600000"
+
+---
+# ground Pods
+apiVersion: v1
+kind: Pod
+metadata:
+  name: groundservice
+  labels:
+    app: groundservice
+    all: allowed
+spec:
+  nodeName: docker-desktop
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    ports:
+    - containerPort: 8080
+    command:
+      - sleep
+      - "3600000"
