@@ -199,7 +199,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'admin@umsystem.edu','admin',1,'$2b$10$H6W0865NkOsLCjSZ1fME7eym05sUZfH8NeoYFrMrmgzXlRGr2JcJy'),(5,'saketh.reddy1307@gmail.coms','Saketh',1,'$2b$10$aGSJbbrReDRAeBLS4nkcGOT1uST.evWKTvYfNazkvU1aWcl1CCGJ.'),(10,'srvmannava@gmail.com','Sravanthi',2,'$2b$10$VU2N4MV/wCoOtT80gbPK/OPHuSGBCW6KghORLBT2Xq19wouaoeNPm');
+INSERT INTO `user` VALUES (1,'admin@umsystem.edu','admin',1,'$2b$10$H6W0865NkOsLCjSZ1fME7eym05sUZfH8NeoYFrMrmgzXlRGr2JcJy'),(5,'saketh.reddy1307@gmail.coms','Saketh',1,'$2b$10$aGSJbbrReDRAeBLS4nkcGOT1uST.evWKTvYfNazkvU1aWcl1CCGJ.');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

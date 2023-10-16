@@ -13,11 +13,15 @@ const util = require('util');
 const stat = util.promisify(fs.stat);
 const multer = require("multer");
 const { exec, execSync } = require('child_process');
+const ip = require('ip');
 
 // const hostIp = process.env.HOST_IP;
 const hostIp = execSync("ifconfig eth0 | grep 'inet ' | awk '{print $2}'").toString().trim();
 const publicIp = execSync("curl -s http://httpbin.org/ip | jq -r '.origin'").toString().trim();
 const allowCors = [`http://localhost:3000`, `http://127.0.0.1:3000`, `http://${hostIp}:3000`, `http://${publicIp}:3000`]
+var requestList = new Set();
+var blockList = new Set();
+var subnetIps;
 console.log(`Allowing CORS: ${allowCors}`);
 const app = express();
 app.use(cors({
@@ -28,7 +32,6 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 const dbConfig = JSON.parse(fs.readFileSync('./configs/dbconfigs.json'));
-const storageConfig = JSON.parse(fs.readFileSync('./configs/storageConfig.json'));
 
 // Create a connection pool to handle multiple connections to the database
 const pool = mysql.createPool({
@@ -38,6 +41,45 @@ const pool = mysql.createPool({
     database: dbConfig.database,
     connectionLimit: dbConfig.connectionLimit
 });
+
+function calculateSubnetRange(ipAddress, subnetMask) {
+    const subnet = ip.subnet(ipAddress, subnetMask);
+    return subnet;
+}
+
+function generateIPRange(startIP, endIP) {
+    const start = startIP.split('.').map(Number);
+    const end = endIP.split('.').map(Number);
+    const result = [];
+
+    for (let i = start[0]; i <= end[0]; i++) {
+        for (let j = start[1]; j <= end[1]; j++) {
+            for (let k = start[2]; k <= end[2]; k++) {
+                for (let l = start[3]; l <= end[3]; l++) {
+                    result.push(`${i}.${j}.${k}.${l}:*`);
+                }
+            }
+        }
+    }
+
+    return result;
+}
+
+try {
+
+    const networkInterfaces = require('os').networkInterfaces();
+    const subnetMask = networkInterfaces['eth0'][0].netmask;
+    
+    // console.log('Private IP Address:', hostIp);
+    // console.log('Subnet Mask:', subnetMask);
+
+    const subnetRange = calculateSubnetRange(hostIp, subnetMask);
+    // console.log('Subnet Range:', subnetRange.networkAddress + '/' + subnetRange.subnetMaskLength);
+    // console.log('IP Range:', subnetRange.firstAddress + ' - ' + subnetRange.lastAddress);
+    subnetIps = generateIPRange(subnetRange.firstAddress, subnetRange.lastAddress);
+} catch (error) {
+    console.error('Error:', error.message);
+}
 
 // Middleware function to verify JWT token
 function verifyToken(req, res, next) {
@@ -51,7 +93,7 @@ function verifyToken(req, res, next) {
         res.sendStatus(403);
     }
 }
- 
+
 function getUserFromToken(token) {
     if (typeof token !== 'string') {
         return 'Unauthorized';
@@ -596,7 +638,7 @@ app.put('/api/updateTrustedDevice', async (req, res) => {
             return res.status(500).json({ message: 'Internal Server Error' });
         }
 
-        if (isAdmin) { 
+        if (isAdmin) {
             try {
                 // Find the trusted device by deviceName
                 const existingDevice = await findTrustedDeviceByName(currentName);
