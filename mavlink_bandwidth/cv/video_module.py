@@ -1,4 +1,8 @@
+import os
+os.environ['MAVLINK20'] = "1" # Change to MAVLink 20 for video commands
 from pymavlink import mavutil
+import pymavlink
+print(pymavlink.__version__)
 import cv2
 import numpy as np
 import time
@@ -6,13 +10,11 @@ import signal
 from threading import Thread, Event
 from detect_faces import detect_faces
 
-import os
-os.environ['MAVLINK20'] = "1" # Change to MAVLink 20 for video commands
 mavutil.set_dialect('common')
 
-# todo: host on AWS
+# Module to receive videos from devices
 
-global should_stop = Event()
+should_stop = Event()
 
 # Run postprocessing before exiting
 def sigint_handler(signum, frame):
@@ -25,6 +27,8 @@ def sigint_handler(signum, frame):
 signal.signal(signal.SIGINT, sigint_handler)
 
 print('Starting server...')
+conn = mavutil.mavlink_connection('tcpin::14541', dialect='common')
+print(dir(conn))
 
 def handle_data(conn):
   buffer = bytearray()
@@ -145,7 +149,6 @@ def print_summary(conn, delta_t, images_received):
         0.001*(conn.mav.total_bytes_received)/delta_t,
         0.001*(conn.mav.total_bytes_sent)/delta_t))
 
-conn = mavutil.mavlink_connection('tcpin::14541')
 is_first_run = True
 while not should_stop.is_set():
   

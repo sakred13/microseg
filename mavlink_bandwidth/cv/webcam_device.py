@@ -10,9 +10,10 @@ os.environ['MAVLINK20'] = "1" # Change to MAVLink 20 for video commands
 mavutil.set_dialect('common')
 
 
+
 # Wait until a connection is initiated by another node (receiver_node.py)
-# conn = mavutil.mavlink_connection('tcp:localhost:14540')
-conn = mavutil.mavlink_connection('tcp:3.19.237.42:14540')
+conn = mavutil.mavlink_connection('tcp:localhost:14540')
+# conn = mavutil.mavlink_connection('tcp:3.19.237.42:14540')
 conn.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
                         mavutil.mavlink.MAV_AUTOPILOT_INVALID,
                         0, 0, 0)
@@ -32,7 +33,10 @@ def sigint_handler(signum, frame):
 signal.signal(signal.SIGINT, sigint_handler)
 
 t0 = 0
-def handle_image_request():
+
+def handle_image_send(conn):
+  
+
   result, image = cam.read()
   
   if not result:
@@ -101,6 +105,25 @@ def handle_image_request():
   # All zero values to end transmission
   conn.mav.data_transmission_handshake_send(0,0,0,0,0,0,0)
   
+def handle_image_stream_request(conn):
+  message = conn.mav.command_long_encode(
+        conn.target_system,  # Target system ID
+        conn.target_component,  # Target component ID
+        mavutil.mavlink.MAV_CMD_REQUEST_MESSAGE,  # ID of command to send
+        0,  # Confirmation
+        mavutil.mavlink.MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION,  # param1: Message ID to be streamed
+        0, # param2: Get all streams
+        0,       # param3 (unused)
+        0,       # param4 (unused)
+        0,       # param5 (unused)
+        0,       # param5 (unused)
+        0        # param6 (unused)
+  )
+  conn.mav.send(message)
+  # stream_conn = mavutil.mavlink_connection('tcp:3.19.237.42:14541')
+  # stream_conn.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
+  #                       mavutil.mavlink.MAV_AUTOPILOT_INVALID,
+  #                       0, 0, 0)
 
 while not should_stop.is_set():
   msg = conn.recv_msg()
@@ -109,8 +132,16 @@ while not should_stop.is_set():
   print(msg.get_type())
   if t0 == 0:
     t0 = time.time()
-  if msg.get_type() == 'DATA_TRANSMISSION_HANDSHAKE':
-    handle_image_request()
+  cmd = msg.get_type()
+  if cmd == 'COMMAND_LONG':
+    if msg.command == 2500:
+      cmd = 'VIDEO_START_CAPTURE'
+    else:
+      print('Unknown command: %d' % msg.command)
+    
+    print('Unwrapped command: %s' % cmd)
+  if cmd == 'VIDEO_START_CAPTURE':
+    handle_image_stream_request(conn)
 
 if t0 == 0:
   t0 = time.time() - 1
