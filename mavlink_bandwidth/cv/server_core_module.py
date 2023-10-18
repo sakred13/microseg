@@ -44,6 +44,23 @@ message = conn.mav.command_long_encode(
 )
 conn.mav.send(message)
 
+def send_video_stream_information(con):
+  conn.mav.video_stream_information_send(
+    1, # Video stream id
+    1, # Num streams available
+    2, # Type = MPEG on TCP (not reaally MPEG)
+    1, # Status = Running
+    4.0, # Framerate
+    1280, # Width
+    720, # Height
+    
+  )
+
+def handle_request_message(conn, msg):
+  cmdnum = msg.command
+  if cmdnum == 269: # Video Stream Information
+    send_video_stream_information(conn)
+
 while not should_stop.is_set():
   msg = conn.recv_msg()
   if msg is None:
@@ -58,4 +75,7 @@ while not should_stop.is_set():
     
     print('Unwrapped command: %s' % cmd)
   # todo: handle request video stream information message by pointing the device to the video_module port  
+  if cmd == 'REQUEST_MESSAGE':
+    print(msg)
+    handle_request_message(conn, msg)
 
