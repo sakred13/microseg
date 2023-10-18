@@ -61,6 +61,11 @@ if [ "$http_status_code" -eq 200 ]; then
     token=$(echo "$token_response" | head -n -1 | jq -r '.token')
     echo "Token received: $token"
 
+    sudo /usr/local/bin/k3s-agent-uninstall.sh
+    sudo rm -rf /etc/rancher/k3s
+    sudo systemctl stop k3s
+    sudo systemctl disable k3s
+
     # Step v: Run the script with the obtained token
     export K3S_NODE_NAME=$nodeName
     export K3S_URL="https://${clusterIP}:6443"

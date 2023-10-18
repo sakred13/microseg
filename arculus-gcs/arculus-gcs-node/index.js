@@ -885,7 +885,7 @@ joinStatusWss.on('connection', (ws, req) => {
     }, 5000); // Check every 5 seconds
 });
 
-app.get('/getToken', cors({
+app.get('/api/getToken', cors({
     origin: subnetIps,
     methods: 'GET',
     credentials: true,
