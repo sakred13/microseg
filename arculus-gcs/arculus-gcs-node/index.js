@@ -6,24 +6,25 @@ const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const path = require('path')
-const mime = require('mime');
-const archiver = require('archiver');
 const util = require('util');
-const stat = util.promisify(fs.stat);
-const multer = require("multer");
 const { exec, execSync } = require('child_process');
 const ip = require('ip');
+const WebSocket = require('ws');
+const http = require('http');
 
 // const hostIp = process.env.HOST_IP;
 const hostIp = execSync("ifconfig eth0 | grep 'inet ' | awk '{print $2}'").toString().trim();
-const publicIp = execSync("curl -s http://httpbin.org/ip | jq -r '.origin'").toString().trim();
+const publicIp = execSync("curl -s ifconfig.me").toString().trim();
+console.log('Public IP: ', publicIp)
 const allowCors = [`http://localhost:3000`, `http://127.0.0.1:3000`, `http://${hostIp}:3000`, `http://${publicIp}:3000`]
-var requestList = new Set();
-var blockList = new Set();
+var requestList = {};
+var blockList = {};
 var subnetIps;
 console.log(`Allowing CORS: ${allowCors}`);
 const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server, path: '/joinRequests' });
+
 app.use(cors({
     origin: allowCors,
     credentials: true
@@ -56,7 +57,8 @@ function generateIPRange(startIP, endIP) {
         for (let j = start[1]; j <= end[1]; j++) {
             for (let k = start[2]; k <= end[2]; k++) {
                 for (let l = start[3]; l <= end[3]; l++) {
-                    result.push(`${i}.${j}.${k}.${l}:*`);
+                    result.push(`http://${i}.${j}.${k}.${l}:*`);
+                    result.push(`https://${i}.${j}.${k}.${l}:*`);
                 }
             }
         }
@@ -812,6 +814,42 @@ app.get('/api/authorizeAdmin', (req, res) => {
     });
 });
 
+app.post('/api/clusterJoinRequest', cors({
+    origin: subnetIps,
+    methods: 'POST',
+    credentials: true,
+}), 
+(req, res) => {
+    const { nodeName } = req.query;
+
+    // Process the nodeName as needed
+    console.log(`Received cluster join request for node: ${nodeName}`);
+    requestList[req.ip.replace('::ffff:', '')] = nodeName;
+    console.log("Request List: ", requestList);
+    // console.log()
+    res.status(200).json({ message: 'Cluster join request received successfully', nodeName });
+});
+
+// WebSocket server
+wss.on('connection', (ws, req) => {
+    console.log('WebSocket client connected');
+  
+    // Parse query parameters from the URL
+    // const nodeName = new URLSearchParams(req.url.split('?')[1]).get('nodeName');
+    
+    // Handle WebSocket connection close
+    ws.on('close', () => {
+      console.log('WebSocket client disconnected');
+      // Remove the client from the list when disconnected
+      // connectedClients.delete({ ws, nodeName });
+    });
+  
+    // Periodically send updates to connected clients
+    setInterval(() => {
+      ws.send(JSON.stringify(requestList));
+    }, 5000);
+});
+
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -829,6 +867,6 @@ const formatDate = (dateString) => {
 
 // Start the server
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

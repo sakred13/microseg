@@ -14,6 +14,8 @@ import AddUserModal from '../UserManagement/AddUserModal';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import DoneIcon from '@mui/icons-material/Done'
+import CloseIcon from '@mui/icons-material/Close'
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -99,7 +101,7 @@ const getMoreNodes = async () => {
     }
 };
 
-const DeviceManagement = () => {
+const DeviceManagement = (props) => {
     const [trustedDevices, setTrustedDevices] = useState([]);
     const [moreNodes, setMoreNodes] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -107,7 +109,6 @@ const DeviceManagement = () => {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [triggerRender, setTriggerRender] = useState(false);
     const navigate = useNavigate();
-    const [editDevice, setEditDevice] = useState([]);
     const [isAddDeviceModalOpen, setIsAddDeviceModalOpen] = useState(false);
     const [selectedNode, setSelectedNode] = useState({ name: '', ip: '' });
     const [tasks, setTasks] = useState([]);
@@ -245,7 +246,7 @@ const DeviceManagement = () => {
             )}
 
             <Typography variant="h6" gutterBottom align="left">
-                Trusted Devices
+                Configured Devices
             </Typography>
             <TableContainer component={Paper} style={{ maxWidth: '70%' }}>
                 <Table size="small">
@@ -254,8 +255,7 @@ const DeviceManagement = () => {
                             <TableCell><b>Name</b></TableCell>
                             <TableCell><b>IP Address</b></TableCell>
                             <TableCell><b>Allowed Tasks</b></TableCell>
-                            <TableCell><b>Action</b></TableCell>
-                            <TableCell><b>Action</b></TableCell>
+                            <TableCell><b>Actions</b></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -285,9 +285,7 @@ const DeviceManagement = () => {
                                         style={{ cursor: 'pointer' }}
                                     >
                                         <font color="black">Edit</font>
-                                    </Button>
-                                </TableCell>
-                                <TableCell>
+                                    </Button> &nbsp;&nbsp;&nbsp;
                                     <Button
                                         startIcon={<DeleteIcon style={{ color: '#e34048' }} />}
                                         onClick={() => handleDeleteDialogOpen(device.device_name)}
@@ -303,7 +301,7 @@ const DeviceManagement = () => {
             </TableContainer>
             <br />
             <Typography variant="h6" gutterBottom align="left">
-                More Nodes on Network
+                More Devices In The Cluster
             </Typography>
 
             <TableContainer component={Paper} style={{ maxWidth: '70%', marginTop: '20px' }}>
@@ -334,6 +332,48 @@ const DeviceManagement = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
+            <br />
+
+            <Typography variant="h6" gutterBottom align="left">
+                Cluster Join Requests
+            </Typography>
+
+            <TableContainer component={Paper} style={{ maxWidth: '70%', marginTop: '20px' }}>
+                <Table size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell><b>Name</b></TableCell>
+                            <TableCell><b>IP Address</b></TableCell>
+                            <TableCell><b>Actions</b></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {Object.entries(props.joinRequests).map(([key, value]) => (
+                            <TableRow key={key}>
+                                <TableCell>{value}</TableCell>
+                                <TableCell>{key}</TableCell>
+                                <TableCell>
+                                    <Button
+                                        startIcon={<DoneIcon />}
+                                        // onClick={() => handleApproveDevice(key, value)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        <font color="black">Approve</font>
+                                    </Button>
+                                    <Button
+                                        startIcon={<CloseIcon style={{ color: '#e34048' }} />}
+                                        // onClick={() => handleApproveDevice(key, value)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        <font color="black">Decline</font>
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
 
             <Dialog
                 open={showDeleteDialog}
@@ -348,7 +388,7 @@ const DeviceManagement = () => {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                <Button onClick={() => handleDeleteDevice(deleteDevice)} color="primary">
+                    <Button onClick={() => handleDeleteDevice(deleteDevice)} color="primary">
                         Yes
                     </Button>
                     <Button onClick={handleDeleteDialogClose} color="primary" autoFocus>
@@ -356,7 +396,7 @@ const DeviceManagement = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-        
+
         </div>
     );
 };

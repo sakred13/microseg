@@ -17,7 +17,6 @@ import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import PeopleIcon from '@mui/icons-material/People';
@@ -26,10 +25,9 @@ import HiveIcon from '@mui/icons-material/Hive';
 import EdgesensorHighIcon from '@mui/icons-material/EdgesensorHigh';
 import SecurityIcon from '@mui/icons-material/Security';
 import { API_URL } from '../config';
+import { useState, useEffect } from 'react';
 
 const drawerWidth = 240;
-const pendingActions = ["pendingAction1", "pendingAction2", "pendingAction3", "pendingAction4", "pendingAction5"];
-const pendingActionsCount = pendingActions.length;
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -80,6 +78,23 @@ const defaultTheme = createTheme();
 export function Layout(props) {
   const [open, setOpen] = React.useState(true);
   const [isAdmin, setIsAdmin] = React.useState(false);
+  const [pendingActionsCount, setPendingActionsCount] = useState(0);
+
+  useEffect(() => {
+  // Create a new WebSocket connection
+  const ws = new WebSocket(`${API_URL.replace('http://', 'ws://')}/joinRequests`);
+  ws.addEventListener('message', (event) => {
+    console.log('Event:', event);
+    const data = JSON.parse(event.data);
+    console.log(`Data: ${data}, Length: ${Object.keys(data).length}`);
+    setPendingActionsCount(Object.keys(data).length);
+  });
+
+  return () => {
+    ws.close();
+  };
+}, []); // Empty dependency array ensures that this effect runs only once on component mount
+
   const navigate = useNavigate();
 
   const handleSignOut = () => {
@@ -164,7 +179,7 @@ export function Layout(props) {
               VIMAN Ground Control Client
             </Typography>
             <IconButton color="inherit">
-              <Badge badgeContent={pendingActionsCount} color="secondary">
+              <Badge badgeContent={'' + pendingActionsCount} color="secondary">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
