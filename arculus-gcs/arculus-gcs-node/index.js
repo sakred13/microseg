@@ -18,12 +18,15 @@ const publicIp = execSync("curl -s ifconfig.me").toString().trim();
 console.log('Public IP: ', publicIp)
 const allowCors = [`http://localhost:3000`, `http://127.0.0.1:3000`, `http://${hostIp}:3000`, `http://${publicIp}:3000`]
 var requestList = {};
+var acceptedList = {};
 var blockList = {};
 var subnetIps;
 console.log(`Allowing CORS: ${allowCors}`);
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server, path: '/joinRequests' });
+const joinReqsWss = new WebSocket.Server({ server, path: '/joinRequests' });
+const joinStatusServer = http.createServer();
+const joinStatusWss = new WebSocket.Server({ server: joinStatusServer, path: '/getJoinStatus' });
 
 app.use(cors({
     origin: allowCors,
@@ -71,7 +74,7 @@ try {
 
     const networkInterfaces = require('os').networkInterfaces();
     const subnetMask = networkInterfaces['eth0'][0].netmask;
-    
+
     // console.log('Private IP Address:', hostIp);
     // console.log('Subnet Mask:', subnetMask);
 
@@ -818,38 +821,137 @@ app.post('/api/clusterJoinRequest', cors({
     origin: subnetIps,
     methods: 'POST',
     credentials: true,
-}), 
-(req, res) => {
+}), (req, res) => {
     const { nodeName } = req.query;
+
+    // Check if nodeName already exists in requestList or acceptedList
+    if (Object.values(requestList).includes(nodeName) || Object.values(acceptedList).includes(nodeName)) {
+        console.log(`Node name ${nodeName} is already taken. Sending 409 status.`);
+        return res.status(409).json({ error: 'The node name is already taken. Please choose a different name.' });
+    }
 
     // Process the nodeName as needed
     console.log(`Received cluster join request for node: ${nodeName}`);
     requestList[req.ip.replace('::ffff:', '')] = nodeName;
     console.log("Request List: ", requestList);
-    // console.log()
+
     res.status(200).json({ message: 'Cluster join request received successfully', nodeName });
 });
 
+// Error handling middleware to catch any unhandled errors
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Internal Server Error' });
+});
+
+
 // WebSocket server
-wss.on('connection', (ws, req) => {
+joinReqsWss.on('connection', (ws, req) => {
     console.log('WebSocket client connected');
-  
-    // Parse query parameters from the URL
-    // const nodeName = new URLSearchParams(req.url.split('?')[1]).get('nodeName');
-    
-    // Handle WebSocket connection close
+
     ws.on('close', () => {
-      console.log('WebSocket client disconnected');
-      // Remove the client from the list when disconnected
-      // connectedClients.delete({ ws, nodeName });
+        console.log('WebSocket client disconnected');
+
     });
-  
+
     // Periodically send updates to connected clients
     setInterval(() => {
-      ws.send(JSON.stringify(requestList));
+        ws.send(JSON.stringify(requestList));
     }, 5000);
 });
 
+joinStatusWss.on('connection', (ws, req) => {
+    console.log('WebSocket client connected');
+
+    // Parse query parameters from the URL
+    const nodeName = new URLSearchParams(req.url.split('?')[1]).get('nodeName');
+
+    // Initial message
+    ws.send("Request submitted. Please hang on until an administrator approves your request.");
+
+    // Handle WebSocket connection close
+    ws.on('close', () => {
+        console.log('WebSocket client disconnected');
+    });
+
+    // Check for nodeName in acceptedList
+    const checkNodeInterval = setInterval(() => {
+        if (Object.values(acceptedList).includes(nodeName)) {
+            // If nodeName is found, send success message and close the WebSocket
+            ws.send("Join Successful");
+            clearInterval(checkNodeInterval); // Stop the interval
+            ws.close();
+        }
+    }, 5000); // Check every 5 seconds
+});
+
+app.get('/getToken', cors({
+    origin: subnetIps,
+    methods: 'GET',
+    credentials: true,
+}), (req, res) => {
+    const { nodeName } = req.query;
+
+    if (!nodeName) {
+        return res.status(400).json({ error: 'Node name is required.' });
+    }
+
+    // Execute the command to retrieve the K3S token
+    exec('sudo cat /var/lib/rancher/k3s/server/node-token', (err, stdout, stderr) => {
+        if (err) {
+            console.error(`Error executing command: ${err.message}`);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        // Extract the token from the command output
+        const token = stdout.trim();
+
+        // Validation: Ensure a valid token is obtained
+        if (!token) {
+            console.error('Empty token received.');
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        if (!nodeName.trim()) {
+            return res.status(400).json({ error: 'Invalid nodeName.' });
+        }
+
+
+        // Example: Respond with the obtained token
+        if (Object.values(acceptedList).includes(nodeName))
+            res.status(200).json({ token });
+        else {
+            res.status(409).json({ error: 'Node name not found in acceptedList.' });
+        }
+    });
+});
+
+app.post('/addToCluster', (req, res) => {
+    const { ipAddress, nodeName, authToken } = req.body;
+
+    // Check if the user has an admin role
+    isAdminUser(getUserFromToken(authToken), async (roleErr, isAdmin) => {
+        if (roleErr) {
+            console.error(roleErr);
+            return res.status(500).json({ message: 'Internal Server Error' });
+        }
+
+        if (isAdmin) {
+            // Validation: Ensure both ipAddress and nodeName are provided
+            if (!ipAddress || !nodeName) {
+                return res.status(400).json({ error: 'Both ipAddress and nodeName are required.' });
+            }
+
+            // Add to acceptedList and remove from requestList
+            acceptedList[ipAddress] = nodeName;
+            delete requestList[ipAddress];
+
+            res.status(200).json({ message: 'Added to cluster successfully.' });
+        } else {
+            return res.status(403).json({ message: 'Unauthorized: Only admin users can perform this action' });
+        }
+    });
+});
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -869,4 +971,8 @@ const formatDate = (dateString) => {
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+});
+
+joinStatusServer.listen(3002, () => {
+    console.log('Join Status WebSocket server listening on port 3002');
 });

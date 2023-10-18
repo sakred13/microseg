@@ -5,7 +5,10 @@ import { API_URL } from '../../../config';
 
 const AccessWrapper = (props) => {
     const [isAdmin, setIsAdmin] = useState(null);
+    var pendingActions = props.pendingActions;
+    const componentWithProps = React.cloneElement(props.component, { pendingActions });
 
+    console.log('PA: ', props.pendingActions);
     useEffect(() => {
         const checkAdminStatus = async () => {
             try {
@@ -33,7 +36,7 @@ const AccessWrapper = (props) => {
 
     return (
         <React.Fragment>
-            {isAdmin ? props.component : <NoAccess />}
+            {isAdmin ? componentWithProps : <NoAccess />}
         </React.Fragment>
     );
 };
