@@ -71,7 +71,7 @@ def send_image(conn):
         msg = conn.recv_msg()
         if msg is None:
           continue
-        print(msg.get_type())
+        # print(msg.get_type())
         if msg.get_type() == 'PING':
           break
   
@@ -88,14 +88,14 @@ def send_image(conn):
 
   # All zero values to end transmission
   conn.mav.data_transmission_handshake_send(0,0,0,0,0,0,0)
-  print('Sent image')
+  # print('Sent image')
 
 def handle_client(conn):
   while not should_stop.is_set():
     msg = conn.recv_msg()
     if msg is None:
       continue
-    print(msg.get_type())
+    # print(msg.get_type())
     if msg.get_type() == 'DATA_TRANSMISSION_HANDSHAKE':
       send_image(conn)
   conn.mav.camera_capture_status_send(

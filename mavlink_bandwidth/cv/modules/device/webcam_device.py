@@ -51,7 +51,7 @@ def send_video_stream_information(conn):
     1, # Num streams available
     2, # Type = MPEG on TCP (not reaally MPEG)
     1, # Status = Running
-    4.0, # Framerate
+    5.0, # Framerate
     1280, # Width
     720, # Height
     1000, # bit rate
