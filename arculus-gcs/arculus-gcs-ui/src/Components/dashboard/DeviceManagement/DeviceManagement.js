@@ -101,6 +101,37 @@ const getMoreNodes = async () => {
     }
 };
 
+const handleApproveDevice = async (ipAddress, nodeName) => {
+    try {
+        const url = `${API_URL}/addToCluster`;
+        const authToken = Cookies.get('jwtToken');
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${encodeURIComponent(Cookies.get('jwtToken'))}`,
+            },
+            body: JSON.stringify({
+                ipAddress,
+                nodeName,
+                authToken
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Success:', data);
+        // Perform any additional actions after a successful API call
+    } catch (error) {
+        console.error('Error handling device approval:', error.message);
+        // Handle errors or show an error message to the user
+    }
+};
+
+
 const DeviceManagement = (props) => {
     const [trustedDevices, setTrustedDevices] = useState([]);
     const [moreNodes, setMoreNodes] = useState([]);
@@ -221,6 +252,7 @@ const DeviceManagement = (props) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 height: '100vh',
+                overflow: "hidden"
             }}
         >
             <Typography variant="h4" gutterBottom>
@@ -348,21 +380,21 @@ const DeviceManagement = (props) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {Object.entries(props.joinRequests).map(([key, value]) => (
+                        {Object.entries(props.pendingActions).map(([key, value]) => (
                             <TableRow key={key}>
                                 <TableCell>{value}</TableCell>
                                 <TableCell>{key}</TableCell>
                                 <TableCell>
                                     <Button
                                         startIcon={<DoneIcon />}
-                                        // onClick={() => handleApproveDevice(key, value)}
+                                        onClick={() => handleApproveDevice(key, value)}
                                         style={{ cursor: 'pointer' }}
                                     >
                                         <font color="black">Approve</font>
                                     </Button>
                                     <Button
                                         startIcon={<CloseIcon style={{ color: '#e34048' }} />}
-                                        // onClick={() => handleApproveDevice(key, value)}
+                                        // onClick={() => handleDeclineDevice(key, value)}
                                         style={{ cursor: 'pointer' }}
                                     >
                                         <font color="black">Decline</font>
@@ -373,6 +405,7 @@ const DeviceManagement = (props) => {
                     </TableBody>
                 </Table>
             </TableContainer>
+            <br />
 
 
             <Dialog

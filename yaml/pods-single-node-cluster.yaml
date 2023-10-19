@@ -7,7 +7,7 @@ metadata:
     app: drone
     sensor-data: allowed
 spec:
-  nodeName: docker-desktop
+  nodeName: controller
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -26,7 +26,7 @@ metadata:
     position-data: allowed
     sensor-data: allowed
 spec:
-  nodeName: docker-desktop
+  nodeName: controller
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -43,7 +43,7 @@ metadata:
     app: drone
     position-data: allowed
 spec:
-  nodeName: docker-desktop
+  nodeName: controller
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -62,7 +62,7 @@ metadata:
     position-data: allowed
     video-data: allowed
 spec:
-  nodeName: docker-desktop
+  nodeName: controller
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -80,7 +80,7 @@ metadata:
     command: allowed
     sensor-data: allowed
 spec:
-  nodeName: docker-desktop
+  nodeName: controller
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -98,7 +98,7 @@ metadata:
     app: drone
     command: allowed
 spec:
-  nodeName: docker-desktop
+  nodeName: controller
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -116,7 +116,7 @@ metadata:
     command: allowed
     video-data: allowed
 spec:
-  nodeName: docker-desktop
+  nodeName: controller
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -134,7 +134,7 @@ metadata:
     app: drone
     video-data: allowed
 spec:
-  nodeName: docker-desktop
+  nodeName: controller
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest
@@ -152,7 +152,7 @@ metadata:
     app: groundservice
     all: allowed
 spec:
-  nodeName: docker-desktop
+  nodeName: controller
   containers:
   - name: busybox
     image: 39dj29dl2d9l2/vcc:latest

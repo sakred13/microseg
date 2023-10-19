@@ -78,22 +78,30 @@ const defaultTheme = createTheme();
 export function Layout(props) {
   const [open, setOpen] = React.useState(true);
   const [isAdmin, setIsAdmin] = React.useState(false);
+  const [pendingActions, setPendingActions] = useState({});
   const [pendingActionsCount, setPendingActionsCount] = useState(0);
 
   useEffect(() => {
-  // Create a new WebSocket connection
-  const ws = new WebSocket(`${API_URL.replace('http://', 'ws://')}/joinRequests`);
-  ws.addEventListener('message', (event) => {
-    console.log('Event:', event);
-    const data = JSON.parse(event.data);
-    console.log(`Data: ${data}, Length: ${Object.keys(data).length}`);
-    setPendingActionsCount(Object.keys(data).length);
-  });
+    const ws = new WebSocket(`${API_URL.replace('http://', 'ws://')}/joinRequests`);
+    ws.addEventListener('message', (event) => {
+      const data = JSON.parse(event.data);
+      setPendingActions(data);
+      setPendingActionsCount(Object.keys(data).length);
+    });
 
-  return () => {
-    ws.close();
+    return () => {
+      ws.close();
+    };
+  }, []);
+
+  const YourNewComponent = () => {
+    // Your new component logic goes here
+    return (
+      <>
+        {props.component}
+      </>
+    );
   };
-}, []); // Empty dependency array ensures that this effect runs only once on component mount
 
   const navigate = useNavigate();
 
@@ -125,7 +133,6 @@ export function Layout(props) {
       }
     };
 
-
     checkAdminStatus();
   }, [navigate]);
 
@@ -141,6 +148,9 @@ export function Layout(props) {
     navigate('/signIn');
     return null;
   }
+
+  // Pass pendingActions as a prop to the DeviceManagement component
+  const componentWithProps = React.cloneElement(props.component, { pendingActions });
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -176,7 +186,7 @@ export function Layout(props) {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              VIMAN Ground Control Client
+              ARCULUS GROUND CONTROL CLIENT
             </Typography>
             <IconButton color="inherit">
               <Badge badgeContent={'' + pendingActionsCount} color="secondary">
@@ -262,7 +272,7 @@ export function Layout(props) {
           <Box sx={{ flexGrow: 1 }} />
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, height: '100vh', overflow: 'auto', marginTop: '100px' }}>
-          {props.component}
+          {componentWithProps}
         </Box>
       </Box>
     </ThemeProvider>

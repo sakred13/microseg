@@ -1,4 +1,4 @@
 // config.js
-const API_URL = 'http://3.12.198.197:3001';
+const API_URL = 'http://18.119.101.183:3001';
 
 export { API_URL };
