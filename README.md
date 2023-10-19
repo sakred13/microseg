@@ -1,70 +1,72 @@
-# ZeroTrust
+# Arculus Test Bed
 
-This repository contains instructions for setting up a ZeroTrust environment using K3s. ZeroTrust is an approach to security that assumes all devices, networks, and users are untrusted, and access is granted only after proper authentication and verification.
+This repository contains the UI, back-end and database infrastructure to setup a test-bed on cloud/physical infrastructure to manage device clusters, users, and assign network policies dynamically to achieve Role-Based, Function-Based, and Risk-Based Access Control through a Ground Control Client Application.
 
 ## Getting Started
 
 ### Prerequisites
 
-You will need to have access to six EC2 instances: one for the controller, one for the ground station, and four drones (two observer drones and two sensing drones). A t2.micro instance is sufficient for this setup.
+For initial setup of the master node which container a ground controller, an EC2 instance or physical machine with Docker installed and having at least 4 GB memory running on Ubuntu is required. For each worker node which will hold a K3S pod, a machine/EC2 instance with 1 GB memory is sufficient.
 
-### Setting up the Cluster
+### Setting up the Ground Controller
 
-To set up the cluster, follow these steps:
+To set up the ground controller as the master node, follow these steps:
 
-1. On the controller node, run the following command, replacing `{controller_node_ip}` with the IP address of the controller node:
+1. Make sure not to run commands as sudo by default. Only run commands as super-user where specified.
+
+2. On the controller machine, run the script `arculus-gcs/setup_controller.sh` to configure it as a K3S master node.
 
 ```bash
 #!/bin/bash
-export K3S_NODE_NAME=controller && export INSTALL_K3S_EXEC="--write-kubeconfig ~/.kube/config --write-kubeconfig-mode 666 --node-external-ip {controller_node_ip} --tls-san {controller_node_ip}" && curl -sfL https://get.k3s.io | sh -s -
+./arculus-gcs/setup_controller.sh
 ```
 
-This command installs K3s on the controller node and sets it up as the primary node in the cluster.
+Running this script installs K3s on the controller machine and sets it up as the primary node of the cluster.
 
-2. After installing K3s, run the following command on the controller node:
+3. Now build the docker image that holds the client application's MySQL database server and deploy it as a container with the required port-mapping by running the below commands from the project's root directory.
 ```bash
 #!/bin/bash
-sudo cat /var/lib/rancher/k3s/server/node-token
+cd arculus-gcs/arculus-gcs-mysql
+sudo docker build -t arculus-gcs-mysql:latest .
+sudo docker run -p 3306:3306 --name arculus-gcs-db arculus-gcs-mysql
 ```
 
-This command generates a unique token for the cluster. You will need this token to join the other nodes to the cluster.
-
-3. On the drones and ground station nodes, run the following command for each node, replacing `{node1_addr}` with the IP address of the node and `{K3S_TOKEN}` with the token generated in step 2:
+4. To turn up the node.js back-end application, navigate to `arculus-gcs/arculus-gcs-node/` and run the following commands to install the needed dependencies and start the API server on port 3001. 
 ```bash
 #!/bin/bash
-export K3S_NODE_NAME=drone1 && export K3S_URL="https://{node1_addr}:6443" && export K3S_TOKEN={K3S_TOKEN} && curl -sfL "https://get.k3s.io" | sh -s -
+npm install
+npm start
 ```
 
-This command installs K3s on the drone or ground station node and joins it to the cluster.
+5. Before starting the UI of the Ground Control Client, update `arculus-gcs/config.js` with the private IP address of the controller node.
 
-4. Finally, on the controller node, run the following command to ensure that all nodes have joined the cluster:
+6. Start the ReactJS UI application, navigate to `arculus-gcs/arculus-gcs-ui/` and run the following commands again to install the needed dependencies and start the API server. 
 ```bash
 #!/bin/bash
-sudo kubectl get nodes
+npm install
+npm start
 ```
 
-This command lists all the nodes in the cluster. Make sure that all the nodes you set up are listed here.
+### Adding a Node to the K3S Cluster
 
-### Creating Pods and Policies
+1. The addition of worker nodes to the cluster has been dynamized and centrally maintained on the Arculus Ground Control Client application.
 
-Once the cluster is set up, you can create pods and policies to define the behavior of the ZeroTrust environment. Pods are groups of one or more containers that run together on a node, while policies define the rules and permissions for accessing the pods.
-
-To create pods and policies, follow these steps:
-
-1. After downloading the current GitHub repo, navigate to the `yaml` directory:
+2. This step does not require the complete codebase to run. The script located at `arculus-gcs/joinClusterWizard.sh` would be sufficient. Run the below script on the node you wish to add to the cluster from the directory containing the script.
 ```bash
 #!/bin/bash
-cd zerotrust/yaml
+sudo ./joinClusterWizard.sh
 ```
 
-2. Apply the `pods.yaml` file to create the necessary pods:
+This script makes a request to an API to request addition of the node as a worker to the cluster. On the Device Management dashboard of the Arculus Ground Control Client, admin users gets a pop-up about the request and they can decide to approve or decline the request. When an admin user approves the request, the requesting node receives the K3S token of the master node to join the cluster. The script then proceeds to join the cluster using the procured token. The back-end application waits for the addition of the node, and once it is added, it deploys a K3S pod and lists it in the list of nodes in the cluster.
+
+3. This behavior can be verified by either using the UI dashboard or running the below commands on the controller node.
 ```bash
 #!/bin/bash
-kubectl apply -f pods.yaml
+kubectl get nodes
+```
+```bash
+#!/bin/bash
+kubectl get pods
 ```
 
-3. Apply the `policy-extended.yaml` file to create the necessary policies:
-```bash
-#!/bin/bash
-kubectl apply -f policy-extended.yaml
-```
+These commands list all the nodes and pods on the cluster. Make sure that all the added nodes are listed here.
