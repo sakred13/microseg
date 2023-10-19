@@ -13,6 +13,9 @@ nodeName=$2
 # Download the latest release (adjust the version as needed)
 wget https://github.com/vi/websocat/releases/download/v1.8.0/websocat_amd64-linux -O websocat
 
+sudo apt update
+sudo apt install -y jq
+
 # Move the binary to a directory in your PATH
 sudo mv websocat /usr/local/bin/
 
