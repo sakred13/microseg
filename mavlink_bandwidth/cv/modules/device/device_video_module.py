@@ -2,22 +2,26 @@ from pymavlink import mavutil
 import cv2
 from threading import Thread, Event
 import signal
+import time
+import math
 
-conn = mavutil.mavlink_connection('tcpin::14542')
+print('Starting video module...')
 
 cam = cv2.VideoCapture(0)
 if not cam.isOpened():
   print("Camera not opened!")
   exit(1)
 
+conn = mavutil.mavlink_connection('tcpin::14541')
+
 should_stop = Event()
 def sigint_handler(signum, frame):
-    cv2.destroyAllWindows()
     should_stop.set()
+    print('SIGINT')
     
 signal.signal(signal.SIGINT, sigint_handler)
 
-def handle_image_send(conn):
+def send_image(conn):
   result, image = cam.read()
   
   if not result:
@@ -44,7 +48,6 @@ def handle_image_send(conn):
     # print(len(b))
     #if len(b) < 253:
         #print(f'Padding with {253 - len(b)} bytes')
-    print('seqnr: %d, len(b): %d' % (seqnr, len(b[0:253])))
     conn.mav.encapsulated_data_send(
         seqnr,
         b[0:253] if len(b) > 253 else b + bytearray((253 - len(b)) * [0])
@@ -85,8 +88,35 @@ def handle_image_send(conn):
 
   # All zero values to end transmission
   conn.mav.data_transmission_handshake_send(0,0,0,0,0,0,0)
+  print('Sent image')
 
-is_first_run = True
+def handle_client(conn):
+  while not should_stop.is_set():
+    msg = conn.recv_msg()
+    if msg is None:
+      continue
+    print(msg.get_type())
+    if msg.get_type() == 'DATA_TRANSMISSION_HANDSHAKE':
+      send_image(conn)
+  conn.mav.camera_capture_status_send(
+    (int) (1000 * (time.time() - t0)), # timestamp
+    0, # image capturing status = idle
+    0, # video capturing status = idle
+    0, # image capture interval
+    0, # elapsed time since recording started = unavailable
+    0, # available storage capacity
+    0 # num images captured
+  )
+  conn.port.close()
+
+def print_summary(conn, delta_t):
+  print("Overall: %u sent, %u received, %u errors bwin=%.1f kB/s bwout=%.1f kB/s" % (
+      conn.mav.total_packets_sent,
+      conn.mav.total_packets_received,
+        conn.mav.total_receive_errors,
+        0.001*(conn.mav.total_bytes_received)/delta_t,
+        0.001*(conn.mav.total_bytes_sent)/delta_t))
+
 def wait_heartbeat(conn):
   while not should_stop.is_set():
     # print('waiting for heartbeat')
@@ -101,8 +131,8 @@ def refresh_conn(conn):
       except Exception as e:
           pass
 
+is_first_run = True
 while not should_stop.is_set():
-  
   if not is_first_run:
     conn = refresh_conn(conn)
   else:
@@ -111,9 +141,10 @@ while not should_stop.is_set():
   wait_heartbeat(conn)
   if should_stop.is_set():
       break
-  # print('heartbeat done')
+  print('Heartbeak received!')
 
+  t0 = time.time()
+  handle_client(conn)
 
-  frames_received = handle_client(conn)
-
-  print_summary(conn, delta_t, frames_received)
+  delta_t = time.time() - t0
+  print_summary(conn, delta_t)

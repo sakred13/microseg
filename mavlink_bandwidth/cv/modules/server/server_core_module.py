@@ -9,7 +9,6 @@ from detect_faces import detect_faces
 import os
 os.environ['MAVLINK20'] = "1" # Change to MAVLink 20 for video commands
 
-# todo: getting BAD_DATA packages on cloud
 
 should_stop = Event()
 
@@ -59,7 +58,6 @@ message = conn.mav.command_long_encode(
 )
 conn.mav.send(message)
 
-
 def handle_data(data_conn):
   buffer = bytearray()
   img_size = 0
@@ -67,48 +65,54 @@ def handle_data(data_conn):
   recvd = 0
   looped = 0
   while recvd != 0 or not should_stop.is_set():
-      msg = data_conn.recv_msg()
-      #print('looping')
-      looped += 1
-      if msg:
-          #print(msg.get_type())
-          if msg.get_type() == 'ENCAPSULATED_DATA':
-              # print('GOOD DATA %d' % msg.seqnr)
-              # print('Received', msg.seqnr)
-              if msg.seqnr <= last_seqnr:
-                  print("Warning: sequence numbers not received in order!")
-              last_seqnr = msg.seqnr
-              recvd += 1
-              buffer += bytearray(msg.data)
-          elif msg.get_type() == 'DATA_TRANSMISSION_HANDSHAKE':
-              print('END OF IMAGE')
-              if msg.size == 0:
-                  #print(f'Finished with seqnr={last_seqnr} and {recvd} packets')
-                  break
-              img_size = msg.size
-              #print(f'Expecting {msg.packets} packets')
-          elif msg.get_type() == 'CAMERA_CAPTURE_STATUS':
-              print('HALT')
-              connected = False
-              break
-          elif msg.get_type() == 'PING':
-              print('PING')
-              data_conn.mav.ping_send(
-                  int((time.time()-int(time.time())) * 1000000),
-                  0,
-                  0,
-                  0
-              )
-          elif msg.get_type() == 'BAD_DATA':
-              print('BAD DATA')
+    msg = data_conn.recv_msg()
+    looped += 1
+    if msg:
+        # print(msg.get_type())
+        if msg.get_type() == 'ENCAPSULATED_DATA':
+            # print('GOOD DATA %d' % msg.seqnr)
+            # print('Received', msg.seqnr)
+            if msg.seqnr <= last_seqnr:
+                print("Warning: sequence numbers not received in order!")
+            last_seqnr = msg.seqnr
+            recvd += 1
+            buffer += bytearray(msg.data)
+        elif msg.get_type() == 'DATA_TRANSMISSION_HANDSHAKE':
+            if msg.size == 0:
+                print('END OF IMAGE')
+                break
+            else:
+                print('START_OF_IMAGE')
+                img_size = msg.size
+        elif msg.get_type() == 'CAMERA_CAPTURE_STATUS':
+            print('HALT')
+            should_stop.set()
+            break
+        elif msg.get_type() == 'PING':
+            print('PING')
+            data_conn.mav.ping_send(
+                int((time.time()-int(time.time())) * 1000000),
+                0,
+                0,
+                0
+            )
+        elif msg.get_type() == 'BAD_DATA':
+            print('BAD DATA')
   if recvd == 0 or len(buffer) == 0:
     return None
   padding_size = len(buffer) - img_size
   buffer = buffer[:-padding_size]
+  print(f"len(buf): {len(buffer)}")
   return buffer
 
 def handle_video_stream(msg):
-  data_conn = mavutil.mavlink_connection(msg.uri)
+  print(f"Connecting to {msg.uri}...")
+  data_conn = mavutil.mavlink_connection(msg.uri, source_component=1)
+  print("Connected!")
+  print(dir(data_conn))
+  data_conn.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
+    mavutil.mavlink.MAV_AUTOPILOT_INVALID,
+    0, 0, 0)
   images_per_second = msg.framerate
   fourcc = cv2.VideoWriter_fourcc(*'mp4v')
   out = cv2.VideoWriter(f"{msg.name}.mp4", fourcc, images_per_second, (1280,720))
@@ -116,12 +120,12 @@ def handle_video_stream(msg):
   last_image_requested_at = 0
   image_interval = 1 / images_per_second # second(s)
   t0 = time.time()
-  connected = True
-  while not should_stop.is_set() and connected:
+  while not should_stop.is_set():
     if last_image_requested_at + image_interval > time.time():
         time.sleep(last_image_requested_at + image_interval - time.time())
     last_image_requested_at = time.time()
     # Request image
+    print('Requesting image')
     data_conn.mav.data_transmission_handshake_send(
         0, # Data stream type: JPEG
         0, # Total data size (ACK only)
@@ -135,14 +139,11 @@ def handle_video_stream(msg):
 
     buffer = handle_data(data_conn)
 
-    if buffer is None:
+    if buffer is None or len(buffer) == 0:
         continue
+    print(len(buffer))
 
-
-    if padding_size < 0:
-        print('Padding must be non-negative!')
-        exit(-1)
-
+    
     mat = cv2.imdecode(np.asarray(buffer), cv2.IMREAD_COLOR)
     detect_faces(mat)
     out.write(mat)
@@ -154,13 +155,14 @@ def handle_video_stream(msg):
   out.release()
   return images_received
 
-
-
 while not should_stop.is_set():
   msg = conn.recv_msg()
   if msg is None:
     continue
   print(msg.get_type())
   if msg.get_type() == 'VIDEO_STREAM_INFORMATION':
+    time.sleep(1)
     handle_video_stream(msg)
+    conn.close()
+    break
 

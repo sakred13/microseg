@@ -16,7 +16,7 @@ conn = mavutil.mavlink_connection('tcp:localhost:14540')
 # conn = mavutil.mavlink_connection('tcp:3.19.237.42:14540')
 conn.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
                         mavutil.mavlink.MAV_AUTOPILOT_INVALID,
-                        0, 0, 0)
+                        1, 0, 0)
 
 
 should_stop = Event()
