@@ -72,56 +72,41 @@ def handle_data(data_conn):
   buffer = buffer[:-padding_size]
   return buffer
 
-def handle_video_stream(msg, logger):
+def handle_audio_stream(msg, logger):
   print(f"Connecting to {msg.uri}...")
   data_conn = mavutil.mavlink_connection(msg.uri, source_component=1)
-  logger.add_module('video', data_conn)
+  logger.add_module('audio', data_conn)
 
   print("Connected!")
-  data_conn.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
-    mavutil.mavlink.MAV_AUTOPILOT_INVALID,
-    0, 0, 0)
-  images_per_second = msg.framerate
-  fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-  out = cv2.VideoWriter(f"{msg.name}.mp4", fourcc, images_per_second, (1280,720))
-  images_received = 0
-  last_image_requested_at = 0
-  image_interval = 1 / images_per_second # second(s)
-  tolerance = image_interval * 0.1
-  # print(f"tolerance: {tolerance}")
-  t0 = time.time()
-  while not should_stop.is_set():
-    # print(last_image_requested_at + image_interval - time.time())
-    if last_image_requested_at + image_interval > time.time() + tolerance:
-      time.sleep(last_image_requested_at + image_interval - time.time() - tolerance/2)
-    last_image_requested_at = time.time()
-    # Request image
-    # print('Requesting image')
-    data_conn.mav.data_transmission_handshake_send(
-        0, # Data stream type: JPEG
-        0, # Total data size (ACK only)
-        1280, # Width
-        720, # Height
-        0, # Number of packets being sent (ACK only)
-        0, # Payload size per packet (ACK only)
-        100 # JPEG quality
-    )
+  # data_conn.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
+  #   mavutil.mavlink.MAV_AUTOPILOT_INVALID,
+  #   0, 0, 0)
+  # images_per_second = msg.framerate
+  # fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+  # out = cv2.VideoWriter(f"{msg.name}.mp4", fourcc, images_per_second, (1280,720))
+  # images_received = 0
+  # last_image_requested_at = 0
+  # image_interval = 1 / images_per_second # second(s)
+  # tolerance = image_interval * 0.1
+  # # print(f"tolerance: {tolerance}")
+  # t0 = time.time()
+  # data_conn.mav.data_transmission_handshake_send(
+  #     0, # Data stream type: JPEG
+  #     0, # Total data size (ACK only)
+  #     1280, # Width
+  #     720, # Height
+  #     0, # Number of packets being sent (ACK only)
+  #     0, # Payload size per packet (ACK only)
+  #     100 # JPEG quality
+  # )
 
 
-    buffer = handle_data(data_conn)
+  # buffer = handle_data(data_conn)
 
-    if buffer is None or len(buffer) == 0:
-        continue
+  # if buffer is None or len(buffer) == 0:
+  #     continue
     
-    mat = cv2.imdecode(np.asarray(buffer), cv2.IMREAD_COLOR)
-    detect_faces(mat)
-    out.write(mat)
-
-    images_received += 1
-
-  print('received %d images' % images_received)
-  print(f"real images per second: {images_received / (time.time() - t0)}")
-  logger.remove_module('video')
+  logger.remove_module('audio')
   data_conn.port.close()
   out.release()
-  return images_received
+  return 0

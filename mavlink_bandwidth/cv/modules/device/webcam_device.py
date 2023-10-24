@@ -38,10 +38,11 @@ def handle_start_video_capture_request(conn):
   print('video cap start')
   proc = subprocess.Popen(['python3', './device/device_video_module.py'])
   print('done')
-  # stream_conn = mavutil.mavlink_connection('tcp:3.19.237.42:14541')
-  # stream_conn.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
-  #                       mavutil.mavlink.MAV_AUTOPILOT_INVALID,
-  #                       0, 0, 0)
+
+def handle_start_audio_capture_request(conn):
+  print('audio cap start')
+  proc = subprocess.Popen(['python3', './device/device_video_module.py'])
+  print('done')
 
 is_video_capture_active = False
 

@@ -6,11 +6,12 @@ import signal
 from threading import Thread, Event
 from detect_faces import detect_faces
 from server_video_module import handle_video_stream
+from server_audio_module import handle_audio_stream
 from BandwidthLogger import BandwidthLogger
 
 import os
 os.environ['MAVLINK20'] = "1" # Change to MAVLink 20 for video commands
-
+mavutil.set_dialect('murry')
 
 should_stop = Event()
 
@@ -38,36 +39,70 @@ while not should_stop.is_set():
         break
 
 
-message = conn.mav.command_long_encode(
-      conn.target_system,  # Target system ID
-      conn.target_component,  # Target component ID
-      mavutil.mavlink.MAV_CMD_VIDEO_START_CAPTURE,  # ID of command to send
-      0,  # Confirmation
-      0,  # param1: All streams
-      0, # param2: Camera status frequency = never
-      0,       # param3 (unused)
-      0,       # param4 (unused)
-      0,       # param5 (unused)
-      0,       # param6 (unused)
-      0        # param7 (unused)
-)
-conn.mav.send(message)
+def request_video_stream(conn):
+  message = conn.mav.command_long_encode(
+        conn.target_system,  # Target system ID
+        conn.target_component,  # Target component ID
+        mavutil.mavlink.MAV_CMD_VIDEO_START_CAPTURE,  # ID of command to send
+        0, # Confirmation
+        0, # param1: All streams
+        0, # param2: Camera status frequency = never
+        0, # param3 (unused)
+        0, # param4 (unused)
+        0, # param5 (unused)
+        0, # param6 (unused)
+        0  # param7 (unused)
+  )
+  conn.mav.send(message)
 
-message = conn.mav.command_long_encode(
-      conn.target_system,  # Target system ID
-      conn.target_component,  # Target component ID
-      mavutil.mavlink.MAV_CMD_REQUEST_MESSAGE,  # ID of command to send
-      0,  # Confirmation
-      mavutil.mavlink.MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION,  # param1: Message ID to be streamed
-      0, # param2: Get all streams
-      0,       # param3 (unused)
-      0,       # param4 (unused)
-      0,       # param5 (unused)
-      0,       # param5 (unused)
-      0        # param6 (unused)
-)
-conn.mav.send(message)
+  message = conn.mav.command_long_encode(
+        conn.target_system,  # Target system ID
+        conn.target_component,  # Target component ID
+        mavutil.mavlink.MAV_CMD_REQUEST_MESSAGE,  # ID of command to send
+        0,  # Confirmation
+        mavutil.mavlink.MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION,  # param1: Message ID to be streamed
+        0, # param2: Get all streams
+        0, # param3 (unused)
+        0, # param4 (unused)
+        0, # param5 (unused)
+        0, # param5 (unused)
+        0  # param6 (unused)
+  )
+  conn.mav.send(message)
 
+def request_audio_stream(conn):
+  message = conn.mav.command_long_encode(
+        conn.target_system,  # Target system ID
+        conn.target_component,  # Target component ID
+        mavutil.mavlink.MAV_CMD_AUDIO_START_CAPTURE,  # ID of command to send
+        0, # Confirmation
+        0, # param1: All streams
+        0, # param2 (unused)
+        0, # param3 (unused)
+        0, # param4 (unused)
+        0, # param5 (unused)
+        0, # param6 (unused)
+        0  # param7 (unused)
+  )
+  conn.mav.send(message)
+
+  message = conn.mav.command_long_encode(
+        conn.target_system,  # Target system ID
+        conn.target_component,  # Target component ID
+        mavutil.mavlink.MAV_CMD_REQUEST_MESSAGE,  # ID of command to send
+        0,  # Confirmation
+        mavutil.mavlink.MAVLINK_MSG_ID_AUDIO_STREAM_INFORMATION,  # param1: Message ID to be streamed
+        0, # param2: Get all streams
+        0, # param3 (unused)
+        0, # param4 (unused)
+        0, # param5 (unused)
+        0, # param5 (unused)
+        0  # param6 (unused)
+  )
+  conn.mav.send(message)
+
+request_video_stream(conn)
+request_audio_stream(conn)
 
 while not should_stop.is_set():
   msg = conn.recv_msg()
@@ -78,5 +113,8 @@ while not should_stop.is_set():
     time.sleep(1)
     handle_video_stream(msg, logger)
     conn.close()
-    break
+  if msg.get_type() == 'AUDIO_STREAM_INFORMATION':
+    time.sleep(1)
+    handle_audio_stream(msg, logger)
+    conn.close()
 
