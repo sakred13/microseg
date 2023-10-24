@@ -81,9 +81,11 @@ def handle_data(data_conn):
   buffer = buffer[:-padding_size]
   return buffer
 
-def handle_video_stream(msg):
+def handle_video_stream(msg, logger):
   print(f"Connecting to {msg.uri}...")
   data_conn = mavutil.mavlink_connection(msg.uri, source_component=1)
+  logger.add_module('video', data_conn)
+
   print("Connected!")
   data_conn.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
     mavutil.mavlink.MAV_AUTOPILOT_INVALID,
@@ -125,8 +127,10 @@ def handle_video_stream(msg):
     out.write(mat)
 
     images_received += 1
+
   print('received %d images' % images_received)
   print(f"real images per second: {images_received / (time.time() - t0)}")
+  logger.remove_module('video')
   data_conn.port.close()
   out.release()
   print_summary(data_conn, time.time() - t0, images_received)

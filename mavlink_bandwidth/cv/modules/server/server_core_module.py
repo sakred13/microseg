@@ -6,16 +6,21 @@ import signal
 from threading import Thread, Event
 from detect_faces import detect_faces
 from server_video_module import handle_video_stream
+from BandwidthLogger import BandwidthLogger
 
 import os
 os.environ['MAVLINK20'] = "1" # Change to MAVLink 20 for video commands
 
+
 should_stop = Event()
+
+logger = BandwidthLogger()
 
 # Run postprocessing before exiting
 def sigint_handler(signum, frame):
     cv2.destroyAllWindows()
     should_stop.set()
+    logger.stop()
     if conn.mav.total_bytes_received == 0:
         exit(0)
     
@@ -23,10 +28,15 @@ signal.signal(signal.SIGINT, sigint_handler)
 
 
 conn = mavutil.mavlink_connection('tcpin::14540')
+
+logger.add_module('core', conn)
+logger.start()
+
 while not should_stop.is_set():
     # print('waiting for heartbeat')
     if conn.wait_heartbeat(timeout=1):
         break
+
 
 message = conn.mav.command_long_encode(
       conn.target_system,  # Target system ID
@@ -66,7 +76,7 @@ while not should_stop.is_set():
   print(msg.get_type())
   if msg.get_type() == 'VIDEO_STREAM_INFORMATION':
     time.sleep(1)
-    handle_video_stream(msg)
+    handle_video_stream(msg, logger)
     conn.close()
     break
 
