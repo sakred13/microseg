@@ -11,15 +11,8 @@ mavutil.set_dialect('common')
 
 
 
-# Wait until a connection is initiated by another node (receiver_node.py)
-conn = mavutil.mavlink_connection('tcp:localhost:14540')
-# conn = mavutil.mavlink_connection('tcp:3.19.237.42:14540')
-conn.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
-                        mavutil.mavlink.MAV_AUTOPILOT_INVALID,
-                        1, 0, 0)
-
-
 should_stop = Event()
+capturing = Event()
 proc = None
 
 # Run postprocessing before exiting
@@ -31,13 +24,24 @@ def sigint_handler(signum, frame):
     
 signal.signal(signal.SIGINT, sigint_handler)
 
+conn = mavutil.mavlink_connection('tcpin::14541')
+while not should_stop.is_set():
+  # print('waiting for heartbeat')
+  if conn.wait_heartbeat(timeout=1):
+    print('new connection!')
+    break
+
 t0 = 0
 
 
 def handle_start_video_capture_request(conn):
-  print('video cap start')
-  proc = subprocess.Popen(['python3', './device/device_video_module.py'])
-  print('done')
+  if not capturing.is_set():
+    print('video cap start')
+    proc = subprocess.Popen(['python3', './camera/camera_video_module.py'])
+    print('done')
+    capturing.set()
+  else:
+    print('Already capturing!')
 
 def handle_start_audio_capture_request(conn):
   print('audio cap start')
@@ -59,7 +63,7 @@ def send_video_stream_information(conn):
     0, # rotation
     90, # horizontal fov
     b'Test', # name
-    b'tcp:localhost:14541' # url
+    b'tcp:localhost:14542' # url
   )
 
 def handle_request_message(conn, msg):

@@ -12,7 +12,7 @@ if not cam.isOpened():
   print("Camera not opened!")
   exit(1)
 
-conn = mavutil.mavlink_connection('tcpin::14541')
+conn = mavutil.mavlink_connection('tcpin::14542')
 
 should_stop = Event()
 def sigint_handler(signum, frame):
@@ -141,7 +141,7 @@ while not should_stop.is_set():
   wait_heartbeat(conn)
   if should_stop.is_set():
       break
-  print('Heartbeak received!')
+  print('Heartbeat received!')
 
   t0 = time.time()
   handle_client(conn)

@@ -7,7 +7,7 @@ import sounddevice as sd
 
 print('Starting audio module...')
 
-conn = mavutil.mavlink_connection('tcpin::14541')
+conn = mavutil.mavlink_connection('tcpin::14543')
 
 should_stop = Event()
 def sigint_handler(signum, frame):

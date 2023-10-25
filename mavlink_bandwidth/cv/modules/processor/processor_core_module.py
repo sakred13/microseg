@@ -3,11 +3,13 @@ import cv2
 import numpy as np
 import time
 import signal
+import sys
+sys.path.append('.')
 from threading import Thread, Event
 from detect_faces import detect_faces
-from server_video_module import handle_video_stream
-from server_audio_module import handle_audio_stream
-from BandwidthLogger import BandwidthLogger
+from processor_video_module import handle_video_stream
+from processor_audio_module import handle_audio_stream
+from util.BandwidthLogger import BandwidthLogger
 
 import os
 os.environ['MAVLINK20'] = "1" # Change to MAVLink 20 for video commands
@@ -28,15 +30,15 @@ def sigint_handler(signum, frame):
 signal.signal(signal.SIGINT, sigint_handler)
 
 
-conn = mavutil.mavlink_connection('tcpin::14540')
+conn = mavutil.mavlink_connection('tcp:localhost:14541')
 
 logger.add_module('core', conn)
 logger.start()
 
-while not should_stop.is_set():
-    # print('waiting for heartbeat')
-    if conn.wait_heartbeat(timeout=1):
-        break
+conn.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
+                        mavutil.mavlink.MAV_AUTOPILOT_INVALID,
+                        1, 0, 0)
+
 
 
 def request_video_stream(conn):
