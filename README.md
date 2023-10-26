@@ -51,10 +51,10 @@ npm start
 
 1. The addition of worker nodes to the cluster has been dynamized and centrally maintained on the Arculus Ground Control Client application.
 
-2. This step does not require the complete codebase to run. The script located at `arculus-gcs/joinClusterWizard.sh` would be sufficient. Run the below script on the node you wish to add to the cluster from the directory containing the script.
+2. This step does not require the complete codebase to run. The script located at `arculus-gcs/joinClusterWizard.sh` with the private IP address of the master node and the name being requested for the node as command-line arguments would be sufficient. Run the below script on the node you wish to add to the cluster from the directory containing the script.
 ```bash
 #!/bin/bash
-sudo ./joinClusterWizard.sh
+sudo ./joinClusterWizard.sh {master-node-private-ip} {node-name}
 ```
 
 This script makes a request to an API to request addition of the node as a worker to the cluster. On the Device Management dashboard of the Arculus Ground Control Client, admin users gets a pop-up about the request and they can decide to approve or decline the request. When an admin user approves the request, the requesting node receives the K3S token of the master node to join the cluster. The script then proceeds to join the cluster using the procured token. The back-end application waits for the addition of the node, and once it is added, it deploys a K3S pod and lists it in the list of nodes in the cluster.
