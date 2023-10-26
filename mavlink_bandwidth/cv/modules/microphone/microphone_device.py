@@ -7,9 +7,7 @@ from threading import Thread, Event
 import subprocess
 import os
 os.environ['MAVLINK20'] = "1" # Change to MAVLink 20 for video commands
-mavutil.set_dialect('common')
-
-
+mavutil.set_dialect('murry')
 
 should_stop = Event()
 capturing = Event()
@@ -24,7 +22,7 @@ def sigint_handler(signum, frame):
     
 signal.signal(signal.SIGINT, sigint_handler)
 
-conn = mavutil.mavlink_connection('tcpin::14540')
+conn = mavutil.mavlink_connection('tcpin::14550')
 while not should_stop.is_set():
   # print('waiting for heartbeat')
   if conn.wait_heartbeat(timeout=1):
@@ -34,41 +32,24 @@ while not should_stop.is_set():
 t0 = 0
 
 
-def handle_start_video_capture_request(conn):
-  if not capturing.is_set():
-    print('video cap start')
-    proc = subprocess.Popen(['python3', './camera/camera_video_module.py'])
-    print('done')
-    capturing.set()
-  else:
-    print('Already capturing!')
-
 def handle_start_audio_capture_request(conn):
   print('audio cap start')
-  proc = subprocess.Popen(['python3', './device/device_video_module.py'])
+  proc = subprocess.Popen(['python3', './microphone/microphone_audio_module.py'])
   print('done')
 
-is_video_capture_active = False
+is_audio_capture_active = False
 
-def send_video_stream_information(conn):
-  conn.mav.video_stream_information_send(
-    1, # Video stream id
+def send_audio_stream_information(conn):
+  conn.mav.audio_stream_information_send(
+    1, # Audio stream id
     1, # Num streams available
-    2, # Type = MPEG on TCP (not reaally MPEG)
-    1, # Status = Running
-    5.0, # Framerate
-    1280, # Width
-    720, # Height
-    1000, # bit rate
-    0, # rotation
-    90, # horizontal fov
-    b'Test', # name
-    b'tcp:localhost:14541' # url
+    b'stream', # Stream name
+    b'tcp:localhost:14558' # url
   )
 
 def handle_request_message(conn, msg):
-  if msg.param1 == 269: # Video stream informiaton
-    send_video_stream_information(conn)
+  if msg.param1 == 501: # Video stream informiaton
+    send_audio_stream_information(conn)
 
 while not should_stop.is_set():
   msg = conn.recv_msg()
@@ -83,29 +64,21 @@ while not should_stop.is_set():
       cmd = 'VIDEO_START_CAPTURE'
     elif msg.command == 512:
       cmd = 'REQUEST_MESSAGE'
+    elif msg.command == 701:
+      cmd = 'AUDIO_START_CAPTURE'
     else:
       print('Unknown command: %d' % msg.command)
     
     print('Unwrapped command: %s' % cmd)
-  if cmd == 'VIDEO_START_CAPTURE' and not is_video_capture_active:
-    is_video_capture_active = True
-    handle_start_video_capture_request(conn)
+  if cmd == 'AUDIO_START_CAPTURE' and not is_audio_capture_active:
+    is_audio_capture_active = True
+    handle_start_audio_capture_request(conn)
   elif cmd == 'REQUEST_MESSAGE':
     handle_request_message(conn, msg)
 
 
 if t0 == 0:
   t0 = time.time() - 1
-
-conn.mav.camera_capture_status_send(
-  (int) (1000 * (time.time() - t0)), # timestamp
-  0, # image capturing status = idle
-  0, # video capturing status = idle
-  0, # image capture interval
-  0, # elapsed time since recording started = unavailable
-  0, # available storage capacity
-  0 # num images captured
-)
 
 delta_t = time.time() - t0
 

@@ -67,7 +67,7 @@ class BandwidthLogger:
     module.writer.csv.writerow(deltas)
 
   def _run(self):
-    print('Run!')
+    # print('Run!')
     for module in self.modules.values():
       self._record_bandwidth(module)
 
@@ -79,5 +79,6 @@ class BandwidthLogger:
       module.close()
 
   def stop(self):
-    self.rt.stop()
+    if self.rt is not None:
+      self.rt.stop()
     self._close()

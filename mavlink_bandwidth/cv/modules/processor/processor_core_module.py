@@ -19,27 +19,44 @@ should_stop = Event()
 
 logger = BandwidthLogger()
 
+
+
+print(sys.argv)
+use_cam = not '-no_cam' in sys.argv
+use_mic = not '-no_mic' in sys.argv
+camera_conn = None
+if use_cam:
+  camera_conn = mavutil.mavlink_connection('tcp:localhost:14540')
+  logger.add_module('camera_device', camera_conn)
+  camera_conn.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
+                          mavutil.mavlink.MAV_AUTOPILOT_INVALID,
+                          1, 0, 0)
+
+mic_conn = None
+if use_mic:
+  mic_conn = mavutil.mavlink_connection('tcp:localhost:14550')
+  logger.add_module('microphone_device', mic_conn)
+  mic_conn.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
+                          mavutil.mavlink.MAV_AUTOPILOT_INVALID,
+                          1, 0, 0)
+
 # Run postprocessing before exiting
 def sigint_handler(signum, frame):
-    cv2.destroyAllWindows()
-    should_stop.set()
-    logger.stop()
-    if conn.mav.total_bytes_received == 0:
-        exit(0)
+  if should_stop.is_set():
+    exit(0)
+  cv2.destroyAllWindows()
+  should_stop.set()
+  logger.stop()
+  if (not use_cam or camera_conn.mav.total_bytes_received == 0) and (not use_mic or mic_conn.mav.total_bytes_received == 0):
+    if use_cam:
+      camera_conn.close()
+    if use_mic:
+      mic_conn.close()
+    exit(0)
     
 signal.signal(signal.SIGINT, sigint_handler)
 
-
-conn = mavutil.mavlink_connection('tcp:localhost:14541')
-
-logger.add_module('core', conn)
 logger.start()
-
-conn.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
-                        mavutil.mavlink.MAV_AUTOPILOT_INVALID,
-                        1, 0, 0)
-
-
 
 def request_video_stream(conn):
   message = conn.mav.command_long_encode(
@@ -73,10 +90,11 @@ def request_video_stream(conn):
   conn.mav.send(message)
 
 def request_audio_stream(conn):
+  print("requesting audio stream")
   message = conn.mav.command_long_encode(
         conn.target_system,  # Target system ID
         conn.target_component,  # Target component ID
-        mavutil.mavlink.MAV_CMD_AUDIO_START_CAPTURE,  # ID of command to send
+        mavutil.mavlink.MAV_CMD_AUDIO_START_CAPTURE, # ID of command to send
         0, # Confirmation
         0, # param1: All streams
         0, # param2 (unused)
@@ -103,20 +121,28 @@ def request_audio_stream(conn):
   )
   conn.mav.send(message)
 
-request_video_stream(conn)
-request_audio_stream(conn)
+if use_cam:
+  request_video_stream(camera_conn)
+
+if use_mic:
+  request_audio_stream(mic_conn)
 
 while not should_stop.is_set():
-  msg = conn.recv_msg()
+  msg = None
+  if use_cam:
+    msg = camera_conn.recv_msg()
+  if msg is None and use_mic:
+    msg = mic_conn.recv_msg()
   if msg is None:
     continue
   print(msg.get_type())
-  if msg.get_type() == 'VIDEO_STREAM_INFORMATION':
+  if msg.get_type() == 'VIDEO_STREAM_INFORMATION' and use_cam:
     time.sleep(1)
-    handle_video_stream(msg, logger)
-    conn.close()
-  if msg.get_type() == 'AUDIO_STREAM_INFORMATION':
+    Thread(target = handle_video_stream, args = (msg, logger)).start()
+  if msg.get_type() == 'AUDIO_STREAM_INFORMATION' and use_mic:
     time.sleep(1)
-    handle_audio_stream(msg, logger)
-    conn.close()
+    print('starting thread!')
+    Thread(target = handle_audio_stream, args = (msg, logger)).start()
+
+
 

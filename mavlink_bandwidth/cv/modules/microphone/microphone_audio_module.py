@@ -4,30 +4,44 @@ import signal
 import time
 import math
 import sounddevice as sd
+import numpy as np
+from io import BytesIO
+
 
 print('Starting audio module...')
 
-conn = mavutil.mavlink_connection('tcpin::14543')
+conn = mavutil.mavlink_connection('tcpin::14558')
 
 should_stop = Event()
 def sigint_handler(signum, frame):
+    if should_stop.is_set():
+      conn.close()
+      exit(0)
     should_stop.set()
     print('SIGINT')
     
 signal.signal(signal.SIGINT, sigint_handler)
 
 def send_chunk(conn):
-  
+  print('Sending chunk')
   freq = 44100
   duration = 5
   recording = sd.rec(int(duration * freq), samplerate=freq, channels=2)
   sd.wait()
-  print(recording.tolist())
+  # print(recording.tolist())
+  print(len(recording))
+  print(recording.shape)
+  by = bytes()
+  np_bytes = BytesIO()
+  np.save(np_bytes, recording, allow_pickle=True)
+  np_bytes.seek(0)
+  b = bytearray(np_bytes.read(-1))
+  print(len(b))
 
-  b = bytearray(cv2.imencode('.jpg', image)[1])
   
   init_len = len(b)
   # Send image metadata
+  # todo: send freq and duration
   conn.mav.data_transmission_handshake_send(
     0, # Data stream type: JPEG
     len(b), # Total data size (ACK only)
@@ -91,9 +105,9 @@ def handle_client(conn):
     msg = conn.recv_msg()
     if msg is None:
       continue
-    # print(msg.get_type())
+    print(msg.get_type())
     if msg.get_type() == 'DATA_TRANSMISSION_HANDSHAKE':
-      send_image(conn)
+      send_chunk(conn)
   conn.mav.camera_capture_status_send(
     (int) (1000 * (time.time() - t0)), # timestamp
     0, # image capturing status = idle

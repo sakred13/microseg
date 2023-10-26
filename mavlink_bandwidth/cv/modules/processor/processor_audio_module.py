@@ -9,11 +9,12 @@ import time
 import signal
 from threading import Thread, Event
 from detect_faces import detect_faces
+import sounddevice as sd
+from io import BytesIO
 
 mavutil.set_dialect('common')
 
 # Module to receive videos from devices
-
 should_stop = Event()
 
 # Run postprocessing before exiting
@@ -77,10 +78,12 @@ def handle_audio_stream(msg, logger):
   data_conn = mavutil.mavlink_connection(msg.uri, source_component=1)
   logger.add_module('audio', data_conn)
 
+  freq = 44100
+  duration = 5
   print("Connected!")
-  # data_conn.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
-  #   mavutil.mavlink.MAV_AUTOPILOT_INVALID,
-  #   0, 0, 0)
+  data_conn.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
+    mavutil.mavlink.MAV_AUTOPILOT_INVALID,
+    0, 0, 2)
   # images_per_second = msg.framerate
   # fourcc = cv2.VideoWriter_fourcc(*'mp4v')
   # out = cv2.VideoWriter(f"{msg.name}.mp4", fourcc, images_per_second, (1280,720))
@@ -89,24 +92,29 @@ def handle_audio_stream(msg, logger):
   # image_interval = 1 / images_per_second # second(s)
   # tolerance = image_interval * 0.1
   # # print(f"tolerance: {tolerance}")
+
   # t0 = time.time()
-  # data_conn.mav.data_transmission_handshake_send(
-  #     0, # Data stream type: JPEG
-  #     0, # Total data size (ACK only)
-  #     1280, # Width
-  #     720, # Height
-  #     0, # Number of packets being sent (ACK only)
-  #     0, # Payload size per packet (ACK only)
-  #     100 # JPEG quality
-  # )
+  while not should_stop.is_set():
+    data_conn.mav.data_transmission_handshake_send(
+        0, # Data stream type: JPEG
+        0, # Total data size (ACK only)
+        0, # Width
+        0, # Height
+        0, # Number of packets being sent (ACK only)
+        0, # Payload size per packet (ACK only)
+        100 # JPEG quality
+    )
 
 
-  # buffer = handle_data(data_conn)
+    chunk = handle_data(data_conn)
+    bio = BytesIO(chunk)
+    arr = np.load(bio, allow_pickle=True)
+    print(arr.tolist())
+    sd.play(arr)
 
   # if buffer is None or len(buffer) == 0:
   #     continue
     
   logger.remove_module('audio')
   data_conn.port.close()
-  out.release()
   return 0

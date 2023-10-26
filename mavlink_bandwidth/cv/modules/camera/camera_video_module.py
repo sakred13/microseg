@@ -12,7 +12,7 @@ if not cam.isOpened():
   print("Camera not opened!")
   exit(1)
 
-conn = mavutil.mavlink_connection('tcpin::14542')
+conn = mavutil.mavlink_connection('tcpin::14541')
 
 should_stop = Event()
 def sigint_handler(signum, frame):
