@@ -14,8 +14,8 @@ import AddUserModal from '../UserManagement/AddUserModal';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import DoneIcon from '@mui/icons-material/Done'
-import CloseIcon from '@mui/icons-material/Close'
+import DoneIcon from '@mui/icons-material/Done';
+import CloseIcon from '@mui/icons-material/Close';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -76,6 +76,7 @@ const getTrustedDevices = async () => {
     }
 };
 
+
 const getMoreNodes = async () => {
     try {
         const url = `${API_URL}/api/getMoreNodes?authToken=${encodeURIComponent(
@@ -109,12 +110,12 @@ const handleApproveDevice = async (ipAddress, nodeName) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${encodeURIComponent(Cookies.get('jwtToken'))}`,
+                Authorization: `Bearer ${encodeURIComponent(Cookies.get('jwtToken'))}`,
             },
             body: JSON.stringify({
                 ipAddress,
                 nodeName,
-                authToken
+                authToken,
             }),
         });
 
@@ -130,7 +131,6 @@ const handleApproveDevice = async (ipAddress, nodeName) => {
         // Handle errors or show an error message to the user
     }
 };
-
 
 const DeviceManagement = (props) => {
     const [trustedDevices, setTrustedDevices] = useState([]);
@@ -169,7 +169,7 @@ const DeviceManagement = (props) => {
                 const filteredMoreNodes = moreNodesList.filter(
                     (node) =>
                         !trustedDevicesList.some(
-                            (device) => device.ip_address === node.ip
+                            (device) => device.device_name === node.nodeName
                         )
                 );
 
@@ -252,7 +252,7 @@ const DeviceManagement = (props) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 height: '100vh',
-                overflow: "hidden"
+                overflow: 'hidden',
             }}
         >
             <Typography variant="h4" gutterBottom>
@@ -284,10 +284,18 @@ const DeviceManagement = (props) => {
                 <Table size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell><b>Name</b></TableCell>
-                            <TableCell><b>IP Address</b></TableCell>
-                            <TableCell><b>Allowed Tasks</b></TableCell>
-                            <TableCell><b>Actions</b></TableCell>
+                            <TableCell>
+                                <b>Name</b>
+                            </TableCell>
+                            <TableCell>
+                                <b>IP Address</b>
+                            </TableCell>
+                            <TableCell>
+                                <b>Allowed Tasks</b>
+                            </TableCell>
+                            <TableCell>
+                                <b>Actions</b>
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -317,7 +325,8 @@ const DeviceManagement = (props) => {
                                         style={{ cursor: 'pointer' }}
                                     >
                                         <font color="black">Edit</font>
-                                    </Button> &nbsp;&nbsp;&nbsp;
+                                    </Button>{' '}
+                                    &nbsp;&nbsp;&nbsp;
                                     <Button
                                         startIcon={<DeleteIcon style={{ color: '#e34048' }} />}
                                         onClick={() => handleDeleteDialogOpen(device.device_name)}
@@ -340,9 +349,15 @@ const DeviceManagement = (props) => {
                 <Table size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell><b>Name</b></TableCell>
-                            <TableCell><b>IP Address</b></TableCell>
-                            <TableCell><b>Action</b></TableCell>
+                            <TableCell>
+                                <b>Name</b>
+                            </TableCell>
+                            <TableCell>
+                                <b>IP Address</b>
+                            </TableCell>
+                            <TableCell>
+                                <b>Action</b>
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -381,9 +396,15 @@ const DeviceManagement = (props) => {
                 <Table size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell><b>Name</b></TableCell>
-                            <TableCell><b>IP Address</b></TableCell>
-                            <TableCell><b>Actions</b></TableCell>
+                            <TableCell>
+                                <b>Name</b>
+                            </TableCell>
+                            <TableCell>
+                                <b>IP Address</b>
+                            </TableCell>
+                            <TableCell>
+                                <b>Actions</b>
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -414,14 +435,15 @@ const DeviceManagement = (props) => {
             </TableContainer>
             <br />
 
-
             <Dialog
                 open={showDeleteDialog}
                 onClose={handleDeleteDialogClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <DialogTitle id="alert-dialog-title">Are you sure you want to remove device {deleteDevice} from the trustlist?</DialogTitle>
+                <DialogTitle id="alert-dialog-title">
+                    Are you sure you want to remove device {deleteDevice} from the trustlist?
+                </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
                         Removing this device from the trustlist will destroy all its "allow" policies. This action cannot be undone.
@@ -436,7 +458,6 @@ const DeviceManagement = (props) => {
                     </Button>
                 </DialogActions>
             </Dialog>
-
         </div>
     );
 };

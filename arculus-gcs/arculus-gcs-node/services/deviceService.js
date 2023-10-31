@@ -2,6 +2,8 @@ const { isAdminUser, getUserFromToken } = require('./authService');
 const pool = require('../modules/arculusDbConnection');
 const { exec, execSync } = require('child_process');
 const ip = require('ip');
+const fs = require('fs');
+const temp = require('temp').track();
 
 var requestList = {};
 var acceptedList = {};
@@ -365,13 +367,11 @@ exports.getMoreNodes = (req, res) => {
     });
 };
 
-
-// Route to handle adding a trusted device
 exports.addTrustedDevice = (req, res) => {
     const { authToken, deviceName, ipAddress, tasks } = req.body;
 
     // Check if the user has an admin role
-    isAdminUser(getUserFromToken(authToken), async (roleErr, isAdmin) => {
+    isAdminUser(getUserFromToken(authToken), (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });
@@ -379,16 +379,55 @@ exports.addTrustedDevice = (req, res) => {
 
         if (isAdmin) {
             try {
-                // Insert into trusted_device and get the device ID
-                const insertDeviceResult = await insertTrustedDevice(deviceName, ipAddress);
+                // Create a temporary YAML file
+                const podYAML = `
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ${deviceName}
+  labels:
+    app: ground
+spec:
+  nodeName: ${deviceName}
+  containers:
+  - name: busybox
+    image: 39dj29dl2d9l2/vcc:latest
+    ports:
+      - containerPort: 8080
+    command:
+      - sleep
+      - "3600000"`;
 
-                // Get task IDs by task names
-                const taskIds = await getTaskIdsByName(tasks);
+                const yamlFilePath = temp.openSync({ suffix: '.yaml' });
+                fs.writeSync(yamlFilePath.fd, podYAML);
+                fs.closeSync(yamlFilePath.fd);
 
-                // Insert rows in the device_task table
-                await insertDeviceTasks(insertDeviceResult.insertId, taskIds);
+                // Apply the YAML file to create the Pod using exec
+                exec(`kubectl apply -f ${yamlFilePath.path}`, (error, stdout, stderr) => {
+                    if (error) {
+                        console.error(`Error executing kubectl: ${error.message}`);
+                        return res.status(500).json({ message: 'Internal Server Error' });
+                    }
 
-                return res.status(200).json({ message: 'Trusted device added successfully' });
+                    // Continue with database operations
+                    Promise.all([
+                        insertTrustedDevice(deviceName, ipAddress),
+                        getTaskIdsByName(tasks),
+                    ])
+                    .then(([insertDeviceResult, taskIds]) => {
+                        // Insert rows in the device_task table
+                        return insertDeviceTasks(insertDeviceResult.insertId, taskIds);
+                    })
+                    .then(() => {
+                        // Delete the temporary YAML file
+                        fs.unlinkSync(yamlFilePath.path);
+                        return res.status(200).json({ message: 'Trusted device added successfully' });
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                        return res.status(500).json({ message: 'Internal Server Error' });
+                    });
+                });
             } catch (error) {
                 console.error(error);
                 return res.status(500).json({ message: 'Internal Server Error' });
