@@ -141,7 +141,7 @@ const DeviceManagement = (props) => {
     const [triggerRender, setTriggerRender] = useState(false);
     const navigate = useNavigate();
     const [isAddDeviceModalOpen, setIsAddDeviceModalOpen] = useState(false);
-    const [selectedNode, setSelectedNode] = useState({ name: '', ip: '' });
+    const [selectedNode, setSelectedNode] = useState({ nodeName: '', nodeIP: '' });
     const [tasks, setTasks] = useState([]);
     const [isEditDeviceModalOpen, setIsEditDeviceModalOpen] = useState(false);
     const [editDeviceDetails, setEditDeviceDetails] = useState(null);
@@ -192,7 +192,7 @@ const DeviceManagement = (props) => {
     };
 
     const handleAddDeviceModalOpen = (nodeName, nodeIP) => {
-        setSelectedNode({ name: nodeName, ip: nodeIP });
+        setSelectedNode({ nodeName: nodeName, nodeIP: nodeIP });
         setIsAddDeviceModalOpen(true);
     };
 
@@ -263,8 +263,8 @@ const DeviceManagement = (props) => {
                 <AddDeviceModal
                     isOpen={isAddDeviceModalOpen}
                     setIsOpen={setIsAddDeviceModalOpen}
-                    nodeName={selectedNode.name}
-                    nodeIP={selectedNode.ip}
+                    nodeName={selectedNode.nodeName}
+                    nodeIP={selectedNode.nodeIP}
                     allowedTasks={tasks}
                 />
             )}
@@ -348,15 +348,22 @@ const DeviceManagement = (props) => {
                     <TableBody>
                         {moreNodes.map((node) => (
                             <TableRow key={node.id}>
-                                <TableCell>{node.pod}</TableCell>
-                                <TableCell>{node.ip}</TableCell>
+                                <TableCell>{node.nodeName}</TableCell>
+                                <TableCell>{node.nodeIP}</TableCell>
                                 <TableCell>
                                     <Button
                                         startIcon={<AddIcon />}
-                                        onClick={() => handleAddDeviceModalOpen(node.pod, node.ip)}
+                                        onClick={() => handleAddDeviceModalOpen(node.nodeName, node.nodeIP)}
                                         style={{ cursor: 'pointer' }}
                                     >
                                         <font color="black">Configure as Trusted Device</font>
+                                    </Button>
+                                    <Button
+                                        startIcon={<CloseIcon style={{ color: '#e34048' }} />}
+                                        // onClick={() => handleDeclineDevice(key, value)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        <font color="black">Remove from Cluster</font>
                                     </Button>
                                 </TableCell>
                             </TableRow>
@@ -414,7 +421,7 @@ const DeviceManagement = (props) => {
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <DialogTitle id="alert-dialog-title">Are you sure to remove device {deleteDevice} from the trustlist?</DialogTitle>
+                <DialogTitle id="alert-dialog-title">Are you sure you want to remove device {deleteDevice} from the trustlist?</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
                         Removing this device from the trustlist will destroy all its "allow" policies. This action cannot be undone.

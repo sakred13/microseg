@@ -186,7 +186,7 @@ const ManageUsers = () => {
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <DialogTitle id="alert-dialog-title">Are you sure to delete user {deleteUser}?</DialogTitle>
+                <DialogTitle id="alert-dialog-title">Are you sure you want to delete user {deleteUser}?</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
                         Deleting this user will permanently remove their account. This action cannot be undone.

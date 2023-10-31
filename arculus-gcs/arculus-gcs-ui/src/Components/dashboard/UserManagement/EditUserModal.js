@@ -88,7 +88,7 @@ const EditUserModal = ({ isOpen, setIsOpen, username, email, role }) => {
                         user: username,
                         updated_username: formData.username,
                         email_id: formData.email,
-                        role: 2,
+                        role: formData.role,
                     }),
                 });
 

@@ -121,6 +121,7 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) =
                                             autoFocus
                                             value={deviceName}
                                             onChange={(e) => setDeviceName(e.target.value)}
+                                            disabled
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
@@ -135,6 +136,9 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) =
                                             onChange={(e) => setIPAddress(e.target.value)}
                                             disabled
                                         />
+                                        <Typography variant="caption" color="textSecondary" gutterBottom>
+                                            The device will be assigned a local IP address after setup and will no longer be referenced by the public IP address.
+                                        </Typography>
                                     </Grid>
                                     <Grid item xs={12}>
                                         <Autocomplete

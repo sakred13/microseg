@@ -12,16 +12,24 @@ var blockList = {};
 exports.joinReqsWebSocket = (ws, req) => {
     console.log('WebSocket client connected');
 
+    // Send the initial message immediately
+    ws.send(JSON.stringify(requestList));
+
     ws.on('close', () => {
         console.log('WebSocket client disconnected');
-
     });
 
-    // Periodically send updates to connected clients
-    setInterval(() => {
+    // Schedule subsequent updates every 5 seconds
+    const updateInterval = setInterval(() => {
         ws.send(JSON.stringify(requestList));
     }, 5000);
+
+    // Stop sending updates when the client disconnects
+    ws.on('close', () => {
+        clearInterval(updateInterval);
+    });
 };
+
 
 exports.joinStatusWebSocket = (ws, req) => {
     console.log('WebSocket client connected');
@@ -276,21 +284,55 @@ exports.getTrustedDevices = (req, res) => {
     });
 };
 
+function getK3sNodes(callback) {
+    exec('kubectl get nodes -o custom-columns=NODE:.metadata.name,IP:.status.addresses[0].address', (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error executing kubectl: ${error.message}`);
+            callback(error, null);
+            return;
+        }
+
+        const nodeList = stdout
+            .trim() // Remove leading/trailing whitespace
+            .split('\n') // Split into lines
+            .slice(1) // Skip header
+            .map((line) => {
+                const [nodeName, nodeIP] = line.trim().split(/\s+/);
+                return { nodeName, nodeIP };
+            });
+
+        callback(null, nodeList);
+    });
+}
+
+// Route to handle user update without changing password
 exports.getMoreNodes = (req, res) => {
     const { authToken } = req.query;
     const username = getUserFromToken(authToken);
 
     pool.getConnection((err, connection) => {
-        if (err) throw err;
+        if (err) {
+            console.error(err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
 
         connection.beginTransaction((err) => {
-            if (err) throw err;
+            if (err) {
+                console.error(err);
+                res.status(500).send('Internal Server Error');
+                connection.release();
+                return;
+            }
 
             connection.query('SELECT user_id FROM user WHERE username = ? LIMIT 1', [username], (err, userRows) => {
                 if (err) {
+                    console.error(err);
                     connection.rollback(() => {
-                        throw err;
+                        res.status(500).send('Internal Server Error');
+                        connection.release();
                     });
+                    return;
                 }
 
                 if (userRows.length === 0 || userRows === undefined || !userRows[0].user_id) {
@@ -301,10 +343,10 @@ exports.getMoreNodes = (req, res) => {
                     return;
                 }
 
-                // Use exec to run kubectl command
-                exec('kubectl get pods -o custom-columns=POD:metadata.name,IP:status.podIP', (error, stdout, stderr) => {
+                // Call the getK3sNodes function to get nodes
+                getK3sNodes((error, nodeList) => {
                     if (error) {
-                        console.error(`Error executing kubectl: ${error.message}`);
+                        // Handle the error, send an error response, and perform rollback and release
                         res.status(500).send('Internal Server Error');
                         connection.rollback(() => {
                             connection.release();
@@ -312,16 +354,8 @@ exports.getMoreNodes = (req, res) => {
                         return;
                     }
 
-                    const podList = stdout
-                        .trim() // Remove leading/trailing whitespace
-                        .split('\n') // Split into lines
-                        .slice(1) // Skip header
-                        .map((line) => {
-                            const [pod, ip] = line.trim().split(/\s+/);
-                            return { pod, ip };
-                        });
-
-                    res.json(podList);
+                    // Send the node list as a response
+                    res.json(nodeList);
                     connection.commit(() => {
                         connection.release();
                     });
@@ -330,6 +364,7 @@ exports.getMoreNodes = (req, res) => {
         });
     });
 };
+
 
 // Route to handle adding a trusted device
 exports.addTrustedDevice = (req, res) => {

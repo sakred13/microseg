@@ -1,10 +1,12 @@
 const { isAdminUser, getUserFromToken } = require('./authService');
 const pool = require('../modules/arculusDbConnection');
+
 // Route to handle user update without changing password
 exports.updateUser = (req, res) => {
     const { authToken, user, updated_username, email_id, role } = req.body;
 
     const username = getUserFromToken(authToken);
+
     // Check if the user has an admin role
     isAdminUser(username, (roleErr, isAdmin) => {
         if (roleErr) {
@@ -16,34 +18,50 @@ exports.updateUser = (req, res) => {
             return res.status(403).json({ message: 'Unauthorized: Only admin users can edit user details' });
         }
 
-        // Fetch the user record from the database using the provided username
-        pool.query('SELECT * FROM user WHERE username = ?', [user], (selectErr, results) => {
-            if (selectErr) {
-                console.error(selectErr);
+        // Fetch the corresponding role_id based on the provided role name
+        pool.query('SELECT role_id FROM role WHERE role_name = ?', [role], (selectRoleErr, roleResults) => {
+            if (selectRoleErr) {
+                console.error(selectRoleErr);
                 return res.status(500).json({ message: 'Internal Server Error' });
             }
 
-            if (results.length === 0) {
-                // No user found with the given username
-                return res.status(404).json({ message: 'User not found' });
+            if (roleResults.length === 0) {
+                // No role found with the given role name
+                return res.status(404).json({ message: 'Role not found' });
             }
 
-            // Update the user record with the new information
-            pool.query(
-                'UPDATE user SET username = ?, email = ?, role_id = ? WHERE username = ?',
-                [updated_username, email_id, role, user],
-                (updateErr) => {
-                    if (updateErr) {
-                        console.error(updateErr);
-                        return res.status(500).json({ message: 'Internal Server Error' });
-                    }
+            const role_id = roleResults[0].role_id;
 
-                    return res.status(200).json({ message: 'User updated successfully' });
+            // Fetch the user record from the database using the provided username
+            pool.query('SELECT * FROM user WHERE username = ?', [user], (selectErr, results) => {
+                if (selectErr) {
+                    console.error(selectErr);
+                    return res.status(500).json({ message: 'Internal Server Error' });
                 }
-            );
+
+                if (results.length === 0) {
+                    // No user found with the given username
+                    return res.status(404).json({ message: 'User not found' });
+                }
+
+                // Update the user record with the new information, including the role_id
+                pool.query(
+                    'UPDATE user SET username = ?, email = ?, role_id = ? WHERE username = ?',
+                    [updated_username, email_id, role_id, user],
+                    (updateErr) => {
+                        if (updateErr) {
+                            console.error(updateErr);
+                            return res.status(500).json({ message: 'Internal Server Error' });
+                        }
+
+                        return res.status(200).json({ message: 'User updated successfully' });
+                    }
+                );
+            });
         });
     });
 };
+
 
 exports.deleteUser = (req, res) => {
     const { username, authToken } = req.query;
