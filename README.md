@@ -38,7 +38,7 @@ npm install
 npm start
 ```
 
-5. Before starting the UI of the Ground Control Client, update `arculus-gcs/config.js` with the private IP address of the controller node.
+5. Before starting the UI of the Ground Control Client, update `arculus-gcs/config.js` with the public IP address of the controller node for API access.
 
 6. Start the ReactJS UI application, navigate to `arculus-gcs/arculus-gcs-ui/` and run the following commands again to install the needed dependencies and start the API server. 
 ```bash
