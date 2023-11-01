@@ -15,18 +15,21 @@ const { joinReqsWebSocket, joinStatusWebSocket } = require('./services/deviceSer
 
 const hostIp = execSync("ifconfig eth0 | grep 'inet ' | awk '{print $2}'").toString().trim();
 const publicIp = execSync("curl -s ifconfig.me").toString().trim();
-console.log('Public IP: ', publicIp)
-const allowCors = [`http://localhost:3000`, `http://127.0.0.1:3000`, `http://${hostIp}:3000`, `http://${publicIp}:3000`]
+console.log('Public IP: ', publicIp);
+const allowCors = [`http://localhost:3000`, `http://127.0.0.1:3000`, `http://${hostIp}:3000`, `http://${publicIp}:3000`];
 
 const app = express();
 const server = http.createServer(app);
-const joinReqsWss = new WebSocket.Server({ server, path: '/joinRequests' });
+
+const joinReqsServer = http.createServer();
+const joinReqsWss = new WebSocket.Server({ server: joinReqsServer, path: '/joinRequests' });
+
 const joinStatusServer = http.createServer();
 const joinStatusWss = new WebSocket.Server({ server: joinStatusServer, path: '/getJoinStatus' });
 
 app.use(cors({
     origin: allowCors,
-    credentials: true
+    credentials: true,
 }));
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -42,6 +45,18 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Internal Server Error' });
 });
 
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection:', reason);
+    // You can choose to log the exception and continue here
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err);
+    // Log the exception and choose whether to continue
+});
+
 // WebSocket servers
 joinReqsWss.on('connection', joinReqsWebSocket);
 joinStatusWss.on('connection', joinStatusWebSocket);
@@ -55,3 +70,8 @@ server.listen(PORT, () => {
 joinStatusServer.listen(3002, () => {
     console.log('Join Status WebSocket server listening on port 3002');
 });
+
+joinReqsServer.listen(3003, () => {
+    console.log('Join Requests WebSocket server listening on port 3003');
+});
+

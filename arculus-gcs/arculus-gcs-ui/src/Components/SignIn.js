@@ -19,7 +19,7 @@ import { API_URL } from '../config';
 
 function SignIn() {
   const [jwtToken, setJwtToken] = useState(null);
-  const [error, setError] = useState(null);
+  const [errorText, setErrorText] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -53,13 +53,17 @@ function SignIn() {
         setJwtToken(result.jwtToken);
         Cookies.set('jwtToken', result.jwtToken);
         Cookies.set('user', result.user);
-        setError(null);
+        setErrorText('');
       } else {
-        setError(result.message);
+        if (response.status === 401) {
+          setErrorText('Invalid Credentials');
+        } else {
+          setErrorText(result.message);
+        }
       }
     } catch (error) {
       console.error('Error during login:', error.message);
-      setError('An unexpected error occurred.');
+      setErrorText('An unexpected error occurred.');
     }
   };
 
@@ -72,7 +76,6 @@ function SignIn() {
             marginTop: 8, // Adjusted marginTop
             display: 'flex',
             flexDirection: 'column',
-            // justifyContent: 'space-between',
             alignItems: 'center',
           }}
         >
@@ -125,16 +128,13 @@ function SignIn() {
             >
               Sign In
             </Button>
-            <Box sx={{ mt: 2, mb: 2 }}>
-              <Typography variant="body2" align="center">
-                OR
+            {errorText && (
+              <Typography variant="body2" color="error" align="center">
+                {errorText}
               </Typography>
-            </Box>
+            )}
             <Grid container>
               <Grid item xs>
-                {/* <Link href="#" variant="body2">
-                  Forgot password?
-                </Link> */}
                 <Button
                   fullWidth
                   variant="contained"
@@ -150,7 +150,6 @@ function SignIn() {
                 >
                   Request to Add Node to Cluster
                 </Button>
-
               </Grid>
             </Grid>
           </Box>

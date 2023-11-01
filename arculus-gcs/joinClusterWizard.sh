@@ -27,8 +27,11 @@ response=$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://${clusterIP}:3
 
 if [ "$response" -eq 200 ]; then
     echo "Cluster join request successful."
-elif [ "$response" -eq 409 ]; then
+elif [ "$response" -eq 422 ]; then
     echo "The node name is already taken. Please choose a different name."
+    exit 1
+elif [ "$response" -eq 409 ]; then
+    echo "The device is already part of the cluster."
     exit 1
 else
     echo "Unable to request node addition."
@@ -44,6 +47,7 @@ while read -r websocket_response; do
         echo "Join Successful. Proceeding further."
         break  # Break out of the loop if the expected message is received
     elif [ "$websocket_response" = "Request Declined" ]; then
+        echo "Received message: $websocket_response"
         echo "Unable to request node addition."
         exit 1
     else

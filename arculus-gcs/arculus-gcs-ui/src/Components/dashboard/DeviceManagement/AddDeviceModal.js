@@ -41,12 +41,20 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) =
     const [ipAddress, setIPAddress] = useState(nodeIP || '');
     const [selectedTasks, setSelectedTasks] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [hasValueSelected, setHasValueSelected] = useState(false);
 
-    const handleAddDevice = async () => {
+    const handleAddDevice = async (e) => {
+        e.preventDefault(); // Prevent the default form submission behavior
+
+        if (!hasValueSelected) {
+            // Display an error message or handle the case when no value is selected
+            return;
+        }
+
         setIsLoading(true);
 
         const authToken = Cookies.get('jwtToken');
-        
+
         try {
             const response = await fetch(`${API_URL}/api/addTrustedDevice`, {
                 method: 'POST',
@@ -69,6 +77,7 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) =
 
             setTimeout(() => {
                 setIsSuccess(false);
+                window.location.reload();
             }, 3000);
         } catch (error) {
             console.error('Error adding trusted device:', error.message);
@@ -145,8 +154,12 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) =
                                             multiple
                                             id="allowed-tasks"
                                             options={allowedTasks.taskNames}
+                                            required
                                             value={selectedTasks}
-                                            onChange={(_, newValue) => setSelectedTasks(newValue)}
+                                            onChange={(_, newValue) => {
+                                                setHasValueSelected(newValue.length > 0);
+                                                setSelectedTasks(newValue);
+                                            }}
                                             isOptionEqualToValue={(option, value) => option === value}
                                             renderTags={(value, getTagProps) =>
                                                 value.map((option, index) => (
@@ -164,7 +177,7 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) =
                                     fullWidth
                                     variant="contained"
                                     sx={{ mt: 3, mb: 2 }}
-                                    disabled={isLoading}
+                                    disabled={isLoading || !hasValueSelected}
                                 >
                                     {isLoading ? 'Adding...' : 'Add Trusted Device'}
                                 </Button>

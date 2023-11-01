@@ -20,6 +20,7 @@ router.get('/api/getToken', cors({
     credentials: true,
 }),
     deviceService.getToken);
-router.post('/addToCluster', deviceService.addToCluster);
+router.post('/api/addToCluster', deviceService.addToCluster);
+router.delete('/api/removeFromCluster', deviceService.removeFromCluster);
 
 module.exports = router;

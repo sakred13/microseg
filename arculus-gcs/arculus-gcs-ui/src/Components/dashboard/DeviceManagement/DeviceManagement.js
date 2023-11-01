@@ -104,7 +104,7 @@ const getMoreNodes = async () => {
 
 const handleDeclineDevice = async (ipAddress, nodeName) => {
     try {
-        const url = `${API_URL}/addToCluster`;
+        const url = `${API_URL}/api/addToCluster`;
         const authToken = Cookies.get('jwtToken');
         const response = await fetch(url, {
             method: 'POST',
@@ -116,7 +116,7 @@ const handleDeclineDevice = async (ipAddress, nodeName) => {
                 ipAddress,
                 nodeName,
                 authToken,
-                decline:true
+                decline: true
             }),
         });
 
@@ -133,9 +133,38 @@ const handleDeclineDevice = async (ipAddress, nodeName) => {
     }
 };
 
+const handleRemoveNode = async (nodeName) => {
+    try {
+        const authToken = Cookies.get('jwtToken');
+        const response = await fetch(
+            `${API_URL}/api/removeFromCluster`,
+            {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${encodeURIComponent(authToken)}`,
+                },
+                body: JSON.stringify({
+                    authToken,
+                    nodeName,
+                }),
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+
+        console.log('Node removed successfully');
+    } catch (error) {
+        console.error('Error removing node from the cluster:', error.message);
+        // Handle errors or show an error message to the user
+    }
+};
+
 const handleApproveDevice = async (ipAddress, nodeName) => {
     try {
-        const url = `${API_URL}/addToCluster`;
+        const url = `${API_URL}/api/addToCluster`;
         const authToken = Cookies.get('jwtToken');
         const response = await fetch(url, {
             method: 'POST',
@@ -176,7 +205,9 @@ const DeviceManagement = (props) => {
     const [tasks, setTasks] = useState([]);
     const [isEditDeviceModalOpen, setIsEditDeviceModalOpen] = useState(false);
     const [editDeviceDetails, setEditDeviceDetails] = useState(null);
-    const [isclickDisabled, setIsClickDisabled] = useState(false);
+    const [isClickDisabled, setisClickDisabled] = useState(false);
+    const [showRemoveClusterDialog, setShowRemoveClusterDialog] = useState(false);
+    const [removeClusterNode, setRemoveClusterNode] = useState(null);
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -268,6 +299,32 @@ const DeviceManagement = (props) => {
     const handleEditDevice = (device) => {
         setEditDeviceDetails(device);
         setIsEditDeviceModalOpen(true);
+    };
+
+    const handleRemoveNodeDialogOpen = (nodeName) => {
+        setRemoveClusterNode(nodeName);
+        setShowRemoveClusterDialog(true);
+    };
+
+    const handleRemoveNodeDialogClose = () => {
+        setShowRemoveClusterDialog(false);
+        setRemoveClusterNode(null);
+        setTriggerRender((prev) => !prev); // Refresh the content after the dialog closes
+    };
+
+    const handleRemoveNodeFromCluster = async (nodeName) => {
+        try {
+            // Perform the removal action here
+            await handleRemoveNode(nodeName); // You can use your existing function here
+            setShowRemoveClusterDialog(false);
+            setRemoveClusterNode(null);
+
+            // Trigger a re-render by updating the state
+            window.location.reload();
+        } catch (error) {
+            console.error('Error removing node from the cluster:', error.message);
+            // Handle errors or show an error message to the user
+        }
     };
 
     const handleEditDeviceModalClose = () => {
@@ -406,8 +463,8 @@ const DeviceManagement = (props) => {
                                         <font color="black">Configure as Trusted Device</font>
                                     </Button>
                                     <Button
-                                        startIcon={<CloseIcon style={{ color: '#e34048' }} />}
-                                        // onClick={() => handleDeclineDevice(key, value)}
+                                        startIcon={<DeleteIcon style={{ color: '#e34048' }} />}
+                                        onClick={() => handleRemoveNodeDialogOpen(node.nodeName)}
                                         style={{ cursor: 'pointer' }}
                                     >
                                         <font color="black">Remove from Cluster</font>
@@ -447,16 +504,17 @@ const DeviceManagement = (props) => {
                                 <TableCell>
                                     <Button
                                         startIcon={<DoneIcon />}
-                                        onClick={() => {setIsClickDisabled(true); handleApproveDevice(key, value)}}
+                                        onClick={() => { setisClickDisabled(true); handleApproveDevice(key, value) }}
                                         style={{ cursor: 'pointer' }}
+                                        disabled={isClickDisabled}
                                     >
                                         <font color="black">Approve</font>
                                     </Button>
                                     <Button
                                         startIcon={<CloseIcon style={{ color: '#e34048' }} />}
-                                        onClick={() => {setIsClickDisabled(true); handleDeclineDevice(key, value)}}
+                                        onClick={() => { setisClickDisabled(true); handleDeclineDevice(key, value) }}
                                         style={{ cursor: 'pointer' }}
-                                        disabled={isclickDisabled}
+                                        disabled={isClickDisabled}
                                     >
                                         <font color="black">Decline</font>
                                     </Button>
@@ -487,6 +545,29 @@ const DeviceManagement = (props) => {
                         Yes
                     </Button>
                     <Button onClick={handleDeleteDialogClose} color="primary" autoFocus>
+                        No
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={showRemoveClusterDialog}
+                onClose={handleRemoveNodeDialogClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    Are you sure you want to remove {removeClusterNode} from the cluster?
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Removing this node from the cluster will disconnect it permanently. This action cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => handleRemoveNodeFromCluster(removeClusterNode)} color="primary">
+                        Yes
+                    </Button>
+                    <Button onClick={handleRemoveNodeDialogClose} color="primary" autoFocus>
                         No
                     </Button>
                 </DialogActions>

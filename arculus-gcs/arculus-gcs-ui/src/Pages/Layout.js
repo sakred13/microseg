@@ -82,7 +82,7 @@ export function Layout(props) {
   const [pendingActionsCount, setPendingActionsCount] = useState(0);
 
   useEffect(() => {
-    const ws = new WebSocket(`${API_URL.replace('http://', 'ws://')}/joinRequests`);
+    const ws = new WebSocket(`${API_URL.replace('http://', 'ws://').replace(':3001', ':3003')}/joinRequests`);
     ws.addEventListener('message', (event) => {
       const data = JSON.parse(event.data);
       setPendingActions(data);

@@ -1,6 +1,6 @@
 const { isAdminUser, getUserFromToken } = require('./authService');
 const pool = require('../modules/arculusDbConnection');
-const { exec, execSync } = require('child_process');
+const { exec } = require('child_process');
 const ip = require('ip');
 const fs = require('fs');
 const temp = require('temp').track();
@@ -373,7 +373,7 @@ exports.getMoreNodes = (req, res) => {
 };
 
 exports.addTrustedDevice = (req, res) => {
-    const { authToken, deviceName, ipAddress, tasks } = req.body;
+    const { authToken, deviceName, tasks } = req.body;
 
     // Check if the user has an admin role
     isAdminUser(getUserFromToken(authToken), (roleErr, isAdmin) => {
@@ -414,24 +414,42 @@ spec:
                         return res.status(500).json({ message: 'Internal Server Error' });
                     }
 
-                    // Continue with database operations
-                    Promise.all([
-                        insertTrustedDevice(deviceName, ipAddress),
-                        getTaskIdsByName(tasks),
-                    ])
-                    .then(([insertDeviceResult, taskIds]) => {
-                        // Insert rows in the device_task table
-                        return insertDeviceTasks(insertDeviceResult.insertId, taskIds);
-                    })
-                    .then(() => {
-                        // Delete the temporary YAML file
-                        fs.unlinkSync(yamlFilePath.path);
-                        return res.status(200).json({ message: 'Trusted device added successfully' });
-                    })
-                    .catch((err) => {
-                        console.error(err);
-                        return res.status(500).json({ message: 'Internal Server Error' });
-                    });
+                    // Function to check the IP address of the Pod
+                    const checkPodIP = () => {
+                        exec(`kubectl get pod ${deviceName} -o=jsonpath='{.status.podIP}'`, (ipError, podIP, ipStderr) => {
+                            if (ipError) {
+                                console.error(`Error getting Pod IP: ${ipError.message}`);
+                                return res.status(500).json({ message: 'Internal Server Error' });
+                            }
+
+                            if (podIP) {
+                                // Continue with database operations
+                                Promise.all([
+                                    insertTrustedDevice(deviceName, podIP),
+                                    getTaskIdsByName(tasks),
+                                ])
+                                .then(([insertDeviceResult, taskIds]) => {
+                                    // Insert rows in the device_task table
+                                    return insertDeviceTasks(insertDeviceResult.insertId, taskIds);
+                                })
+                                .then(() => {
+                                    // Delete the temporary YAML file
+                                    fs.unlinkSync(yamlFilePath.path);
+                                    return res.status(200).json({ message: 'Trusted device added successfully' });
+                                })
+                                .catch((err) => {
+                                    console.error(err);
+                                    return res.status(500).json({ message: 'Internal Server Error' });
+                                });
+                            } else {
+                                // If the IP address is not available, check again after a short delay
+                                setTimeout(checkPodIP, 1000); // Check every second (adjust as needed)
+                            }
+                        });
+                    };
+
+                    // Start checking for the IP address
+                    checkPodIP();
                 });
             } catch (error) {
                 console.error(error);
@@ -442,6 +460,8 @@ spec:
         }
     });
 };
+
+
 
 exports.updateTrustedDevice = async (req, res) => {
     const { authToken, currentName, deviceName, ipAddress, tasks } = req.body;
@@ -538,22 +558,48 @@ exports.removeTrustedDevice = (req, res) => {
     });
 };
 
-
 exports.clusterJoinRequest = (req, res) => {
     const { nodeName } = req.query;
 
-    // Check if nodeName already exists in requestList or acceptedList
-    if (Object.values(requestList).includes(nodeName) || Object.values(acceptedList).includes(nodeName)) {
-        console.log(`Node name ${nodeName} is already taken. Sending 409 status.`);
-        return res.status(409).json({ error: 'The node name is already taken. Please choose a different name.' });
-    }
+    const requestingIP = req.ip.replace('::ffff:', '');
 
-    // Process the nodeName as needed
-    console.log(`Received cluster join request for node: ${nodeName}`);
-    requestList[req.ip.replace('::ffff:', '')] = nodeName;
-    console.log("Request List: ", requestList);
+    // Execute the kubectl get nodes command to fetch the node names and IP addresses
+    exec('kubectl get nodes -o custom-columns=NAME:.metadata.name,INTERNAL-IP:.status.addresses[0].address', (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error executing kubectl: ${error.message}`);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
 
-    res.status(200).json({ message: 'Cluster join request received successfully', nodeName });
+        const nodeData = stdout
+            .split('\n')
+            .slice(1) // Skip the header line
+            .filter((data) => data.length > 0)
+            .map((data) => {
+                const [nodeName, nodeIP] = data.split(/\s+/);
+                return { nodeName, nodeIP };
+            });
+
+        // Check if nodeName already exists in the cluster
+        const existingNodeNames = nodeData.map((node) => node.nodeName);
+        if (existingNodeNames.includes(nodeName)) {
+            console.log(`Node name ${nodeName} is already taken. Sending 422 status.`);
+            return res.status(422).json({ error: 'The node name is already taken. Please choose a different name.' });
+        }
+
+        // Check if the requesting IP is already part of the cluster
+        const existingIPs = nodeData.map((node) => node.nodeIP);
+        if (existingIPs.includes(requestingIP)) {
+            console.log(`Requesting device with IP address ${requestingIP} is already part of the cluster. Sending 409 status.`);
+            return res.status(409).json({ error: 'The device is already part of the cluster.' });
+        }
+
+        // Process the nodeName as needed
+        console.log(`Received cluster join request for node: ${nodeName}`);
+        requestList[requestingIP] = nodeName;
+        console.log("Request List: ", requestList);
+
+        res.status(200).json({ message: 'Cluster join request received successfully', nodeName });
+    });
 };
 
 
@@ -574,7 +620,6 @@ exports.getToken = (req, res) => {
         // Extract the token from the command output
         const token = stdout.trim();
 
-        // Validation: Ensure a valid token is obtained
         if (!token) {
             console.error('Empty token received.');
             return res.status(500).json({ error: 'Internal Server Error' });
@@ -619,6 +664,36 @@ exports.addToCluster = (req, res) => {
                 acceptedList[ipAddress] = nodeName;
                 delete requestList[ipAddress];
                 res.status(200).json({ message: 'Added to cluster successfully.' });
+            }
+        } else {
+            return res.status(403).json({ message: 'Unauthorized: Only admin users can perform this action' });
+        }
+    });
+};
+
+exports.removeFromCluster = (req, res) => {
+    const { authToken, nodeName } = req.body;
+
+    // Check if the user has an admin role
+    isAdminUser(getUserFromToken(authToken), async (roleErr, isAdmin) => {
+        if (roleErr) {
+            console.error(roleErr);
+            return res.status(500).json({ message: 'Internal Server Error' });
+        }
+
+        if (isAdmin) {
+            try {
+                // First, delete the Pod with the given nodeName
+                exec(`kubectl delete node ${nodeName}`, (error, stdout, stderr) => {
+                    if (error) {
+                        console.error(`Error executing kubectl: ${error.message}`);
+                        return res.status(500).json({ message: 'Internal Server Error' });
+                    }
+                    return res.status(200).json({ message: 'Node removed from the cluster successfully' });
+                });
+            } catch (error) {
+                console.error(error);
+                return res.status(500).json({ message: 'Internal Server Error' });
             }
         } else {
             return res.status(403).json({ message: 'Unauthorized: Only admin users can perform this action' });
