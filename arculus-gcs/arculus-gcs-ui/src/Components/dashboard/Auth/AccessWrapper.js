@@ -8,7 +8,6 @@ const AccessWrapper = (props) => {
     var pendingActions = props.pendingActions;
     const componentWithProps = React.cloneElement(props.component, { pendingActions });
 
-    console.log('PA: ', props.pendingActions);
     useEffect(() => {
         const checkAdminStatus = async () => {
             try {

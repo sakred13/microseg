@@ -24,6 +24,7 @@ import EditDeviceModal from './EditDeviceModal';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import CircularProgress from '@mui/material/CircularProgress';
 import { API_URL } from '../../../config';
 
 const getTasks = async () => {
@@ -208,6 +209,7 @@ const DeviceManagement = (props) => {
     const [isClickDisabled, setisClickDisabled] = useState(false);
     const [showRemoveClusterDialog, setShowRemoveClusterDialog] = useState(false);
     const [removeClusterNode, setRemoveClusterNode] = useState(null);
+    const [removeTrustedDevice, setRemoveTrustedDevice] = useState(false);
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -541,12 +543,30 @@ const DeviceManagement = (props) => {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => handleDeleteDevice(deleteDevice)} color="primary">
-                        Yes
-                    </Button>
-                    <Button onClick={handleDeleteDialogClose} color="primary" autoFocus>
-                        No
-                    </Button>
+                    {removeTrustedDevice ? (
+                        <CircularProgress size={24} />
+                    ) : (
+                        <>
+                            <Button
+                                onClick={() => {
+                                    setRemoveTrustedDevice(true); // Disable buttons and show spinner
+                                    handleDeleteDevice(deleteDevice);
+                                }}
+                                color="primary"
+                                disabled={removeTrustedDevice}
+                            >
+                                Yes
+                            </Button>
+                            <Button
+                                onClick={handleDeleteDialogClose}
+                                color="primary"
+                                autoFocus
+                                disabled={removeTrustedDevice}
+                            >
+                                No
+                            </Button>
+                        </>
+                    )}
                 </DialogActions>
             </Dialog>
             <Dialog

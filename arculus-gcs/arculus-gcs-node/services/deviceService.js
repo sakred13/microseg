@@ -545,7 +545,15 @@ exports.removeTrustedDevice = (req, res) => {
                             return res.status(500).json({ message: 'Internal Server Error' });
                         }
 
-                        return res.status(200).json({ message: 'Trusted device removed successfully' });
+                        // Now that the database records are deleted, you can delete the pod using kubectl
+                        exec(`kubectl delete pod ${deviceName}`, (deletePodErr, stdout, stderr) => {
+                            if (deletePodErr) {
+                                console.error(`Error deleting pod: ${deletePodErr.message}`);
+                                return res.status(500).json({ message: 'Internal Server Error' });
+                            }
+
+                            return res.status(200).json({ message: 'Trusted device and associated pod removed successfully' });
+                        });
                     });
                 });
             } catch (error) {
@@ -557,6 +565,7 @@ exports.removeTrustedDevice = (req, res) => {
         }
     });
 };
+
 
 exports.clusterJoinRequest = (req, res) => {
     const { nodeName } = req.query;
