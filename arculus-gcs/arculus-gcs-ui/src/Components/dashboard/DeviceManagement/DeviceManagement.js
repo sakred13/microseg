@@ -539,7 +539,10 @@ const DeviceManagement = (props) => {
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        Removing this device from the trustlist will destroy all its "allow" policies. This action cannot be undone.
+                        {removeTrustedDevice ?
+                            (<text>Please wait while the device is being deconfigured. This might take some time.</text>) :
+                            (<text>Removing this device from the trustlist will destroy all its "allow" policies. This action cannot be undone.</text>)
+                        }
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
