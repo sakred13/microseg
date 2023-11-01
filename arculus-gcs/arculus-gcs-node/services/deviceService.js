@@ -373,7 +373,7 @@ exports.getMoreNodes = (req, res) => {
 };
 
 exports.addTrustedDevice = (req, res) => {
-    const { authToken, deviceName, tasks } = req.body;
+    const { authToken, deviceName, tasks, deviceType } = req.body;
 
     // Check if the user has an admin role
     isAdminUser(getUserFromToken(authToken), (roleErr, isAdmin) => {
@@ -383,6 +383,25 @@ exports.addTrustedDevice = (req, res) => {
         }
 
         if (isAdmin) {
+            // Define Docker images based on deviceType
+            const imageMap = {
+                "Video Capture Device": "39dj29dl2d9l2/vcc:latest",
+                "Video Processing Device": "nginx:latest",
+                "Command Controller": "39dj29dl2d9l2/vcc:latest",
+                "Controlled Drone": "39dj29dl2d9l2/vcc:latest",
+                "Controlled UGV": "39dj29dl2d9l2/vcc:latest",
+                "Sensor-bundled Device": "39dj29dl2d9l2/vcc:latest",
+                "Sensor Data Processing Device": "39dj29dl2d9l2/vcc:latest",
+                "Co-ordinate Relay Device": "39dj29dl2d9l2/vcc:latest",
+                "Co-ordinate Processing Device": "39dj29dl2d9l2/vcc:latest",
+            };
+
+            const selectedImage = imageMap[deviceType];
+
+            if (!selectedImage) {
+                return res.status(400).json({ message: 'Invalid deviceType' });
+            }
+
             try {
                 // Create a temporary YAML file
                 const podYAML = `
@@ -396,7 +415,7 @@ spec:
   nodeName: ${deviceName}
   containers:
   - name: busybox
-    image: 39dj29dl2d9l2/vcc:latest
+    image: ${selectedImage}
     ports:
       - containerPort: 8080
     command:
@@ -460,6 +479,7 @@ spec:
         }
     });
 };
+
 
 
 

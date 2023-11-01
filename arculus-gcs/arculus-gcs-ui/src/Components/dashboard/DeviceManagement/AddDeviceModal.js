@@ -7,7 +7,7 @@ import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import { Autocomplete, Chip } from '@mui/material';
+import { Autocomplete, Chip, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import Cookies from 'js-cookie';
 import { API_URL } from '../../../config';
 
@@ -35,19 +35,31 @@ const successStyles = {
     color: 'green',
 };
 
+const deviceTypes = [
+    "Video Capture Device",
+    "Video Processing Device",
+    "Command Controller",
+    "Controlled Drone",
+    "Controlled UGV",
+    "Sensor-bundled Device",
+    "Sensor Data Processing Device",
+    "Co-ordinate Relay Device",
+    "Co-ordinate Processing Device"
+];
+
 const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) => {
     const [isSuccess, setIsSuccess] = useState(false);
     const [deviceName, setDeviceName] = useState(nodeName || '');
     const [ipAddress, setIPAddress] = useState(nodeIP || '');
+    const [selectedDeviceType, setSelectedDeviceType] = useState('');
     const [selectedTasks, setSelectedTasks] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [hasValueSelected, setHasValueSelected] = useState(false);
 
     const handleAddDevice = async (e) => {
-        e.preventDefault(); // Prevent the default form submission behavior
+        e.preventDefault();
 
         if (!hasValueSelected) {
-            // Display an error message or handle the case when no value is selected
             return;
         }
 
@@ -65,6 +77,7 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) =
                     authToken,
                     deviceName,
                     ipAddress,
+                    deviceType: selectedDeviceType, // Include selected device type
                     tasks: selectedTasks,
                 }),
             });
@@ -89,6 +102,7 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) =
     const handleCancel = () => {
         setDeviceName('');
         setIPAddress('');
+        setSelectedDeviceType('');
         setSelectedTasks([]);
         setIsOpen(false);
     };
@@ -148,6 +162,27 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) =
                                         <Typography variant="caption" color="textSecondary" gutterBottom>
                                             The device will be assigned a local IP address after setup and will no longer be referenced by the public IP address.
                                         </Typography>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth variant="outlined" required>
+                                            <InputLabel htmlFor="deviceType">Device Type</InputLabel>
+                                            <Select
+                                                fullWidth
+                                                value={selectedDeviceType}
+                                                onChange={(e) => setSelectedDeviceType(e.target.value)}
+                                                label="Device Type"
+                                                inputProps={{
+                                                    name: 'deviceType',
+                                                    id: 'deviceType',
+                                                }}
+                                            >
+                                                {deviceTypes.map((type, index) => (
+                                                    <MenuItem key={index} value={type}>
+                                                        {type}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
                                     </Grid>
                                     <Grid item xs={12}>
                                         <Autocomplete
