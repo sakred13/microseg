@@ -55,6 +55,11 @@ exports.joinStatusWebSocket = (ws, req) => {
             clearInterval(checkNodeInterval); // Stop the interval
             ws.close();
         }
+        else if (Object.values(blockList).includes(nodeName)) {
+            ws.send("Request Declined");
+            clearInterval(checkNodeInterval); // Stop the interval
+            ws.close();
+        }
     }, 5000); // Check every 5 seconds
 };
 
@@ -590,7 +595,7 @@ exports.getToken = (req, res) => {
 };
 
 exports.addToCluster = (req, res) => {
-    const { ipAddress, nodeName, authToken } = req.body;
+    const { ipAddress, nodeName, authToken, decline } = req.body;
 
     // Check if the user has an admin role
     isAdminUser(getUserFromToken(authToken), async (roleErr, isAdmin) => {
@@ -605,11 +610,16 @@ exports.addToCluster = (req, res) => {
                 return res.status(400).json({ error: 'Both ipAddress and nodeName are required.' });
             }
 
-            // Add to acceptedList and remove from requestList
-            acceptedList[ipAddress] = nodeName;
-            delete requestList[ipAddress];
-
-            res.status(200).json({ message: 'Added to cluster successfully.' });
+            if (decline) {
+                blockList[ipAddress] = nodeName;
+                delete requestList[ipAddress];
+                res.status(403).json({ message: 'Device declined and removed from the request list.' });
+            } else {
+                // Add to acceptedList and remove from requestList
+                acceptedList[ipAddress] = nodeName;
+                delete requestList[ipAddress];
+                res.status(200).json({ message: 'Added to cluster successfully.' });
+            }
         } else {
             return res.status(403).json({ message: 'Unauthorized: Only admin users can perform this action' });
         }

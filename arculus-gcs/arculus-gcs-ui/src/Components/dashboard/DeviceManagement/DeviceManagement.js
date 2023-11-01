@@ -102,6 +102,37 @@ const getMoreNodes = async () => {
     }
 };
 
+const handleDeclineDevice = async (ipAddress, nodeName) => {
+    try {
+        const url = `${API_URL}/addToCluster`;
+        const authToken = Cookies.get('jwtToken');
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${encodeURIComponent(Cookies.get('jwtToken'))}`,
+            },
+            body: JSON.stringify({
+                ipAddress,
+                nodeName,
+                authToken,
+                decline:true
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Success:', data);
+        // Perform any additional actions after a successful API call
+    } catch (error) {
+        console.error('Error handling device decline:', error.message);
+        // Handle errors or show an error message to the user
+    }
+};
+
 const handleApproveDevice = async (ipAddress, nodeName) => {
     try {
         const url = `${API_URL}/addToCluster`;
@@ -145,6 +176,7 @@ const DeviceManagement = (props) => {
     const [tasks, setTasks] = useState([]);
     const [isEditDeviceModalOpen, setIsEditDeviceModalOpen] = useState(false);
     const [editDeviceDetails, setEditDeviceDetails] = useState(null);
+    const [isclickDisabled, setIsClickDisabled] = useState(false);
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -415,15 +447,16 @@ const DeviceManagement = (props) => {
                                 <TableCell>
                                     <Button
                                         startIcon={<DoneIcon />}
-                                        onClick={() => handleApproveDevice(key, value)}
+                                        onClick={() => {setIsClickDisabled(true); handleApproveDevice(key, value)}}
                                         style={{ cursor: 'pointer' }}
                                     >
                                         <font color="black">Approve</font>
                                     </Button>
                                     <Button
                                         startIcon={<CloseIcon style={{ color: '#e34048' }} />}
-                                        // onClick={() => handleDeclineDevice(key, value)}
+                                        onClick={() => {setIsClickDisabled(true); handleDeclineDevice(key, value)}}
                                         style={{ cursor: 'pointer' }}
+                                        disabled={isclickDisabled}
                                     >
                                         <font color="black">Decline</font>
                                     </Button>

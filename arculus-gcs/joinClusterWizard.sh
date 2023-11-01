@@ -43,6 +43,9 @@ while read -r websocket_response; do
     if [ "$websocket_response" = "Join Successful" ]; then
         echo "Join Successful. Proceeding further."
         break  # Break out of the loop if the expected message is received
+    else if [ "$websocket_response" = "Request Declined" ]; then
+        echo "Unable to request node addition."
+        exit 1
     else
         # Print all messages from the WebSocket
         echo "Received message: $websocket_response"
