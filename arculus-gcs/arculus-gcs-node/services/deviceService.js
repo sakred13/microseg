@@ -212,76 +212,100 @@ exports.getTrustedDevices = (req, res) => {
     const { authToken } = req.query;
     const username = getUserFromToken(authToken);
 
-    pool.getConnection(function (err, connection) {
-        if (err) throw err;
+    // Execute the kubectl command to get running pods
+    exec('kubectl get pods --namespace=default -o json', (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error executing kubectl: ${error}`);
+            res.status(500).send('Failed to fetch pod information');
+            return;
+        }
 
-        connection.beginTransaction(function (err) {
+        const podInfo = JSON.parse(stdout).items.map(pod => ({
+            name: pod.metadata.name,
+            ip: pod.status.podIP,
+        }));
+
+        const podNames = podInfo.map(pod => pod.name);
+        const podIPs = podInfo.map(pod => pod.ip);
+
+        pool.getConnection(function (err, connection) {
             if (err) throw err;
 
-            connection.query('SELECT user_id FROM user WHERE username = ? LIMIT 1', [username], function (err, userRows) {
-                if (err) {
-                    connection.rollback(function () {
-                        throw err;
-                    });
-                }
+            connection.beginTransaction(function (err) {
+                if (err) throw err;
 
-                if (userRows.length === 0 || userRows === undefined || !userRows[0].user_id) {
-                    res.status(400).send('User not found');
-                    connection.rollback(function () {
-                        connection.release();
-                    });
-                    return;
-                }
-                const userId = userRows[0].user_id;
-
-                connection.query(`
-                SELECT device_id, device_name, ip_address, personnel_rank
-                FROM trusted_device
-            `, function (err, deviceRows) {
+                connection.query('SELECT user_id FROM user WHERE username = ? LIMIT 1', [username], function (err, userRows) {
                     if (err) {
                         connection.rollback(function () {
                             throw err;
                         });
-                    } else {
-                        const deviceIds = deviceRows.map(device => device.device_id);
+                    }
 
-                        if (deviceIds.length === 0) {
-                            // No trusted devices found, return an empty array
+                    if (userRows.length === 0 || userRows === undefined || !userRows[0].user_id) {
+                        res.status(400).send('User not found');
+                        connection.rollback(function () {
                             connection.release();
-                            res.json([]);
-                            return;
-                        }
+                        });
+                        return;
+                    }
+                    const userId = userRows[0].user_id;
 
-                        // Fetch tasks for each device
+                    if (podNames.length === 0 || podIPs.length === 0) {
+                        // Handle the case where there are no pod names or IP addresses
+                        connection.release();
+                        res.json([]); // Return an empty array or handle it as needed
+                    } else {
                         connection.query(`
-                        SELECT dt.device_id, t.task_name
-                        FROM device_task dt
-                        INNER JOIN task t ON dt.task_id = t.task_id
-                        WHERE dt.device_id IN (?)
-                    `, [deviceIds], function (err, taskRows) {
+                            SELECT device_id, device_name, ip_address, personnel_rank
+                            FROM trusted_device
+                            WHERE device_name IN (?) AND ip_address IN (?)
+                        `, [podNames, podIPs], function (err, deviceRows) {
                             if (err) {
                                 connection.rollback(function () {
                                     throw err;
                                 });
                             } else {
-                                connection.release();
+                                const deviceIds = deviceRows.map(device => device.device_id);
 
-                                // Organize tasks by device_id
-                                const tasksByDevice = {};
-                                taskRows.forEach(task => {
-                                    if (!tasksByDevice[task.device_id]) {
-                                        tasksByDevice[task.device_id] = [];
+                                if (deviceIds.length === 0) {
+                                    // No trusted devices found, return an empty array
+                                    connection.release();
+                                    res.json([]);
+                                    return;
+                                }
+
+                                // Fetch tasks for each device
+                                connection.query(`
+                                    SELECT dt.device_id, t.task_name
+                                    FROM device_task dt
+                                    INNER JOIN task t ON dt.task_id = t.task_id
+                                    WHERE dt.device_id IN (?)
+                                `, [deviceIds], function (err, taskRows) {
+                                    if (err) {
+                                        connection.rollback(function () {
+                                            throw err;
+                                        });
+                                    } else {
+                                        connection.release();
+
+                                        // Organize tasks by device_id
+                                        const tasksByDevice = {};
+                                        taskRows.forEach(task => {
+                                            if (!tasksByDevice[task.device_id]) {
+                                                tasksByDevice[task.device_id] = [];
+                                            }
+                                            tasksByDevice[task.device_id].push(task.task_name);
+                                        });
+
+                                        // Merge tasks into deviceRows
+                                        const devicesWithTasks = deviceRows.map(device => ({
+                                            ...device,
+                                            allowedTasks: tasksByDevice[device.device_id] || [],
+                                        }));
+
+                                        res.json(devicesWithTasks);
                                     }
-                                    tasksByDevice[task.device_id].push(task.task_name);
                                 });
-
-                                // Merge tasks into deviceRows
-                                const devicesWithTasks = deviceRows.map(device => ({
-                                    ...device,
-                                    allowedTasks: tasksByDevice[device.device_id] || [],
-                                }));
-
-                                res.json(devicesWithTasks);
                             }
                         });
                     }
@@ -292,23 +316,34 @@ exports.getTrustedDevices = (req, res) => {
 };
 
 function getK3sNodes(callback) {
-    exec('kubectl get nodes -o custom-columns=NODE:.metadata.name,IP:.status.addresses[0].address', (error, stdout, stderr) => {
+    exec('kubectl get nodes -o json', (error, stdout, stderr) => {
         if (error) {
             console.error(`Error executing kubectl: ${error.message}`);
             callback(error, null);
             return;
         }
 
-        const nodeList = stdout
-            .trim() // Remove leading/trailing whitespace
-            .split('\n') // Split into lines
-            .slice(1) // Skip header
-            .map((line) => {
-                const [nodeName, nodeIP] = line.trim().split(/\s+/);
-                return { nodeName, nodeIP };
-            });
+        try {
+            const nodeData = JSON.parse(stdout);
 
-        callback(null, nodeList);
+            const nodeList = nodeData.items
+                .filter((node) => {
+                    return node.status.conditions.some((condition) => {
+                        return condition.type === 'Ready' && condition.status === 'True';
+                    });
+                })
+                .map((node) => {
+                    return {
+                        nodeName: node.metadata.name,
+                        nodeIP: node.status.addresses.find((addr) => addr.type === 'InternalIP').address,
+                    };
+                });
+
+            callback(null, nodeList);
+        } catch (err) {
+            console.error(`Error parsing JSON: ${err.message}`);
+            callback(err, null);
+        }
     });
 }
 
@@ -447,19 +482,19 @@ spec:
                                     insertTrustedDevice(deviceName, podIP),
                                     getTaskIdsByName(tasks),
                                 ])
-                                .then(([insertDeviceResult, taskIds]) => {
-                                    // Insert rows in the device_task table
-                                    return insertDeviceTasks(insertDeviceResult.insertId, taskIds);
-                                })
-                                .then(() => {
-                                    // Delete the temporary YAML file
-                                    fs.unlinkSync(yamlFilePath.path);
-                                    return res.status(200).json({ message: 'Trusted device added successfully' });
-                                })
-                                .catch((err) => {
-                                    console.error(err);
-                                    return res.status(500).json({ message: 'Internal Server Error' });
-                                });
+                                    .then(([insertDeviceResult, taskIds]) => {
+                                        // Insert rows in the device_task table
+                                        return insertDeviceTasks(insertDeviceResult.insertId, taskIds);
+                                    })
+                                    .then(() => {
+                                        // Delete the temporary YAML file
+                                        fs.unlinkSync(yamlFilePath.path);
+                                        return res.status(200).json({ message: 'Trusted device added successfully' });
+                                    })
+                                    .catch((err) => {
+                                        console.error(err);
+                                        return res.status(500).json({ message: 'Internal Server Error' });
+                                    });
                             } else {
                                 // If the IP address is not available, check again after a short delay
                                 setTimeout(checkPodIP, 1000); // Check every second (adjust as needed)

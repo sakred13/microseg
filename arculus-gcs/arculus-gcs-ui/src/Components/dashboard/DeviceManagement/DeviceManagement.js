@@ -25,6 +25,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { API_URL } from '../../../config';
 
 const getTasks = async () => {
@@ -419,11 +420,11 @@ const DeviceManagement = (props) => {
                                     </Button>{' '}
                                     &nbsp;&nbsp;&nbsp;
                                     <Button
-                                        startIcon={<DeleteIcon style={{ color: '#e34048' }} />}
+                                        startIcon={<RemoveCircleOutlineIcon style={{ color: '#e34048' }} />}
                                         onClick={() => handleDeleteDialogOpen(device.device_name)}
                                         style={{ cursor: 'pointer', color: 'black' }}
                                     >
-                                        Remove from Trustlist
+                                        Deconfigure Device
                                     </Button>
                                 </TableCell>
                             </TableRow>
@@ -535,13 +536,13 @@ const DeviceManagement = (props) => {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                    Are you sure you want to remove device {deleteDevice} from the trustlist?
+                    Are you sure you want to deconfigure trusted device {deleteDevice}?
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
                         {removeTrustedDevice ?
                             (<text>Please wait while the device is being deconfigured. This might take some time.</text>) :
-                            (<text>Removing this device from the trustlist will destroy all its "allow" policies. This action cannot be undone.</text>)
+                            (<text>Removing this device configuration will destroy all its "allow" policies. This action cannot be undone.</text>)
                         }
                     </DialogContentText>
                 </DialogContent>

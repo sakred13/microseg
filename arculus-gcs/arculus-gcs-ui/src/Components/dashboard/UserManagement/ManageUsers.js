@@ -153,14 +153,14 @@ const ManageUsers = () => {
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell>{user.role_name}</TableCell>
                                 <TableCell>
-                                    {user.username !== Cookies.get('user') && user.role_name !== 'Admin' && (
+                                    {user.username !== Cookies.get('user') && (
                                         <Button startIcon={<EditIcon />} onClick={() => { setEditUser([user.username, user.email, user.role_name]); setIsEditModalOpen(true) }} style={{ cursor: 'pointer' }}>
                                             <font color="black">Edit</font>
                                         </Button>
                                     )}
                                 </TableCell>
                                 <TableCell>
-                                    {user.username !== Cookies.get('user') && user.role_name !== 'Admin' && (
+                                    {user.username !== Cookies.get('user') && (
                                         <Button
                                             startIcon={<DeleteIcon style={{ "color": "#e34048" }} />}
                                             onClick={() => handleDeleteDialogOpen(user.username)}
