@@ -132,6 +132,7 @@ const EditDeviceModal = ({ isOpen, setIsOpen, deviceDetails, allowedTasks }) => 
                                             id="deviceName"
                                             label="Device Name"
                                             autoFocus
+                                            disabled
                                             value={deviceName}
                                             onChange={(e) => setDeviceName(e.target.value)}
                                             error={!deviceName} // Set error prop based on whether deviceName is empty

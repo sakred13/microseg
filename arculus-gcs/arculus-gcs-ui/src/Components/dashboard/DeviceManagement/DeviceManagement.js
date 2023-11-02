@@ -416,7 +416,7 @@ const DeviceManagement = (props) => {
                                         onClick={() => handleEditDevice(device)}
                                         style={{ cursor: 'pointer' }}
                                     >
-                                        <font color="black">Edit</font>
+                                        <font color="black">Update Device Capabilities</font>
                                     </Button>{' '}
                                     &nbsp;&nbsp;&nbsp;
                                     <Button
@@ -465,17 +465,20 @@ const DeviceManagement = (props) => {
                                     >
                                         <font color="black">Configure as Trusted Device</font>
                                     </Button>
-                                    <Button
-                                        startIcon={<DeleteIcon style={{ color: '#e34048' }} />}
-                                        onClick={() => handleRemoveNodeDialogOpen(node.nodeName)}
-                                        style={{ cursor: 'pointer' }}
-                                    >
-                                        <font color="black">Remove from Cluster</font>
-                                    </Button>
+                                    {node.nodeName !== 'controller' && (
+                                        <Button
+                                            startIcon={<DeleteIcon style={{ color: '#e34048' }} />}
+                                            onClick={() => handleRemoveNodeDialogOpen(node.nodeName)}
+                                            style={{ cursor: 'pointer' }}
+                                        >
+                                            <font color="black">Remove from Cluster</font>
+                                        </Button>
+                                    )}
                                 </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
+
                 </Table>
             </TableContainer>
             <br />
