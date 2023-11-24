@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './MissionPlanner.css';
+import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
+import DesertMission from './DesertMission';
+import ForestMission from './ForestMission';
 
 function MissionPlanner() {
   const [activeTab, setActiveTab] = useState('Select Mission Type');
@@ -9,7 +12,10 @@ function MissionPlanner() {
   const [videoAnalytic, setVideoAnalytic] = useState('controller');
   const [videoCollectionDrone, setVideoCollectionDrone] = useState('drone1');
   const [supplyDeliveryDrone, setSupplyDeliveryDrone] = useState('drone1');
-  const [selectedLocation, setSelectedLocation] = useState('/forest.png')
+  const [selectedLocation, setSelectedLocation] = useState('/forest.png');
+  const [gcX, setGcX] = useState(693);
+  const [gcY, setGcY] = useState(720);
+
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
@@ -33,8 +39,14 @@ function MissionPlanner() {
   const handleChangeLocation = (location) => {
     if (location === 'Battlefield 1: Paleto Forest') {
       setSelectedLocation('/forest.png');
+      // Calculate gcX and gcY based on the width and height ratio
+      setGcX(0.3867); // Example: 202 / 1792
+      setGcY(0.7031); // Example: 420 / 1024
     } else if (location === 'Battlefield 2: Grand Senora Desert') {
       setSelectedLocation('/desert.png');
+      // Calculate gcX and gcY based on the width and height ratio
+      setGcX(0.1129); // Example: 202 / 1792
+      setGcY(0.4102); // Example: 420 / 1024
     }
   };
 
@@ -42,6 +54,11 @@ function MissionPlanner() {
   useEffect(() => {
     handleChangeLocation(missionLocation);
   }, [missionLocation]);
+
+  // Function to switch to the "Execute Mission" tab
+  const switchToExecuteTab = () => {
+    setActiveTab('Execute Mission');
+  };
 
   return (
     <div className="missionPlanner">
@@ -54,13 +71,13 @@ function MissionPlanner() {
         </button>
         <button
           className={activeTab === 'Plan Mission' ? 'tab-button active' : 'tab-button'}
-          onClick={() => handleTabChange('Plan Mission')}
+        // onClick={() => handleTabChange('Plan Mission')}
         >
           Plan Mission
         </button>
         <button
-          className={activeTab === 'Execute Mission' ? 'tab-button active' : 'tab-button'}
-          onClick={() => handleTabChange('Execute Mission')}
+          className={activeTab === 'Execute Mission' ? 'tab-button active execute-button' : 'tab-button execute-button'}
+        // onClick={switchToExecuteTab}
         >
           Execute Mission
         </button>
@@ -90,7 +107,6 @@ function MissionPlanner() {
               value={missionLocation}
               onChange={(e) => setMissionLocation(e.target.value)}
             >
-              <option value="">Select Location</option>
               <option value="Battlefield 1: Paleto Forest">Battlefield 1: Paleto Forest</option>
               <option value="Battlefield 2: Grand Senora Desert">Battlefield 2: Grand Senora Desert</option>
             </select>
@@ -102,7 +118,7 @@ function MissionPlanner() {
               value={videoAnalytic}
               onChange={(e) => setVideoAnalytic(e.target.value)}
             >
-              <option value="controller">Controller</option>
+              <option value="controller">controller</option>
             </select>
 
             {/* Video Collection Surveillance Drone dropdown */}
@@ -112,8 +128,8 @@ function MissionPlanner() {
               value={videoCollectionDrone}
               onChange={(e) => setVideoCollectionDrone(e.target.value)}
             >
-              <option value="drone1">Drone 1</option>
-              <option value="drone2">Drone 2</option>
+              <option value="drone2">drone2</option>
+              <option value="drone1">drone1</option>
             </select>
 
             {/* Supply Delivery Drone dropdown */}
@@ -123,45 +139,93 @@ function MissionPlanner() {
               value={supplyDeliveryDrone}
               onChange={(e) => setSupplyDeliveryDrone(e.target.value)}
             >
-              <option value="drone1">Drone 1</option>
-              <option value="drone2">Drone 2</option>
+              <option value="drone1">drone1</option>
+              <option value="drone2">drone2</option>
             </select>
             <label htmlFor="mapsvg">Point the supply delivery destination on map.</label>
-
+            <div className='tabs mission-container' style={{ border: '2px solid black', padding: '10px' }}>
             <svg
               id="mapsvg"
               className="mission-svg"
-              viewBox="0 0 1792 1024" // Set the viewBox to match the aspect ratio of your background image
-              preserveAspectRatio="xMidYMid meet" // Maintain aspect ratio and scale to fit the container width
+              viewBox="0 0 1792 1024"
+              preserveAspectRatio="xMidYMid meet"
               onClick={handleSvgClick}
             >
               <image href={selectedLocation} x="0" y="0" width="1792" height="1024" />
-              <image
-                href="/groundControl.png"
-                x={202} // Offset to center the soldier image (35 is half of 70)
-                y={420} // Offset to center the soldier image (35 is half of 70)
-                width="70"
-                height="70"
-              />
+
+              {/* Ground Control */}
+              <image href="groundControl.png" x={gcX * 1792 - 35} y={gcY * 1024 - 35} width="70" height="70" />
+              <rect x={gcX * 1792 - 75} y={gcY * 1024 + 45} width="150" height="30" fill="black" stroke="white" strokeWidth="2" rx="15" ry="15" />
+              <text x={gcX * 1792} y={gcY * 1024 + 65} fill="white" fontSize="15" textAnchor="middle" fontWeight="bold">
+                Ground Station
+              </text>
+
+              {/* Soldier */}
               {soldierPosition && (
                 <image
-                  href="/soldier.png"
-                  x={soldierPosition.x * 1792 - 35} // Offset to center the soldier image (35 is half of 70)
-                  y={soldierPosition.y * 1024 - 35} // Offset to center the soldier image (35 is half of 70)
+                  href="soldier.png"
+                  x={soldierPosition.x * 1792 - 35}
+                  y={soldierPosition.y * 1024 - 35}
                   width="70"
                   height="70"
                 />
               )}
+              {soldierPosition && (
+                <rect
+                  x={soldierPosition.x * 1792 - 75} // Adjust the x-coordinate for the rect element
+                  y={soldierPosition.y * 1024 + 50} // Adjust the y-coordinate for the rect element
+                  width="150"
+                  height="30"
+                  fill="black"
+                  stroke="white"
+                  strokeWidth="2"
+                  rx="15"
+                  ry="15"
+                />
+              )}
+              {soldierPosition && (
+                <text
+                  x={soldierPosition.x * 1792}
+                  y={soldierPosition.y * 1024 + 70} // Adjust the y-coordinate for the text element
+                  fill="white"
+                  fontSize="15"
+                  textAnchor="middle"
+                  fontWeight="bold"
+                >
+                  Supply Destination
+                </text>
+              )}
             </svg>
+            </div>
+            <br/>
+            <button
+              onClick={switchToExecuteTab}
+              style={{
+                backgroundColor: 'green',
+                padding: '10px 20px',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+              }}
+            >
+              <SettingsSuggestIcon /> Execute Mission
+            </button>
+            <br/>
+
           </div>
         )}
 
         {activeTab === 'Execute Mission' && (
-          <div>
-            <h2>Execute Mission</h2>
-            {/* Add your content for executing the mission here */}
-          </div>
-        )}
+          <>             <h2>Mission in Execution...</h2>
+
+            <div className='tabs mission-container' style={{ border: '2px solid black', padding: '10px' }}>
+              {/* Add your content for executing the mission here */}
+              {selectedLocation === '/desert.png' ? <DesertMission handleTabChange={handleTabChange} /> : <ForestMission handleTabChange={handleTabChange}/>}
+            </div>
+
+          </>)}
       </div>
     </div>
   );

@@ -253,7 +253,7 @@ export function Layout(props) {
                 <ListItemIcon>
                   <WhatshotIcon />
                 </ListItemIcon>
-                <ListItemText primary="Plan and Execute Missions" />
+                <ListItemText primary="Execute Missions" />
               </ListItemButton>
             )}
             {isAdmin && (
@@ -280,7 +280,7 @@ export function Layout(props) {
           <Divider sx={{ my: 1 }} />
           <Box sx={{ flexGrow: 1 }} />
         </Drawer>
-        <Box component="main" sx={{ flexGrow: 1, height: '100vh', overflow: 'auto', marginTop: '100px' }}>
+        <Box component="main" sx={{ flexGrow: 1, overflow: 'auto', marginTop: '100px' }}>
           {componentWithProps}
         </Box>
       </Box>
