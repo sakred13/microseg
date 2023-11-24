@@ -13,6 +13,7 @@ import ManageUsers from './Components/dashboard/UserManagement/ManageUsers';
 import DeviceManagement from './Components/dashboard/DeviceManagement/DeviceManagement';
 import NoAccess from './Components/dashboard/Auth/NoAccess';
 import AccessWrapper from './Components/dashboard/Auth/AccessWrapper';
+import MissionPlanner from './Components/dashboard/MissionPlanning/MissionPlanner';
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
           <Route path='/manageUsers'   element={<Layout component={<AccessWrapper component={<ManageUsers/>}/>}/>}/>
           <Route path='/manageDevices'   element={<Layout component={<AccessWrapper component={<DeviceManagement/>}/>}/>}/>
           <Route path='/managePolicies'   element={<Layout component={<AccessWrapper component={<DeviceManagement/>}/>}/>}/>
+          <Route path='/planMissions'   element={<Layout component={<AccessWrapper component={<MissionPlanner/>}/>}/>}/>
           <Route path='/noAccess'   element={<Layout component={<NoAccess/>}/>}/>
       </Routes>
     </BrowserRouter>

@@ -1,0 +1,112 @@
+/* MissionPlanner.css */
+
+.tabs {
+  display: flex;
+  background-color: #f0f0f0; /* Background color for the tabs */
+}
+
+.tab-button {
+  flex: 1;
+  padding: 10px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.tab-button:hover {
+  background-color: #ddd; /* Background color for tabs on hover */
+}
+
+.active {
+  background-color: #888; /* Background color for the active tab */
+  color: #fff; /* Text color for the active tab */
+}
+
+.mission-type-container {
+  text-align: center;
+}
+
+.missionPlanner {
+  text-align: center;
+  margin: 0 5%; /* Add 5% margin on both right and left sides */
+}
+
+.mission-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.mission-button:hover {
+  background-color: #f0f0f0;
+}
+
+/* Additional styles for the active tab */
+.active {
+  background-color: #888;
+  color: #fff;
+}
+
+div.mission-planner {
+  margin: 0 5%;
+}
+
+/* Style for the "Plan Mission" tab */
+.tab-content h2 {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+/* Style for form elements (dropdowns) */
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+/* Style for the background image container */
+.image-container {
+  position: relative;
+  margin-top: 20px;
+  width: 100%; /* Adjust the container width as needed */
+  max-width: 100%; /* Ensure the container doesn't exceed its parent's width */
+}
+
+.image-container img {
+  width: 100%; /* Make the image fill the width of its container */
+  height: auto; /* Maintain the aspect ratio */
+  max-width: 100%; /* Ensure the image doesn't exceed its original dimensions */
+}
+
+
+/* Style for the soldier image */
+img.soldier {
+  position: absolute;
+  pointer-events: none;
+  width: 3.10625%; /* 100% / 25.6 = 3.90625% */
+  height: 6.82537%; /* 100% / 14.62 = 6.82537% */
+  top: 50%; /* Adjust the top position to center the soldier vertically */
+  left: 50%; /* Adjust the left position to center the soldier horizontally */
+  transform: translate(-50%, -50%); /* Center the soldier image in the parent container */
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Apply a scaling effect on soldier image when hovering */
+img.soldier:hover {
+  transform: scale(1.2);
+}

@@ -24,6 +24,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import HiveIcon from '@mui/icons-material/Hive';
 import EdgesensorHighIcon from '@mui/icons-material/EdgesensorHigh';
 import SecurityIcon from '@mui/icons-material/Security';
+import WhatshotIcon from '@mui/icons-material/Whatshot';
 import { API_URL } from '../config';
 import { useState, useEffect } from 'react';
 
@@ -245,6 +246,14 @@ export function Layout(props) {
                   <SecurityIcon />
                 </ListItemIcon>
                 <ListItemText primary="Manage Policies" />
+              </ListItemButton>
+            )}
+            {isAdmin && (
+              <ListItemButton onClick={() => handleManageClick('/planMissions')}>
+                <ListItemIcon>
+                  <WhatshotIcon />
+                </ListItemIcon>
+                <ListItemText primary="Plan and Execute Missions" />
               </ListItemButton>
             )}
             {isAdmin && (
