@@ -1,5 +1,5 @@
 {
-    "honeyNetDomain": "",
+    "honeyNetDomain": "ec2-44-201-232-0.compute-1.amazonaws.com",
     "username": "admin@localhost",
     "password": "vimanlab"
 }

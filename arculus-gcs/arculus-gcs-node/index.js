@@ -73,34 +73,6 @@ process.on('uncaughtException', (err) => {
 joinReqsWss.on('connection', joinReqsWebSocket);
 joinStatusWss.on('connection', joinStatusWebSocket);
 
-// Proxy route for honeypot API
-app.all('/honeypot-api/*', async (req, res) => {
-    try {
-      // Extract the path after '/honeypot-api/' to use in the proxy URL
-      const apiPath = req.params[0];
-  
-      // Create the full URL to the honeypot service API
-      const honeypotApiUrl = `https://honeypot-service-api-url.com/${apiPath}`;
-  
-      // Make a request to the honeypot API, forwarding the HTTP method
-      const response = await axios({
-        method: req.method,
-        url: honeypotApiUrl,
-        headers: {
-          'Authorization': 'Bearer YOUR_API_KEY', // Add any required headers here
-          // Other headers as needed to mimic the dashboard request
-        },
-        data: req.body, // Include request body if present (for POST and PUT requests)
-      });
-  
-      // Forward the honeypot service response to the client
-      res.status(response.status).json(response.data);
-    } catch (error) {
-      console.error('Error calling honeypot API:', error);
-      res.status(500).json({ error: 'Proxy error' });
-    }
-  });
-
 // Start the server
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
