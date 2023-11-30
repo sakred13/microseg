@@ -5,16 +5,23 @@ import AttackerStats from './AttackerStats';
 import './MetricsDashboard.css'; // Assuming you have a similar CSS file for styling
 import MainDashboard from './MainDashboard';
 import { useDashboardContext } from './DashboardContext';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew'; // Icon for external site
+import { CHN_URL } from '../../../config';
+import Button from '@mui/material/Button';
 
 function MetricsDashboard() {
-    const { activeTab, setActiveTab, attackerIp } = useDashboardContext();
+  const { activeTab, setActiveTab, attackerIp } = useDashboardContext();
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
   };
 
+  const handleNavigate = () => {
+    window.open(CHN_URL, '_blank');
+  };
+
   return (
-    <div className="metricsDashboard"> 
+    <div className="metricsDashboard">
       <Typography variant="h4" component="div" gutterBottom>
         Metrics Dashboard
       </Typography>
@@ -47,6 +54,13 @@ function MetricsDashboard() {
         {activeTab === 'Intel Feed' && <IntelFeed />}
         {activeTab === 'Attacker Stats' && <AttackerStats attackerIp={attackerIp} />}
       </div>
+
+      <div className="footer-text">
+        <Typography variant="body1" component="div" gutterBottom>
+          For more detailed insights, visit our <Button color="primary" onClick={handleNavigate}>Complete CHN Server Dashboard<OpenInNewIcon fontSize="small" /></Button>
+        </Typography>
+      </div>
+      <br/>
     </div>
   );
 }

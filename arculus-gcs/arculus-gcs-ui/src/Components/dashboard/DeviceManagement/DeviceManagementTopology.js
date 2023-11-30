@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import ReactFlow, {
   applyEdgeChanges,
   applyNodeChanges,
@@ -6,7 +6,7 @@ import ReactFlow, {
   Controls
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
 
 
 // Node dimensions
@@ -97,7 +97,7 @@ const groupNodes = [
   }
 ];
 
-const initialEdges = [{ id: 'controller-configured', source: 'controller', target: 'configured', label: 'Configured Devices' }, { id: 'controller-notConfigured', source: 'controller', target: 'notConfigured', label: "Devices in the Cluster" }];
+const initialEdges = [{ id: 'controller-configured', source: 'controller', target: 'configured', label: 'Configured Devices' }];
 const yOffset = -40; // Adjust the offset as needed for visual appearance
 const clusterDevicesParentNode = groupNodes.find(node => node.id === 'notConfigured');
 const configuredDevicesParentNode = groupNodes.find(node => node.id === 'configured');
@@ -106,8 +106,8 @@ const clusterDevicesLabel = {
   id: 'cluster-devices-label',
   type: 'default',
   data: { label: 'Devices in the Cluster' },
-  position: { 
-    x: clusterDevicesParentNode.position.x + (clusterDevicesParentNode.style.width / 2) - (nodeWidth / 2), 
+  position: {
+    x: clusterDevicesParentNode.position.x + (clusterDevicesParentNode.style.width / 2) - (nodeWidth / 2),
     y: clusterDevicesParentNode.position.y + yOffset
   },
   draggable: false,
@@ -119,8 +119,8 @@ const configuredDevicesLabel = {
   id: 'configured-devices-label',
   type: 'default',
   data: { label: 'Configured Devices' },
-  position: { 
-    x: configuredDevicesParentNode.position.x + (configuredDevicesParentNode.style.width / 2) - (nodeWidth / 2), 
+  position: {
+    x: configuredDevicesParentNode.position.x + (configuredDevicesParentNode.style.width / 2) - (nodeWidth / 2),
     y: configuredDevicesParentNode.position.y + yOffset
   },
   draggable: false,
@@ -148,6 +148,46 @@ const rfStyle = {
 function DeviceManagementTopology() {
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
+  const [selectedNode, setSelectedNode] = useState(null);
+  const menuRef = useRef(null); // Reference to the menu box
+
+  const onNodeClick = (event, node) => {
+    if (node.type === 'input' || clusterDevices.includes(node.id)) { // Assuming 'input' type is used for Cluster Join Request nodes
+      setSelectedNode(node);
+    }
+  };
+
+  const handleOutsideClick = (event) => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      setSelectedNode(null); // Close the menu if click is outside
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, []);
+
+  const handleApprove = (node) => {
+    // Logic to handle approval
+    console.log('Approved', node);
+    setSelectedNode(null); // Deselect node after action
+  };
+
+  const handleReject = (node) => {
+    // Logic to handle rejection
+    console.log('Rejected', node);
+    setSelectedNode(null); // Deselect node after action
+  };
+
+  const handleConfigureAsTrusted = () => {
+    console.log('Configured as trusted', selectedNode);
+    // Add your configuration logic here
+    setSelectedNode(null); // Deselect node after action
+  };
+
 
   // const constrainNodePosition = (node, parentNode) => {
   //   const parentX = parentNode.position.x;
@@ -222,6 +262,7 @@ function DeviceManagementTopology() {
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
+          onNodeClick={onNodeClick}
           fitView
           style={rfStyle}
           attributionPosition="top-right"
@@ -229,6 +270,36 @@ function DeviceManagementTopology() {
           <Background />
           <Controls />
         </ReactFlow>
+        {selectedNode && (
+          <Box
+            ref={menuRef}
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 'auto',
+              bgcolor: 'background.paper',
+              boxShadow: 24,
+              border: "1px solid black",
+              p: 1,
+            }}
+          >
+            <Typography variant="h6" component="h2">
+              {selectedNode.data.label}
+            </Typography>
+            {/* Check if the selected node is a cluster device for displaying the trusted device configuration button */}
+            {clusterDevices.includes(selectedNode.id) ? (
+              <Button onClick={handleConfigureAsTrusted} color="primary">
+                Configure as trusted device
+              </Button>
+            ) : (
+              <>
+                <Button onClick={handleApprove}>Approve</Button>
+                <Button onClick={handleReject} color="error">Reject</Button>
+              </>)}
+          </Box>
+        )}
       </div>
     </Box>
   );
