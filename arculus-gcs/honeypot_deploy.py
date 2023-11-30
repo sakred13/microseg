@@ -4,10 +4,10 @@ import subprocess
 app = Flask(__name__)
 
 pot_type_commands = {
-    "Cowrie": "mkdir /Cowrie && cd /Cowrie && sudo wget \"{}/api/script/?text=true&script_id=3\" --no-check-certificate -O deploy.sh && sudo bash deploy.sh {} {} && sudo docker-compose up -d",
-    "Dionaea": "mkdir /Dionaea && cd /Dionaea && sudo wget \"{}/api/script/?text=true&script_id=4\" --no-check-certificate -O deploy.sh && sudo bash deploy.sh {} {} && sudo docker-compose up -d",
-    "Conpot": "mkdir /Conpot && cd /Conpot && sudo wget \"{}/api/script/?text=true&script_id=2\" --no-check-certificate -O deploy.sh && sudo bash deploy.sh {} {} && sudo docker-compose up -d",
-    "Elasticpot": "mkdir /Elasticpot && cd /Elasticpot && sudo wget \"{}/api/script/?text=true&script_id=5\" --no-check-certificate -O deploy.sh && sudo bash deploy.sh {} {} && sudo docker-compose up -d",
+    "Cowrie": "sudo mkdir /Cowrie && cd /Cowrie && sudo wget \"{}/api/script/?text=true&script_id=3\" --no-check-certificate -O deploy.sh && sudo bash deploy.sh {} {} && sudo docker-compose up -d",
+    "Dionaea": "sudo mkdir /Dionaea && cd /Dionaea && sudo wget \"{}/api/script/?text=true&script_id=4\" --no-check-certificate -O deploy.sh && sudo bash deploy.sh {} {} && sudo docker-compose up -d",
+    "Conpot": "sudo mkdir /Conpot && cd /Conpot && sudo wget \"{}/api/script/?text=true&script_id=2\" --no-check-certificate -O deploy.sh && sudo bash deploy.sh {} {} && sudo docker-compose up -d",
+    "Elasticpot": "sudo mkdir /Elasticpot && cd /Elasticpot && sudo wget \"{}/api/script/?text=true&script_id=5\" --no-check-certificate -O deploy.sh && sudo bash deploy.sh {} {} && sudo docker-compose up -d",
 }
 
 @app.route('/deployHoneyPot', methods=['POST'])

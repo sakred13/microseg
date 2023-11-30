@@ -257,18 +257,18 @@ export function Layout(props) {
               </ListItemButton>
             )}
             {isAdmin && (
-              <ListItemButton onClick={() => handleManageClick('/noAccess')}>
+              <ListItemButton onClick={() => handleManageClick('/honeypots')}>
                 <ListItemIcon>
                   <HiveIcon />
                 </ListItemIcon>
                 <ListItemText primary="Deploy Honeypots" />
               </ListItemButton>
             )}
-            <ListItemButton>
+              <ListItemButton onClick={() => handleManageClick('/attackMetrics')}>
               <ListItemIcon>
                 <BarChartIcon />
               </ListItemIcon>
-              <ListItemText primary="Metrics" />
+              <ListItemText primary="Attack Metrics" />
             </ListItemButton>
             <ListItemButton onClick={handleSignOut}>
               <ListItemIcon>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
-import Typography from '@mui/material/Typography'; // Import Typography for headings
+import Typography from '@mui/material/Typography';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -12,7 +12,6 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import CloseIcon from '@mui/icons-material/Close';
 import Cookies from 'js-cookie';
 import { API_URL } from '../../../config';
-
 
 function DeployedHoneypots() {
   const [deployedHoneypots, setDeployedHoneypots] = useState([]); // Store deployed honeypots data
@@ -51,7 +50,6 @@ function DeployedHoneypots() {
     }
   };
 
-
   useEffect(() => {
     // Fetch deployed honeypots when the component mounts
     fetchDeployedHoneypots();
@@ -59,41 +57,52 @@ function DeployedHoneypots() {
 
   return (
     <div className="deployed-honeypots-content">
-    <Typography variant="h6" component="div" gutterBottom>
-      Deployed Honeypots
-    </Typography>
-    {isDeployedHoneypotsLoading ? (
-      <CircularProgress />
-    ) : (
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell><b>IP Address</b></TableCell>
-              <TableCell><b>Honeypot Type</b></TableCell>
-              <TableCell><b>Actions</b></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {deployedHoneypots.map((honeypot) => (
-              <TableRow key={honeypot.honeypotTarget}>
-                <TableCell>{honeypot.honeypotTarget}</TableCell>
-                <TableCell>{honeypot.honeypotType}</TableCell>
-                <TableCell>
-                  <IconButton color="primary" aria-label="View Activity">
-                    <VisibilityIcon />
-                  </IconButton>
-                  <IconButton color="error" aria-label="Destroy Honeypot">
-                    <CloseIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    )}
-  </div>
+      <Typography variant="h6" component="div" gutterBottom>
+        Deployed Honeypots
+      </Typography>
+      {isDeployedHoneypotsLoading ? (
+        <CircularProgress />
+      ) : (
+        <>
+          {deployedHoneypots.length === 0 ? (
+            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+              <img src="/bee.png" alt="Bee" width="200" height="200" />
+              <Typography variant="h4" color="textSecondary">
+                No Honeypots Deployed Yet!
+              </Typography>
+            </div>
+          ) : (
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell><b>IP Address</b></TableCell>
+                    <TableCell><b>Honeypot Type</b></TableCell>
+                    <TableCell><b>Actions</b></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {deployedHoneypots.map((honeypot) => (
+                    <TableRow key={honeypot.honeypotTarget}>
+                      <TableCell>{honeypot.honeypotTarget}</TableCell>
+                      <TableCell>{honeypot.honeypotType}</TableCell>
+                      <TableCell>
+                        <IconButton color="primary" aria-label="View Activity">
+                          <VisibilityIcon />
+                        </IconButton>
+                        <IconButton color="error" aria-label="Destroy Honeypot">
+                          <CloseIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </>
+      )}
+    </div>
   );
 }
 

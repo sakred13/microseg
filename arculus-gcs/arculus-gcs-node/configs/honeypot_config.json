@@ -1,4 +1,8 @@
 {
     "url": "https://ec2-.compute-1.amazonaws.com",
-    "deployKey": "RF"
+    "deployKey": "RFhLN9tD",
+    "honeyNetDomain": "e.compute-1.amazonaws.com",
+    "username": "admin@localhost",
+    "password": "vi",
+    "apikey": "731da004"
 }

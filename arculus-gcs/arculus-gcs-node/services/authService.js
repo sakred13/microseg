@@ -22,7 +22,6 @@ function getUserFromToken(token) {
 };
 exports.getUserFromToken = getUserFromToken;
 
-// Function to check if the user is an admin
 const isAdminUser = (username, callback) => {
     pool.query("SELECT r.role_name FROM user u JOIN role r ON u.role_id = r.role_id WHERE u.username = ?", [username], (err, results) => {
         if (err) {
@@ -30,11 +29,15 @@ const isAdminUser = (username, callback) => {
             return callback(err, null);
         }
 
+        // Log the fetched user information
+        console.log(`Fetched user: ${username}, Roles:`, results.map(row => row.role_name));
+
         const isAdmin = results.some((row) => row.role_name === 'Admin');
         callback(null, isAdmin);
     });
 };
 exports.isAdminUser = isAdminUser;
+
 
 exports.signup = (req, res) => {
     const { jwtToken, username, email, password, role } = req.body;

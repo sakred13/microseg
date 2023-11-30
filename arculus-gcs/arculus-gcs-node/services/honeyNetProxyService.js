@@ -2,12 +2,12 @@ const fs = require('fs-extra');
 const axios = require('axios');
 
 const { isAdminUser, getUserFromToken } = require('./authService');
-const proxyConfig = JSON.parse(fs.readFileSync('configs/proxy_config.json'));
+const proxyConfig = JSON.parse(fs.readFileSync('configs/honeypot_config.json'));
 
 exports.honeyPotApi = async (req, res) => {
     try {
         const { authToken, ...queryParams } = req.query; // Destructure authToken and collect the rest in queryParams
-
+        console.log('WebToken: ', authToken);
         // Check if the user has an admin role
         isAdminUser(getUserFromToken(authToken), async (roleErr, isAdmin) => {
             if (roleErr) {
@@ -20,8 +20,7 @@ exports.honeyPotApi = async (req, res) => {
                 const apiPath = req.params[0];
 
                 // Create the full URL to the honeypot service API
-                const honeypotApiUrl = `${proxyConfig.honeyNetDomain}/${apiPath}`;
-                // const honeypotApiUrl = 'https://dummy.restapiexample.com/api/v1/create'
+                const honeypotApiUrl = `http://${proxyConfig.honeyNetDomain}/${apiPath}`;
                 console.log("honey: ", honeypotApiUrl);
 
                 // Make a request to the honeypot API, forwarding the HTTP method and query parameters
@@ -31,6 +30,7 @@ exports.honeyPotApi = async (req, res) => {
                         url: honeypotApiUrl,
                         params: queryParams, // Pass query parameters to the honeypot service
                         headers: {
+                            apikey: proxyConfig.apikey
                             // Other headers as needed to mimic the dashboard request
                         },
                         data: req.body, // Include request body if present (for POST and PUT requests)
@@ -54,22 +54,4 @@ exports.honeyPotApi = async (req, res) => {
         res.status(500).json({ error: 'Proxy error' });
     }
 };
-
-
-
-// let honeyPotToken = null; // Initialize honeyPotToken as null
-
-// // Function to fetch the honeypot authorization token
-// const fetchAuthToken = async () => {
-//   try {
-//     const response = await axios.post(honeypotApiUrl, { proxyConfig.username, proxyConfig.password });
-//     honeyPotToken = response.data.authToken; // Store the honeyPotToken in the variable
-//     console.log('Honeypot authorization token fetched and stored:', honeyPotToken);
-//   } catch (error) {
-//     console.error('Error fetching honeypot authorization token:', error.message);
-//   }
-// };
-
-// // Schedule the cron job to run every 30 minutes
-// cron.schedule('*/30 * * * *', fetchAuthToken);
 

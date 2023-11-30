@@ -1,0 +1,34 @@
+/* MetricsDashboard.css */
+
+.tabs {
+    display: flex;
+    background-color: #f0f0f0;
+  }
+  
+  .tab-button {
+    flex: 1;
+    padding: 10px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .tab-button:hover {
+    background-color: #ddd;
+  }
+  
+  .active {
+    background-color: #555;
+    color: #fff;
+  }
+  
+  .metricsDashboard {
+    text-align: center;
+    margin: 0 5%;
+  }
+  
+  .bold-heading {
+    font-weight: bold;
+  }
+  /* Additional styles specific to MetricsDashboard if needed */
+  
