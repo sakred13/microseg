@@ -3,6 +3,7 @@ import './MissionPlanner.css';
 import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import DesertMission from './DesertMission';
 import ForestMission from './ForestMission';
+import Typography from '@mui/material/Typography';
 
 function MissionPlanner() {
   const [activeTab, setActiveTab] = useState('Select Mission Type');
@@ -62,6 +63,9 @@ function MissionPlanner() {
 
   return (
     <div className="missionPlanner">
+      <Typography variant="h4" component="div" gutterBottom>
+        Mission Planning And Execution Dashboard
+      </Typography>
       <div className="tabs">
         <button
           className={activeTab === 'Select Mission Type' ? 'tab-button active' : 'tab-button'}
@@ -144,60 +148,60 @@ function MissionPlanner() {
             </select>
             <label htmlFor="mapsvg">Point the supply delivery destination on map.</label>
             <div className='tabs mission-container' style={{ border: '2px solid black', padding: '10px' }}>
-            <svg
-              id="mapsvg"
-              className="mission-svg"
-              viewBox="0 0 1792 1024"
-              preserveAspectRatio="xMidYMid meet"
-              onClick={handleSvgClick}
-            >
-              <image href={selectedLocation} x="0" y="0" width="1792" height="1024" />
+              <svg
+                id="mapsvg"
+                className="mission-svg"
+                viewBox="0 0 1792 1024"
+                preserveAspectRatio="xMidYMid meet"
+                onClick={handleSvgClick}
+              >
+                <image href={selectedLocation} x="0" y="0" width="1792" height="1024" />
 
-              {/* Ground Control */}
-              <image href="groundControl.png" x={gcX * 1792 - 35} y={gcY * 1024 - 35} width="70" height="70" />
-              <rect x={gcX * 1792 - 75} y={gcY * 1024 + 45} width="150" height="30" fill="black" stroke="white" strokeWidth="2" rx="15" ry="15" />
-              <text x={gcX * 1792} y={gcY * 1024 + 65} fill="white" fontSize="15" textAnchor="middle" fontWeight="bold">
-                Ground Station
-              </text>
-
-              {/* Soldier */}
-              {soldierPosition && (
-                <image
-                  href="soldier.png"
-                  x={soldierPosition.x * 1792 - 35}
-                  y={soldierPosition.y * 1024 - 35}
-                  width="70"
-                  height="70"
-                />
-              )}
-              {soldierPosition && (
-                <rect
-                  x={soldierPosition.x * 1792 - 75} // Adjust the x-coordinate for the rect element
-                  y={soldierPosition.y * 1024 + 50} // Adjust the y-coordinate for the rect element
-                  width="150"
-                  height="30"
-                  fill="black"
-                  stroke="white"
-                  strokeWidth="2"
-                  rx="15"
-                  ry="15"
-                />
-              )}
-              {soldierPosition && (
-                <text
-                  x={soldierPosition.x * 1792}
-                  y={soldierPosition.y * 1024 + 70} // Adjust the y-coordinate for the text element
-                  fill="white"
-                  fontSize="15"
-                  textAnchor="middle"
-                  fontWeight="bold"
-                >
-                  Supply Destination
+                {/* Ground Control */}
+                <image href="groundControl.png" x={gcX * 1792 - 35} y={gcY * 1024 - 35} width="70" height="70" />
+                <rect x={gcX * 1792 - 75} y={gcY * 1024 + 45} width="150" height="30" fill="black" stroke="white" strokeWidth="2" rx="15" ry="15" />
+                <text x={gcX * 1792} y={gcY * 1024 + 65} fill="white" fontSize="15" textAnchor="middle" fontWeight="bold">
+                  Ground Station
                 </text>
-              )}
-            </svg>
+
+                {/* Soldier */}
+                {soldierPosition && (
+                  <image
+                    href="soldier.png"
+                    x={soldierPosition.x * 1792 - 35}
+                    y={soldierPosition.y * 1024 - 35}
+                    width="70"
+                    height="70"
+                  />
+                )}
+                {soldierPosition && (
+                  <rect
+                    x={soldierPosition.x * 1792 - 75} // Adjust the x-coordinate for the rect element
+                    y={soldierPosition.y * 1024 + 50} // Adjust the y-coordinate for the rect element
+                    width="150"
+                    height="30"
+                    fill="black"
+                    stroke="white"
+                    strokeWidth="2"
+                    rx="15"
+                    ry="15"
+                  />
+                )}
+                {soldierPosition && (
+                  <text
+                    x={soldierPosition.x * 1792}
+                    y={soldierPosition.y * 1024 + 70} // Adjust the y-coordinate for the text element
+                    fill="white"
+                    fontSize="15"
+                    textAnchor="middle"
+                    fontWeight="bold"
+                  >
+                    Supply Destination
+                  </text>
+                )}
+              </svg>
             </div>
-            <br/>
+            <br />
             <button
               onClick={switchToExecuteTab}
               style={{
@@ -212,7 +216,7 @@ function MissionPlanner() {
             >
               <SettingsSuggestIcon /> Execute Mission
             </button>
-            <br/>
+            <br />
 
           </div>
         )}
@@ -222,7 +226,7 @@ function MissionPlanner() {
 
             <div className='tabs mission-container' style={{ border: '2px solid black', padding: '10px' }}>
               {/* Add your content for executing the mission here */}
-              {selectedLocation === '/desert.png' ? <DesertMission handleTabChange={handleTabChange} /> : <ForestMission handleTabChange={handleTabChange}/>}
+              {selectedLocation === '/desert.png' ? <DesertMission handleTabChange={handleTabChange} /> : <ForestMission handleTabChange={handleTabChange} />}
             </div>
 
           </>)}
