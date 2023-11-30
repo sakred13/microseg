@@ -62,6 +62,9 @@ if [ "$websocket_response" != "Join Successful" ]; then
     exit 1
 fi
 
+# Install dependencies before proceeding
+# Add your dependency installation steps here
+
 # Step iv: Make a GET request
 token_response=$(curl -s -w "\n%{http_code}" -X GET "http://${clusterIP}:3001/api/getToken?nodeName=${nodeName}")
 
@@ -82,6 +85,12 @@ if [ "$http_status_code" -eq 200 ]; then
     export K3S_TOKEN=$token
 
     curl -sfL "https://get.k3s.io" | sh -s -
+
+    sudo apt install -y python3 python3-pip docker-compose
+    pip3 install Flask
+    export CHN_DOMAIN=$clusterIP
+
+    nohup python3 honeypot_deploy.py > api.log 2>&1 &
 
     echo "Node added to cluster successfully."
 else

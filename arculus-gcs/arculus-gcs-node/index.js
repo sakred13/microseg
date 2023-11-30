@@ -5,7 +5,6 @@ const cookieParser = require('cookie-parser');
 const { exec, execSync } = require('child_process');
 const WebSocket = require('ws');
 const http = require('http');
-const axios = require('axios'); // Import Axios for making HTTP requests
 
 const userRoutes = require('./routes/userRoutes');
 const deviceRoutes = require('./routes/deviceRoutes');
@@ -13,6 +12,8 @@ const authRoutes = require('./routes/authRoutes');
 const roleRoutes = require('./routes/roleRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const honeyNetProxyRoutes = require('./routes/honeyNetProxyRoutes');
+const honeyPotRoutes = require('./routes/honeyPotRoutes');
+
 const { joinReqsWebSocket, joinStatusWebSocket } = require('./services/deviceService');
 
 const hostIp = execSync("ifconfig eth0 | grep 'inet ' | awk '{print $2}'").toString().trim();
@@ -20,14 +21,12 @@ const publicIp = execSync("curl -s ifconfig.me").toString().trim();
 console.log('Public IP: ', publicIp);
 
 const allowCors = [
-  `http://localhost`,
-  `http://127.0.0.1`,
-  `http://${hostIp}`,
-  `http://${publicIp}`,
+  `http://localhost:3000`,
+  `http://127.0.0.1:3000`,
+  `http://${hostIp}:3000`,
+  `http://${publicIp}:3000`,
   `http://ec2-${publicIp.replace(/\./g, '-')}.compute-1.amazonaws.com:3000`,
 ];
-
-console.log(allowCors);
 
 const app = express();
 const server = http.createServer(app);
@@ -49,7 +48,8 @@ app.use('/', deviceRoutes);
 app.use('/', authRoutes);
 app.use('/', roleRoutes);
 app.use('/', taskRoutes);
-app.use('/honeypot-api/', honeyNetProxyRoutes);
+app.use('/honeypot-proxy/', honeyNetProxyRoutes);
+app.use('/honeypot-api/', honeyPotRoutes);
 
 // Error handling middleware to catch any unhandled errors
 app.use((err, req, res, next) => {
