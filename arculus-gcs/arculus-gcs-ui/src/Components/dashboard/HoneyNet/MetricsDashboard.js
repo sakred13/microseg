@@ -8,6 +8,8 @@ import { useDashboardContext } from './DashboardContext';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'; // Icon for external site
 import { CHN_URL } from '../../../config';
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
 
 function MetricsDashboard() {
   const { activeTab, setActiveTab, attackerIp } = useDashboardContext();
@@ -60,7 +62,17 @@ function MetricsDashboard() {
           For more detailed insights, visit our <Button color="primary" onClick={handleNavigate}>Complete CHN Server Dashboard<OpenInNewIcon fontSize="small" /></Button>
         </Typography>
       </div>
-      <br/>
+      <br />
+      <Box mt={8}>
+        <Typography variant="body2" color="text.secondary" align="center">
+          {/* {'Copyright © '} */}
+          Powered by&nbsp;
+          <Link color="inherit" href="https://stingar-docs.cloud.duke.edu/prepare_hp_host/register_in_stingar.html">
+            STINGAR
+          </Link>{' '}
+          {'.'}
+        </Typography>
+      </Box>
     </div>
   );
 }

@@ -3,6 +3,8 @@ import './HoneypotDashboard.css'; // Import the CSS file for HoneypotDashboard
 import Typography from '@mui/material/Typography'; // Import Typography for headings
 import DeployedHoneypots from './DeployedHoneypots';
 import DeployHoneypots from './DeployHoneypots';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
 
 function HoneypotDashboard() {
   const [activeTab, setActiveTab] = useState('Deployed HoneyPots');
@@ -36,13 +38,23 @@ function HoneypotDashboard() {
 
       <div className="tab-content">
         {activeTab === 'Deploy HoneyPots' && (
-          <DeployHoneypots setActiveTab={setActiveTab}/>
+          <DeployHoneypots setActiveTab={setActiveTab} />
         )}
 
         {activeTab === 'Deployed HoneyPots' && (
-          <DeployedHoneypots/>
+          <DeployedHoneypots />
         )}
       </div>
+      <Box mt={8}>
+        <Typography variant="body2" color="text.secondary" align="center">
+          {/* {'Copyright © '} */}
+          Powered by&nbsp;
+          <Link color="inherit" href="https://stingar-docs.cloud.duke.edu/prepare_hp_host/register_in_stingar.html">
+            STINGAR
+          </Link>{' '}
+          {'.'}
+        </Typography>
+      </Box>
     </div>
   );
 }

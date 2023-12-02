@@ -342,8 +342,7 @@ const DeviceManagement = (props) => {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
-                height: '100vh',
+                justifyContent: 'flex-start', // Start content from the top
                 overflow: 'hidden',
             }}
         >
@@ -369,73 +368,73 @@ const DeviceManagement = (props) => {
                 />
             )}
 
-<Typography variant="h6" gutterBottom align="left">
-    Configured Devices
-</Typography>
-<TableContainer component={Paper} style={{ maxWidth: '70%' }}>
-    <Table size="small">
-        <TableHead>
-            <TableRow>
-                <TableCell>
-                    <b>Name</b>
-                </TableCell>
-                <TableCell>
-                    <b>IP Address</b>
-                </TableCell>
-                <TableCell>
-                    <b>Device Type</b> {/* Add a new column header */}
-                </TableCell>
-                <TableCell>
-                    <b>Allowed Tasks</b>
-                </TableCell>
-                <TableCell>
-                    <b>Actions</b>
-                </TableCell>
-            </TableRow>
-        </TableHead>
-        <TableBody>
-            {trustedDevices.map((device) => (
-                <TableRow key={device.id}>
-                    <TableCell>{device.device_name}</TableCell>
-                    <TableCell>{device.ip_address}</TableCell>
-                    <TableCell>{device.device_type}</TableCell> {/* Display device_type */}
-                    <TableCell>
-                        <Tooltip
-                            title={device.allowedTasks.map((task, index) => (
-                                <React.Fragment key={index}>
-                                    {task}
-                                    <br />
-                                </React.Fragment>
-                            ))}
-                            arrow
-                        >
-                            <IconButton size="small">
-                                <VisibilityIcon />
-                            </IconButton>
-                        </Tooltip>
-                    </TableCell>
-                    <TableCell>
-                        <Button
-                            startIcon={<EditIcon />}
-                            onClick={() => handleEditDevice(device)}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <font color="black">Update Device Capabilities</font>
-                        </Button>{' '}
-                        &nbsp;&nbsp;&nbsp;
-                        <Button
-                            startIcon={<RemoveCircleOutlineIcon style={{ color: '#e34048' }} />}
-                            onClick={() => handleDeleteDialogOpen(device.device_name)}
-                            style={{ cursor: 'pointer', color: 'black' }}
-                        >
-                            Deconfigure Device
-                        </Button>
-                    </TableCell>
-                </TableRow>
-            ))}
-        </TableBody>
-    </Table>
-</TableContainer>
+            <Typography variant="h6" gutterBottom align="left">
+                Configured Devices
+            </Typography>
+            <TableContainer component={Paper} style={{ maxWidth: '70%' }}>
+                <Table size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>
+                                <b>Name</b>
+                            </TableCell>
+                            <TableCell>
+                                <b>IP Address</b>
+                            </TableCell>
+                            <TableCell>
+                                <b>Device Type</b> {/* Add a new column header */}
+                            </TableCell>
+                            <TableCell>
+                                <b>Allowed Tasks</b>
+                            </TableCell>
+                            <TableCell>
+                                <b>Actions</b>
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {trustedDevices.map((device) => (
+                            <TableRow key={device.id}>
+                                <TableCell>{device.device_name}</TableCell>
+                                <TableCell>{device.ip_address}</TableCell>
+                                <TableCell>{device.device_type}</TableCell> {/* Display device_type */}
+                                <TableCell>
+                                    <Tooltip
+                                        title={device.allowedTasks.map((task, index) => (
+                                            <React.Fragment key={index}>
+                                                {task}
+                                                <br />
+                                            </React.Fragment>
+                                        ))}
+                                        arrow
+                                    >
+                                        <IconButton size="small">
+                                            <VisibilityIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                </TableCell>
+                                <TableCell>
+                                    <Button
+                                        startIcon={<EditIcon />}
+                                        onClick={() => handleEditDevice(device)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        <font color="black">Update Device Capabilities</font>
+                                    </Button>{' '}
+                                    &nbsp;&nbsp;&nbsp;
+                                    <Button
+                                        startIcon={<RemoveCircleOutlineIcon style={{ color: '#e34048' }} />}
+                                        onClick={() => handleDeleteDialogOpen(device.device_name)}
+                                        style={{ cursor: 'pointer', color: 'black' }}
+                                    >
+                                        Deconfigure Device
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
 
             <br />
             <Typography variant="h6" gutterBottom align="left">

@@ -122,8 +122,7 @@ const ManageUsers = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
-                height: '100vh',
+                minHeight: '90vh', // Ensure a minimum height for the content
             }}
         >
             <Typography variant="h4" gutterBottom>
