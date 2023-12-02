@@ -41,6 +41,8 @@ const EditDeviceModal = ({ isOpen, setIsOpen, deviceDetails, allowedTasks }) => 
     const [ipAddress, setIPAddress] = useState('');
     const [selectedTasks, setSelectedTasks] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [ingressRules, setIngressRules] = useState('');
+    const [egressRules, setEgressRules] = useState('');
 
     useEffect(() => {
         if (deviceDetails) {
@@ -50,8 +52,50 @@ const EditDeviceModal = ({ isOpen, setIsOpen, deviceDetails, allowedTasks }) => 
         }
     }, [deviceDetails]);
 
+    useEffect(() => {
+        // Function to generate ingress and egress rules based on selected tasks
+        const generateRules = () => {
+            const sendTasks = selectedTasks.filter(task => task.startsWith('send_'));
+            const receiveTasks = selectedTasks.filter(task => task.startsWith('receive_'));
+
+            const ingressRulesArr = [];
+            const egressRulesArr = [];
+
+            if (sendTasks.includes('send_video')) {
+                ingressRulesArr.push('5005/UDP');
+            }
+            if (sendTasks.includes('send_posdata')) {
+                ingressRulesArr.push('5015/TCP');
+            }
+            if (sendTasks.includes('send_command')) {
+                ingressRulesArr.push('5025/TCP');
+            }
+            if (sendTasks.includes('send_sensordata')) {
+                ingressRulesArr.push('5035/TCP');
+            }
+
+            if (receiveTasks.includes('receive_video')) {
+                egressRulesArr.push('5005/UDP');
+            }
+            if (receiveTasks.includes('receive_posdata')) {
+                egressRulesArr.push('5015/TCP');
+            }
+            if (receiveTasks.includes('receive_command')) {
+                egressRulesArr.push('5025/TCP');
+            }
+            if (receiveTasks.includes('receive_sensordata')) {
+                egressRulesArr.push('5035/TCP');
+            }
+
+            setIngressRules(ingressRulesArr.join('\n'));
+            setEgressRules(egressRulesArr.join('\n'));
+        };
+
+        generateRules();
+    }, [selectedTasks]);
+
     const handleEditDevice = async (e) => {
-        e.preventDefault(); // Prevent the default form submission behavior
+        e.preventDefault();
 
         setIsLoading(true);
 
@@ -81,7 +125,6 @@ const EditDeviceModal = ({ isOpen, setIsOpen, deviceDetails, allowedTasks }) => 
             setTimeout(() => {
                 setIsSuccess(false);
                 setIsOpen(false);
-                // onEdit();
             }, 3000);
         } catch (error) {
             console.error('Error editing trusted device:', error.message);
@@ -135,7 +178,7 @@ const EditDeviceModal = ({ isOpen, setIsOpen, deviceDetails, allowedTasks }) => 
                                             disabled
                                             value={deviceName}
                                             onChange={(e) => setDeviceName(e.target.value)}
-                                            error={!deviceName} // Set error prop based on whether deviceName is empty
+                                            error={!deviceName}
                                             helperText={!deviceName ? 'Device Name is required' : ''}
                                         />
                                     </Grid>
@@ -150,7 +193,7 @@ const EditDeviceModal = ({ isOpen, setIsOpen, deviceDetails, allowedTasks }) => 
                                             value={ipAddress}
                                             onChange={(e) => setIPAddress(e.target.value)}
                                             disabled
-                                            error={!ipAddress} // Set error prop based on whether ipAddress is empty
+                                            error={!ipAddress}
                                             helperText={!ipAddress ? 'IP Address is required' : ''}
                                         />
                                     </Grid>
@@ -173,10 +216,36 @@ const EditDeviceModal = ({ isOpen, setIsOpen, deviceDetails, allowedTasks }) => 
                                                     variant="outlined"
                                                     label="Allowed Tasks"
                                                     fullWidth
-                                                    error={selectedTasks.length === 0} // Set error prop based on whether selectedTasks is empty
+                                                    error={selectedTasks.length === 0}
                                                     helperText={selectedTasks.length === 0 ? 'Allowed Tasks are required' : ''}
                                                 />
                                             )}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            required
+                                            fullWidth
+                                            id="ingressRules"
+                                            label="Ingress Rules"
+                                            name="ingressRules"
+                                            multiline
+                                            rows={4}
+                                            value={ingressRules}
+                                            disabled
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            required
+                                            fullWidth
+                                            id="egressRules"
+                                            label="Egress Rules"
+                                            name="egressRules"
+                                            multiline
+                                            rows={4}
+                                            value={egressRules}
+                                            disabled
                                         />
                                     </Grid>
                                 </Grid>

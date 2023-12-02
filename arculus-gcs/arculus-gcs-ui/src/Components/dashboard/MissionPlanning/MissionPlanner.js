@@ -4,18 +4,148 @@ import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import DesertMission from './DesertMission';
 import ForestMission from './ForestMission';
 import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
+import Button from '@mui/material/Button';
+import { API_URL } from '../../../config';
+import Cookies from 'js-cookie';
 
 function MissionPlanner() {
   const [activeTab, setActiveTab] = useState('Select Mission Type');
   const [selectedMission, setSelectedMission] = useState(null);
   const [soldierPosition, setSoldierPosition] = useState(null);
   const [missionLocation, setMissionLocation] = useState('');
-  const [videoAnalytic, setVideoAnalytic] = useState('controller');
-  const [videoCollectionDrone, setVideoCollectionDrone] = useState('drone1');
-  const [supplyDeliveryDrone, setSupplyDeliveryDrone] = useState('drone1');
+  const [videoAnalytic, setVideoAnalytic] = useState('');
+  const [videoCollectionDrone, setVideoCollectionDrone] = useState('');
+  const [supplyDeliveryDrone, setSupplyDeliveryDrone] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('/forest.png');
   const [gcX, setGcX] = useState(693);
   const [gcY, setGcY] = useState(720);
+  const [videoCollectionDrones, setVideoCollectionDrones] = useState([]);
+  const [supplyDeliveryDrones, setSupplyDeliveryDrones] = useState([]);
+  const [videoAnalyticControllers, setVideoAnalyticControllers] = useState([]);
+  const isExecuteMissionDisabled = !videoAnalytic || !videoCollectionDrone || !supplyDeliveryDrone;
+  const [isSelectionsIncompleteModalOpen, setIsSelectionsIncompleteModalOpen] = useState(false);
+  const [insufficientPrivileges, setInsufficientPrivileges] = useState(false);
+  const [insufficientPrivilegesModalOpen, setInsufficientPrivilegesModalOpen] = useState(false);
+  const [devicePrivileges, setDevicePrivileges] = useState({});
+
+  useEffect(() => {
+    // Fetch trusted devices from your API using fetch
+    fetch(`${API_URL}/api/getTrustedDevices?authToken=${encodeURIComponent(
+      Cookies.get('jwtToken')
+    )}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((devices) => {
+        // Filter devices by device_type
+        const videoCollectionSurveillanceDrones = devices.filter((device) => device.device_type === 'Video Capture Device');
+        const supplyDeliveryDrones = devices.filter((device) => device.device_type === 'Controlled Drone');
+        const videoAnalyticControllers = devices.filter((device) => device.device_type === 'Video Analytic Controller');
+        // Set initial values for videoAnalytic, supplyDeliveryDrone, and videoCollectionDrone
+        if (videoAnalyticControllers.length > 0) {
+          setVideoAnalytic(videoAnalyticControllers[0].device_name);
+        }
+        if (videoCollectionSurveillanceDrones.length > 0) {
+          setVideoCollectionDrone(videoCollectionSurveillanceDrones[0].device_name);
+        }
+        if (supplyDeliveryDrones.length > 0) {
+          setSupplyDeliveryDrone(supplyDeliveryDrones[0].device_name);
+        }
+
+        // Update state variables with filtered devices
+        setVideoCollectionDrones(videoCollectionSurveillanceDrones);
+        setSupplyDeliveryDrones(supplyDeliveryDrones);
+        setVideoAnalyticControllers(videoAnalyticControllers);
+
+        const privileges = {
+          videoAnalytic: {
+            "required": ["send_command", "receive_video", "receive_posdata"],
+            "has": []
+          },
+          videoCollectionDrone: {
+            "required": ["send_video", "receive_command", "send_posdata"],
+            "has": []
+          },
+          supplyDeliveryDrone: {
+            "required": ["receive_command", "send_posdata"],
+            "has": []
+          }
+        };
+
+        // Check if videoAnalyticControllers, videoCollectionDrones, and supplyDeliveryDrones have values
+        if (videoAnalyticControllers.length > 0 && videoCollectionDrones.length > 0 && supplyDeliveryDrones.length > 0) {
+          // Find the corresponding device and assign its allowedTasks to privileges
+          const videoAnalyticDevice = videoAnalyticControllers.find(device => device.device_name === videoAnalytic);
+          const videoCollectionDevice = videoCollectionDrones.find(device => device.device_name === videoCollectionDrone);
+          const supplyDeliveryDevice = supplyDeliveryDrones.find(device => device.device_name === supplyDeliveryDrone);
+
+          privileges.videoAnalytic.has = videoAnalyticDevice ? videoAnalyticDevice.allowedTasks : [];
+          privileges.videoCollectionDrone.has = videoCollectionDevice ? videoCollectionDevice.allowedTasks : [];
+          privileges.supplyDeliveryDrone.has = supplyDeliveryDevice ? supplyDeliveryDevice.allowedTasks : [];
+        }
+
+        // Update the devicePrivileges state with the privileges object
+        setDevicePrivileges(privileges);
+
+        const anyRequiredPrivilegeAbsent = Object.keys(privileges).some((deviceType) => {
+          return privileges[deviceType].required.some((privilege) => !privileges[deviceType].has.includes(privilege));
+        });
+
+        // Set insufficientPrivileges to true if any required privilege is absent
+        setInsufficientPrivileges(anyRequiredPrivilegeAbsent);
+
+        // Log the updated devicePrivileges
+        console.log("Device Privileges: ", privileges);
+      })
+      .catch((error) => {
+        // Handle error if the API request fails
+        console.error('Error fetching trusted devices:', error);
+      });
+  }, []);
+
+
+  useEffect(() => {
+    // Initialize an empty privileges object
+    const privileges = {
+      videoAnalytic: {
+        "device": videoAnalytic,
+        "required": ["send_command", "receive_video", "receive_posdata"],
+        "has": []
+      },
+      videoCollectionDrone: {
+        "device": videoCollectionDrone,
+        "required": ["send_video", "receive_command", "send_posdata"],
+        "has": []
+      },
+      supplyDeliveryDrone: {
+        "device": supplyDeliveryDrone,
+        "required": ["receive_command", "send_posdata"],
+        "has": []
+      }
+    };
+
+    // Check if videoAnalyticControllers, videoCollectionDrones, and supplyDeliveryDrones have values
+    if (videoAnalyticControllers.length > 0 && videoCollectionDrones.length > 0 && supplyDeliveryDrones.length > 0) {
+      // Find the corresponding device and assign its allowedTasks to privileges
+      const videoAnalyticDevice = videoAnalyticControllers.find(device => device.device_name === videoAnalytic);
+      const videoCollectionDevice = videoCollectionDrones.find(device => device.device_name === videoCollectionDrone);
+      const supplyDeliveryDevice = supplyDeliveryDrones.find(device => device.device_name === supplyDeliveryDrone);
+
+      privileges.videoAnalytic.has = videoAnalyticDevice ? videoAnalyticDevice.allowedTasks : [];
+      privileges.videoCollectionDrone.has = videoCollectionDevice ? videoCollectionDevice.allowedTasks : [];
+      privileges.supplyDeliveryDrone.has = supplyDeliveryDevice ? supplyDeliveryDevice.allowedTasks : [];
+    }
+
+    // Update the devicePrivileges state with the privileges object
+    setDevicePrivileges(privileges);
+
+    // Log the updated devicePrivileges
+    console.log("Device Privileges: ", privileges);
+  });
 
 
   const handleTabChange = (tabName) => {
@@ -61,6 +191,28 @@ function MissionPlanner() {
     setActiveTab('Execute Mission');
   };
 
+  const handleExecuteMissionClick = () => {
+    if (isExecuteMissionDisabled) {
+      setIsSelectionsIncompleteModalOpen(true); // Open the modal when the button is disabled
+    }
+    else if (insufficientPrivileges) {
+      setInsufficientPrivilegesModalOpen(true);
+    }
+    else {
+      switchToExecuteTab();
+    }
+  };
+
+  // Function to close the modal
+  const closeModal = () => {
+    setIsSelectionsIncompleteModalOpen(false);
+  };
+
+  const closeInsufficientPrivilegesModal = () => {
+    setInsufficientPrivilegesModalOpen(false);
+  };
+
+
   return (
     <div className="missionPlanner">
       <Typography variant="h4" component="div" gutterBottom>
@@ -103,6 +255,7 @@ function MissionPlanner() {
         {activeTab === 'Plan Mission' && (
           <div>
             <h2>Plan Mission</h2>
+
             {selectedMission && <p>Selected Mission Type: {selectedMission}</p>}
 
             <label htmlFor="missionLocation">Mission Location:</label>
@@ -122,7 +275,15 @@ function MissionPlanner() {
               value={videoAnalytic}
               onChange={(e) => setVideoAnalytic(e.target.value)}
             >
-              <option value="controller">controller</option>
+              {videoAnalyticControllers.length === 0 ? ( // Check if there are no suitable devices
+                <option disabled>No suitable device available</option>
+              ) : (
+                videoAnalyticControllers.map((device) => (
+                  <option key={device.id} value={device.device_name}>
+                    {device.device_name}
+                  </option>
+                ))
+              )}
             </select>
 
             {/* Video Collection Surveillance Drone dropdown */}
@@ -132,8 +293,15 @@ function MissionPlanner() {
               value={videoCollectionDrone}
               onChange={(e) => setVideoCollectionDrone(e.target.value)}
             >
-              <option value="drone2">drone2</option>
-              <option value="drone1">drone1</option>
+              {videoCollectionDrones.length === 0 ? ( // Check if there are no suitable devices
+                <option disabled>No suitable device available</option>
+              ) : (
+                videoCollectionDrones.map((device) => (
+                  <option key={device.id} value={device.device_name}>
+                    {device.device_name}
+                  </option>
+                ))
+              )}
             </select>
 
             {/* Supply Delivery Drone dropdown */}
@@ -143,9 +311,17 @@ function MissionPlanner() {
               value={supplyDeliveryDrone}
               onChange={(e) => setSupplyDeliveryDrone(e.target.value)}
             >
-              <option value="drone1">drone1</option>
-              <option value="drone2">drone2</option>
+              {supplyDeliveryDrones.length === 0 ? ( // Check if there are no suitable devices
+                <option disabled>No suitable device available</option>
+              ) : (
+                supplyDeliveryDrones.map((device) => (
+                  <option key={device.id} value={device.device_name}>
+                    {device.device_name}
+                  </option>
+                ))
+              )}
             </select>
+
             <label htmlFor="mapsvg">Point the supply delivery destination on map.</label>
             <div className='tabs mission-container' style={{ border: '2px solid black', padding: '10px' }}>
               <svg
@@ -202,8 +378,11 @@ function MissionPlanner() {
               </svg>
             </div>
             <br />
-            <button
-              onClick={switchToExecuteTab}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleExecuteMissionClick}
+              // disabled={isExecuteMissionDisabled}
               style={{
                 backgroundColor: 'green',
                 padding: '10px 20px',
@@ -212,12 +391,113 @@ function MissionPlanner() {
                 borderRadius: '5px',
                 cursor: 'pointer',
                 fontWeight: 'bold',
-              }}
+              }}// Disable the button if any dropdown is empty
             >
               <SettingsSuggestIcon /> Execute Mission
-            </button>
-            <br />
+            </Button>
 
+            <Modal
+              open={isSelectionsIncompleteModalOpen}
+              onClose={closeModal}
+              aria-labelledby="modal-title"
+              aria-describedby="modal-description"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <div style={{
+                backgroundColor: 'white',
+                padding: '20px',
+                borderRadius: '5px',
+                outline: 'none',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+              }}>
+                <h2 id="modal-title">Configure all devices first!</h2>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={closeModal}
+                  style={{
+                    display: 'block',
+                    margin: '0 auto', // Center the button horizontally
+                    marginTop: '20px', // Add some top margin for spacing
+                  }}
+                >
+                  OK
+                </Button>
+              </div>
+            </Modal>
+            <Modal
+              open={insufficientPrivilegesModalOpen}
+              onClose={closeInsufficientPrivilegesModal}
+              aria-labelledby="modal-title"
+              aria-describedby="modal-description"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <div style={{
+                backgroundColor: 'white',
+                padding: '20px',
+                borderRadius: '5px',
+                outline: 'none',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                textAlign: 'center',
+              }}>
+                <h2 id="modal-title" style={{ fontWeight: 'bold' }}>Insufficient Privileges for Some Devices</h2>
+                <p>Mission Execution might fail! Please provide sufficient capabilities for necessary ingress and egress.</p>
+
+                <table style={{ margin: '0 auto', textAlign: 'left', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr>
+                      <th style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>Device</th>
+                      <th style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>Privileges</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.keys(devicePrivileges).map(deviceTypeKey => {
+                      const deviceType = devicePrivileges[deviceTypeKey];
+                      return (
+                        <tr key={deviceType.device}>
+                          <td style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>{deviceType.device}</td>
+                          <td style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>
+                            {deviceType.required.map(privilege => (
+                              <div key={privilege}>
+                                {deviceType.has.includes(privilege) ? (
+                                  <span style={{ color: 'green' }}>✅</span>
+                                ) : (
+                                  <span style={{ color: 'red' }}>❌</span>
+                                )}
+                                {privilege}
+                              </div>
+                            ))}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table><br/>
+
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={closeInsufficientPrivilegesModal}
+                  style={{
+                    display: 'block',
+                    margin: '0 auto',
+                    marginTop: '20px',
+                  }}
+                >
+                  OK
+                </Button>
+              </div>
+            </Modal>
+
+            <br />
           </div>
         )}
 

@@ -160,6 +160,7 @@ CREATE TABLE `trusted_device` (
   `device_name` varchar(40) DEFAULT NULL,
   `ip_address` varchar(20) DEFAULT NULL,
   `personnel_rank` int DEFAULT NULL,
+  `device_type` varchar(40) DEFAULT NULL, 
   PRIMARY KEY (`device_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -170,7 +171,7 @@ CREATE TABLE `trusted_device` (
 
 LOCK TABLES `trusted_device` WRITE;
 /*!40000 ALTER TABLE `trusted_device` DISABLE KEYS */;
-INSERT INTO `trusted_device` VALUES (15,'zone1drone1','10.1.0.34',NULL);
+INSERT INTO `trusted_device` VALUES (15,'zone1drone1','10.1.0.34', 'Video Capture Device',NULL);
 /*!40000 ALTER TABLE `trusted_device` ENABLE KEYS */;
 UNLOCK TABLES;
 

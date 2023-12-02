@@ -79,98 +79,107 @@ function MainDashboard() {
 
     return (
         <Box sx={{ padding: 3 }}>
-            <Grid container spacing={3}>
-                {/* Top Attacker IPs Table */}
-                <Grid item xs={12}>
-                    <Typography variant="h6" gutterBottom sx={{ textAlign: 'center', fontWeight: 'bold' }}>
-                        View Attack Details in the last
-                        <TextField
-                            type="number"
-                            value={hoursAgo}
-                            onChange={handleHoursChange}
-                            inputProps={{ min: "1", step: "1" }}
-                            sx={{
-                                width: '80px', // Adjust the width as desired
-                                marginLeft: 1,
-                                '& input': {
-                                    padding: '5px', // Decrease padding to reduce height
-                                    fontSize: '0.875rem' // Adjust font size if necessary
-                                }
-                            }}
-                        />
-
-                        <span> hours</span><br />
+            {attackData.length === 0 ? (
+                <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                    <img src="/noAttackBee.png" alt="Bee" width="400" height="400" />
+                    <Typography variant="h4" color="textSecondary">
+                        No Attacks Yet!
                     </Typography>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
-                        Top Attacker IPs
-                    </Typography>
-                    <TableContainer component={Paper}>
-                        <Table aria-label="Top 5 Attacker IPs">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell><b>Honeypot</b></TableCell>
-                                    <TableCell align="right"><b>Source IP</b></TableCell>
-                                    <TableCell align="right"><b>Attacks</b></TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {attackData.slice(0, 5).map((row, index) => (
-                                    <TableRow key={index}>
-                                        <TableCell component="th" scope="row">
-                                            {row.honeypot}
-                                        </TableCell>
-                                        <TableCell align="right" onClick={() => switchToAttackerStats(row.source_ip)} style={{ cursor: 'pointer' }}>
-                                            {row.source_ip}
-                                        </TableCell>
-                                        <TableCell align="right">{row.count}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Grid>
+                </div>
+            ) : (
+                <Grid container spacing={3}>
+                    {/* Top Attacker IPs Table */}
+                    <Grid item xs={12}>
+                        <Typography variant="h6" gutterBottom sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+                            View Attack Details in the last
+                            <TextField
+                                type="number"
+                                value={hoursAgo}
+                                onChange={handleHoursChange}
+                                inputProps={{ min: "1", step: "1" }}
+                                sx={{
+                                    width: '80px', // Adjust the width as desired
+                                    marginLeft: 1,
+                                    '& input': {
+                                        padding: '5px', // Decrease padding to reduce height
+                                        fontSize: '0.875rem' // Adjust font size if necessary
+                                    }
+                                }}
+                            />
 
-                <Grid item xs={8} md={4}>
-                    <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
-                        Attack Shares
-                    </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                        <Pie data={chartData} />
-                    </Box>
-                </Grid>
+                            <span> hours</span><br />
+                        </Typography>
+                    </Grid>
 
-                {/* Top Honeypots Attacked Table */}
-                <Grid item xs={16} md={6}>
-                    <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
-                        Top Honeypots Attacked
-                    </Typography>
-                    <TableContainer component={Paper}>
-                        <Table aria-label="Top 5 Honeypots">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell><b>Honeypot</b></TableCell>
-                                    <TableCell align="right"><b>Total Attacks</b></TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {topHoneypots.map((row, index) => (
-                                    <TableRow key={index}>
-                                        <TableCell component="th" scope="row">
-                                            {row[0]}
-                                        </TableCell>
-                                        <TableCell align="right">{row[1]}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Grid>
+                    {/* Conditional rendering based on attackData length */}
 
-                {/* Attack Shares Chart */}
+                    <React.Fragment>
+                        {/* Rest of your content */}
+                        <Grid item xs={12} md={6}>
+                            <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
+                                Top Attacker IPs
+                            </Typography>
+                            <TableContainer component={Paper}>
+                                <Table aria-label="Top 5 Attacker IPs">
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell><b>Honeypot</b></TableCell>
+                                            <TableCell align="right"><b>Source IP</b></TableCell>
+                                            <TableCell align="right"><b>Attacks</b></TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {attackData.slice(0, 5).map((row, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell component="th" scope="row">
+                                                    {row.honeypot}
+                                                </TableCell>
+                                                <TableCell align="right" onClick={() => switchToAttackerStats(row.source_ip)} style={{ cursor: 'pointer' }}>
+                                                    {row.source_ip}
+                                                </TableCell>
+                                                <TableCell align="right">{row.count}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Grid>
+                        <Grid item xs={8} md={4}>
+                            <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
+                                Attack Shares
+                            </Typography>
+                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                                <Pie data={chartData} />
+                            </Box>
+                        </Grid>
+                        <Grid item xs={16} md={6}>
+                            <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
+                                Top Honeypots Attacked
+                            </Typography>
+                            <TableContainer component={Paper}>
+                                <Table aria-label="Top 5 Honeypots">
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell><b>Honeypot</b></TableCell>
+                                            <TableCell align="right"><b>Total Attacks</b></TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {topHoneypots.map((row, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell component="th" scope="row">
+                                                    {row[0]}
+                                                </TableCell>
+                                                <TableCell align="right">{row[1]}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Grid>
+                    </React.Fragment>
 
-            </Grid>
+                </Grid>)}
         </Box>
     );
 }

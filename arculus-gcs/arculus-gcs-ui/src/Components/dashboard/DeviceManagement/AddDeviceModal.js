@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -37,7 +37,7 @@ const successStyles = {
 
 const deviceTypes = [
     "Video Capture Device",
-    "Video Processing Device",
+    "Video Analytic Controller",
     "Command Controller",
     "Controlled Drone",
     "Controlled UGV",
@@ -55,6 +55,52 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) =
     const [selectedTasks, setSelectedTasks] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [hasValueSelected, setHasValueSelected] = useState(false);
+    const [ingressRules, setIngressRules] = useState('');
+    const [egressRules, setEgressRules] = useState('');
+
+    useEffect(() => {
+        // Function to generate ingress and egress rules based on selected tasks
+        const generateRules = () => {
+        
+            const sendTasks = selectedTasks.filter(task => task.startsWith('send_'));
+            const receiveTasks = selectedTasks.filter(task => task.startsWith('receive_'));
+            
+            const ingressRulesArr = [];
+            const egressRulesArr = [];
+        
+            if (sendTasks.includes('send_video')) {
+                ingressRulesArr.push('5005/UDP');
+            }
+            if (sendTasks.includes('send_posdata')) {
+                ingressRulesArr.push('5015/TCP');
+            }
+            if (sendTasks.includes('send_command')) {
+                ingressRulesArr.push('5025/TCP');
+            }
+            if (sendTasks.includes('send_sensordata')) {
+                ingressRulesArr.push('5035/TCP');
+            }
+        
+            if (receiveTasks.includes('receive_video')) {
+                egressRulesArr.push('5005/UDP');
+            }
+            if (receiveTasks.includes('receive_posdata')) {
+                egressRulesArr.push('5015/TCP');
+            }
+            if (receiveTasks.includes('receive_command')) {
+                egressRulesArr.push('5025/TCP');
+            }
+            if (receiveTasks.includes('receive_sensordata')) {
+                egressRulesArr.push('5035/TCP');
+            }
+        
+            setIngressRules(ingressRulesArr.join('\n'));
+            setEgressRules(egressRulesArr.join('\n'));
+        };
+          
+
+        generateRules();
+    }, [selectedTasks]);
 
     const handleAddDevice = async (e) => {
         e.preventDefault();
@@ -204,6 +250,32 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) =
                                             renderInput={(params) => (
                                                 <TextField {...params} variant="outlined" label="Allowed Tasks" fullWidth />
                                             )}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            required
+                                            fullWidth
+                                            id="ingressRules"
+                                            label="Ingress Rules"
+                                            name="ingressRules"
+                                            multiline
+                                            rows={4} // Adjust the number of rows as needed
+                                            value={ingressRules}
+                                            disabled
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            required
+                                            fullWidth
+                                            id="egressRules"
+                                            label="Egress Rules"
+                                            name="egressRules"
+                                            multiline
+                                            rows={4} // Adjust the number of rows as needed
+                                            value={egressRules}
+                                            disabled
                                         />
                                     </Grid>
                                 </Grid>

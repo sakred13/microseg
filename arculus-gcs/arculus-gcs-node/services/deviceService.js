@@ -120,9 +120,9 @@ const deleteDeviceTasks = (deviceId, taskIdsToDelete) => {
 };
 
 // Function to insert a trusted device and get the device ID
-const insertTrustedDevice = (deviceName, ipAddress) => {
+const insertTrustedDevice = (deviceName, ipAddress, deviceType) => {
     return new Promise((resolve, reject) => {
-        pool.query('INSERT INTO trusted_device (device_name, ip_address) VALUES (?, ?)', [deviceName, ipAddress], (insertErr, result) => {
+        pool.query('INSERT INTO trusted_device (device_name, ip_address, device_type) VALUES (?, ?, ?)', [deviceName, ipAddress, deviceType], (insertErr, result) => {
             if (insertErr) {
                 reject(insertErr);
             } else {
@@ -256,7 +256,7 @@ exports.getTrustedDevices = (req, res) => {
                         res.json([]); // Return an empty array or handle it as needed
                     } else {
                         connection.query(`
-                            SELECT device_id, device_name, ip_address, personnel_rank
+                            SELECT device_id, device_name, ip_address, personnel_rank, device_type
                             FROM trusted_device
                             WHERE device_name IN (?) AND ip_address IN (?)
                         `, [podNames, podIPs], function (err, deviceRows) {
@@ -421,7 +421,7 @@ exports.addTrustedDevice = (req, res) => {
             // Define Docker images based on deviceType
             const imageMap = {
                 "Video Capture Device": "39dj29dl2d9l2/vcc:latest",
-                "Video Processing Device": "nginx:latest",
+                "Video Analytic Controller": "nginx:latest",
                 "Command Controller": "39dj29dl2d9l2/vcc:latest",
                 "Controlled Drone": "39dj29dl2d9l2/vcc:latest",
                 "Controlled UGV": "39dj29dl2d9l2/vcc:latest",
@@ -479,7 +479,7 @@ spec:
                             if (podIP) {
                                 // Continue with database operations
                                 Promise.all([
-                                    insertTrustedDevice(deviceName, podIP),
+                                    insertTrustedDevice(deviceName, podIP, deviceType),
                                     getTaskIdsByName(tasks),
                                 ])
                                     .then(([insertDeviceResult, taskIds]) => {
@@ -514,8 +514,6 @@ spec:
         }
     });
 };
-
-
 
 
 exports.updateTrustedDevice = async (req, res) => {

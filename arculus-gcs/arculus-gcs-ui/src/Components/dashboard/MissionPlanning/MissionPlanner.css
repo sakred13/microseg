@@ -110,3 +110,68 @@ img.soldier {
 img.soldier:hover {
   transform: scale(1.2);
 }
+
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  outline: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-family: 'Roboto', sans-serif;
+}
+
+.modal-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.privilege-list {
+  text-align: left;
+}
+
+.device-privileges {
+  margin-bottom: 10px;
+}
+
+.device-privileges h3 {
+  font-size: 1.1em;
+  color: #333;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li.has-privilege::before {
+  content: '✅';
+  color: green;
+  margin-right: 5px;
+}
+
+li.no-privilege::before {
+  content: '❌';
+  color: red;
+  margin-right: 5px;
+}
+
+.modal-button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #0056b3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modal-button:hover {
+  background-color: #003d82;
+}

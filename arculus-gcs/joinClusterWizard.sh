@@ -34,7 +34,7 @@ elif [ "$response" -eq 409 ]; then
     echo "The device is already part of the cluster."
     exit 1
 else
-    echo "Unable to request node addition."
+    echo "$response: Unable to request node addition."
     exit 1
 fi
 

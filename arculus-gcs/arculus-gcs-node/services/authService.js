@@ -29,9 +29,6 @@ const isAdminUser = (username, callback) => {
             return callback(err, null);
         }
 
-        // Log the fetched user information
-        console.log(`Fetched user: ${username}, Roles:`, results.map(row => row.role_name));
-
         const isAdmin = results.some((row) => row.role_name === 'Admin');
         callback(null, isAdmin);
     });
