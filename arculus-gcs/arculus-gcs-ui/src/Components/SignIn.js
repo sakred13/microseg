@@ -73,14 +73,15 @@ function SignIn() {
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8, // Adjusted marginTop
+            marginTop: 8,
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
           }}
         >
-          <img src="CERI-Logo.png" alt="Logo" style={{ width: '317px', height: '100px' }} />
+          <img src="titled-logo.png" alt="Logo" style={{ width: '100px', height: '100px' }} />
+          <img src="CERI-Logo.png" alt="Logo" style={{ width: '317px', height: '100px', marginLeft: '16px' }} />
         </Box>
+
         <Box
           sx={{
             marginTop: 7, // Adjusted marginTop
@@ -160,7 +161,7 @@ function SignIn() {
         </Box>
         <Box mt={8}>
           <Typography variant="body2" color="text.secondary" align="center">
-            {'Copyright © '}
+            {/* {'Copyright © '} */}
             <Link color="inherit" href="https://engineering.missouri.edu/departments/eecs/">
               EECS Dept., University of Missouri
             </Link>{' '}

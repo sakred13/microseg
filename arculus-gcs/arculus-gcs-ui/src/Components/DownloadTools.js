@@ -7,6 +7,9 @@ import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { ThemeProvider, createTheme } from '@mui/material/styles'; // Updated import for MUI v5
 import { API_URL } from '../config';
 import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+
 
 function DownloadTools() {
     const [copyButtonText, setCopyButtonText] = useState('Copy to Clipboard');
@@ -79,16 +82,7 @@ function DownloadTools() {
 
     return (
         <ThemeProvider theme={createTheme()}>
-            <Box
-                sx={{
-                    marginTop: 8, // Adjusted marginTop
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                }}
-            >
-                <img src="CERI-Logo.png" alt="Logo" style={{ width: '317px', height: '100px' }} />
-            </Box>
+
             <div style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -96,6 +90,17 @@ function DownloadTools() {
                 textAlign: 'center',
                 margin: '16px',
             }}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-start',
+                    }}
+                >
+                    <img src="titled-logo.png" alt="Logo" style={{ width: '100px', height: '100px' }} />
+                    <img src="CERI-Logo.png" alt="Logo" style={{ width: '317px', height: '100px', marginLeft: '16px' }} />
+                </Box>
+
                 <h1>Download both the Arculus Join Request Wizard and the Honeypot Wizard here.</h1>
 
                 <Button
@@ -150,6 +155,16 @@ function DownloadTools() {
                 </IconButton>
                 <p>{copyButtonText}</p>
             </div>
+            <Box mt={8}>
+                <Typography variant="body2" color="text.secondary" align="center">
+                    {/* {'Copyright © '} */}
+                    <Link color="inherit" href="https://engineering.missouri.edu/departments/eecs/">
+                        EECS Dept., University of Missouri
+                    </Link>{' '}
+                    {new Date().getFullYear()}
+                    {'.'}
+                </Typography>
+            </Box>
         </ThemeProvider>
     );
 }
