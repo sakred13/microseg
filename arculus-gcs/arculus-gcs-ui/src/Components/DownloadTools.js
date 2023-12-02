@@ -19,8 +19,8 @@ function DownloadTools() {
     };
 
     const generateDownloadScript = (nodeName) => {
-        return `curl -o joinClusterWizard.sh ${API_URL}:3001/tools/downloadJoinWiz & \
-    curl -o honeypotWiz.py ${API_URL}:3001/tools/downloadHoneyWiz &
+        return `curl -o joinClusterWizard.sh ${API_URL}/tools/downloadJoinWiz & \
+    curl -o honeypotWiz.py ${API_URL}/tools/downloadHoneyWiz &
     wait
     chmod +x joinClusterWizard.sh
     chmod +x honeypotWiz.py
