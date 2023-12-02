@@ -79,7 +79,7 @@ function SignIn() {
             alignItems: 'center',
           }}
         >
-          <img src="viman-lab.png" alt="Logo" style={{ width: '200px', height: '90px' }} />
+          <img src="CERI-Logo.png" alt="Logo" style={{ width: '317px', height: '100px' }} />
         </Box>
         <Box
           sx={{
@@ -144,8 +144,12 @@ function SignIn() {
                     color: 'white',
                     backgroundColor: '#4CAF50',
                     '&:hover': {
-                      backgroundColor: '#45A049', // Change this to the desired hover color
+                      backgroundColor: '#45A049',
                     },
+                  }}
+                  onClick={() => {
+                    // Redirect to the /downloadTools route
+                    navigate('/downloadTools');
                   }}
                 >
                   Request to Add Node to Cluster

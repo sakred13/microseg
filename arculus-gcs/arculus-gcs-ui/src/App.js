@@ -16,6 +16,7 @@ import IntroDashboard from './Components/dashboard/IntroDashboard';
 import MetricsDashboard from './Components/dashboard/HoneyNet/MetricsDashboard';
 import { DashboardProvider } from './Components/dashboard/HoneyNet/DashboardContext';
 import DeviceManagementTopology from './Components/dashboard/DeviceManagement/DeviceManagementTopology';
+import DownloadTools from './Components/DownloadTools';
 
 function App() {
 
@@ -25,6 +26,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Routing />} />
           <Route path='/signIn' element={<SignInPage />} />
+          <Route path='/downloadTools' element={<DownloadTools />} />
           <Route path='/loggedIn' element={<Layout component={<AccessWrapper component={<IntroDashboard />} />} />} />
           <Route path='/dashboard' element={<Layout component={<AccessWrapper component={<IntroDashboard />} />} />} />
           <Route path='/manageUsers' element={<Layout component={<AccessWrapper component={<ManageUsers />} />} />} />

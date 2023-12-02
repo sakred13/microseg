@@ -90,7 +90,7 @@ if [ "$http_status_code" -eq 200 ]; then
     pip3 install Flask
     export CHN_DOMAIN=$clusterIP
 
-    nohup python3 honeypot_deploy.py > api.log 2>&1 &
+    nohup python3 honeypotWiz.py > api.log 2>&1 &
 
     echo "Node added to cluster successfully."
 else

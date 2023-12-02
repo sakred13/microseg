@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser');
 const { exec, execSync } = require('child_process');
 const WebSocket = require('ws');
 const http = require('http');
-
+const path = require('path');
 const userRoutes = require('./routes/userRoutes');
 const deviceRoutes = require('./routes/deviceRoutes');
 const authRoutes = require('./routes/authRoutes');
@@ -30,6 +30,7 @@ const allowCors = [
 
 const app = express();
 const server = http.createServer(app);
+app.use(express.static('tools'));
 
 const joinReqsServer = http.createServer();
 const joinReqsWss = new WebSocket.Server({ server: joinReqsServer, path: '/joinRequests' });
@@ -50,6 +51,27 @@ app.use('/', roleRoutes);
 app.use('/', taskRoutes);
 app.use('/honeypot-proxy/', honeyNetProxyRoutes);
 app.use('/honeypot-api/', honeyPotRoutes);
+
+app.get('/tools/downloadJoinWiz', (req, res) => {
+  const filePath = path.join(__dirname, '/tools/joinClusterWizard.sh');
+  res.download(filePath, 'joinClusterWizard.sh', (err) => {
+      if (err) {
+          console.error('Error while downloading joinClusterWizard.sh:', err);
+          res.status(500).send('Internal Server Error');
+      }
+  });
+});
+
+// API to download honeypotWiz.py
+app.get('/tools/downloadHoneyWiz', (req, res) => {
+  const filePath = path.join(__dirname, '/tools/honeypotWiz.py');
+  res.download(filePath, 'honeypotWiz.py', (err) => {
+      if (err) {
+          console.error('Error while downloading honeypotWiz.py:', err);
+          res.status(500).send('Internal Server Error');
+      }
+  });
+});
 
 // Error handling middleware to catch any unhandled errors
 app.use((err, req, res, next) => {
