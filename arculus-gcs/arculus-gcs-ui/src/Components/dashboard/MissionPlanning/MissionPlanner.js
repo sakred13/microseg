@@ -61,45 +61,6 @@ function MissionPlanner() {
         setSupplyDeliveryDrones(supplyDeliveryDrones);
         setVideoAnalyticControllers(videoAnalyticControllers);
 
-        const privileges = {
-          videoAnalytic: {
-            "required": ["send_command", "receive_video", "receive_posdata"],
-            "has": []
-          },
-          videoCollectionDrone: {
-            "required": ["send_video", "receive_command", "send_posdata"],
-            "has": []
-          },
-          supplyDeliveryDrone: {
-            "required": ["receive_command", "send_posdata"],
-            "has": []
-          }
-        };
-
-        // Check if videoAnalyticControllers, videoCollectionDrones, and supplyDeliveryDrones have values
-        if (videoAnalyticControllers.length > 0 && videoCollectionDrones.length > 0 && supplyDeliveryDrones.length > 0) {
-          // Find the corresponding device and assign its allowedTasks to privileges
-          const videoAnalyticDevice = videoAnalyticControllers.find(device => device.device_name === videoAnalytic);
-          const videoCollectionDevice = videoCollectionDrones.find(device => device.device_name === videoCollectionDrone);
-          const supplyDeliveryDevice = supplyDeliveryDrones.find(device => device.device_name === supplyDeliveryDrone);
-
-          privileges.videoAnalytic.has = videoAnalyticDevice ? videoAnalyticDevice.allowedTasks : [];
-          privileges.videoCollectionDrone.has = videoCollectionDevice ? videoCollectionDevice.allowedTasks : [];
-          privileges.supplyDeliveryDrone.has = supplyDeliveryDevice ? supplyDeliveryDevice.allowedTasks : [];
-        }
-
-        // Update the devicePrivileges state with the privileges object
-        setDevicePrivileges(privileges);
-
-        const anyRequiredPrivilegeAbsent = Object.keys(privileges).some((deviceType) => {
-          return privileges[deviceType].required.some((privilege) => !privileges[deviceType].has.includes(privilege));
-        });
-
-        // Set insufficientPrivileges to true if any required privilege is absent
-        setInsufficientPrivileges(anyRequiredPrivilegeAbsent);
-
-        // Log the updated devicePrivileges
-        console.log("Device Privileges: ", privileges);
       })
       .catch((error) => {
         // Handle error if the API request fails
@@ -142,6 +103,28 @@ function MissionPlanner() {
 
     // Update the devicePrivileges state with the privileges object
     setDevicePrivileges(privileges);
+
+    // Check if videoAnalyticControllers, videoCollectionDrones, and supplyDeliveryDrones have values
+    if (videoAnalyticControllers.length > 0 && videoCollectionDrones.length > 0 && supplyDeliveryDrones.length > 0) {
+      // Find the corresponding device and assign its allowedTasks to privileges
+      const videoAnalyticDevice = videoAnalyticControllers.find(device => device.device_name === videoAnalytic);
+      const videoCollectionDevice = videoCollectionDrones.find(device => device.device_name === videoCollectionDrone);
+      const supplyDeliveryDevice = supplyDeliveryDrones.find(device => device.device_name === supplyDeliveryDrone);
+
+      privileges.videoAnalytic.has = videoAnalyticDevice ? videoAnalyticDevice.allowedTasks : [];
+      privileges.videoCollectionDrone.has = videoCollectionDevice ? videoCollectionDevice.allowedTasks : [];
+      privileges.supplyDeliveryDrone.has = supplyDeliveryDevice ? supplyDeliveryDevice.allowedTasks : [];
+    }
+
+    // Update the devicePrivileges state with the privileges object
+    setDevicePrivileges(privileges);
+
+    const anyRequiredPrivilegeAbsent = Object.keys(privileges).some((deviceType) => {
+      return privileges[deviceType].required.some((privilege) => !privileges[deviceType].has.includes(privilege));
+    });
+
+    // Set insufficientPrivileges to true if any required privilege is absent
+    setInsufficientPrivileges(anyRequiredPrivilegeAbsent);
 
     // Log the updated devicePrivileges
     console.log("Device Privileges: ", privileges);
@@ -480,7 +463,7 @@ function MissionPlanner() {
                       );
                     })}
                   </tbody>
-                </table><br/>
+                </table><br />
 
                 <Button
                   variant="contained"
