@@ -69,29 +69,29 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) =
             const egressRulesArr = [];
         
             if (sendTasks.includes('send_video')) {
-                ingressRulesArr.push('5005/UDP');
+                egressRulesArr.push('5005/UDP');
             }
             if (sendTasks.includes('send_posdata')) {
-                ingressRulesArr.push('5015/TCP');
+                egressRulesArr.push('5015/TCP');
             }
             if (sendTasks.includes('send_command')) {
-                ingressRulesArr.push('5025/TCP');
+                egressRulesArr.push('5025/TCP');
             }
             if (sendTasks.includes('send_sensordata')) {
-                ingressRulesArr.push('5035/TCP');
+                egressRulesArr.push('5035/TCP');
             }
         
             if (receiveTasks.includes('receive_video')) {
-                egressRulesArr.push('5005/UDP');
+                ingressRulesArr.push('5005/UDP');
             }
             if (receiveTasks.includes('receive_posdata')) {
-                egressRulesArr.push('5015/TCP');
+                ingressRulesArr.push('5015/TCP');
             }
             if (receiveTasks.includes('receive_command')) {
-                egressRulesArr.push('5025/TCP');
+                ingressRulesArr.push('5025/TCP');
             }
             if (receiveTasks.includes('receive_sensordata')) {
-                egressRulesArr.push('5035/TCP');
+                ingressRulesArr.push('5035/TCP');
             }
         
             setIngressRules(ingressRulesArr.join('\n'));

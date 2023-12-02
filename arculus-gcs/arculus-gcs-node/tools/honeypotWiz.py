@@ -8,6 +8,7 @@ pot_type_commands = {
     "Dionaea": "sudo mkdir /Dionaea && cd /Dionaea && sudo wget \"{}/api/script/?text=true&script_id=4\" --no-check-certificate -O deploy.sh && sudo bash deploy.sh {} {} && sudo docker-compose up -d",
     "Conpot": "sudo mkdir /Conpot && cd /Conpot && sudo wget \"{}/api/script/?text=true&script_id=2\" --no-check-certificate -O deploy.sh && sudo bash deploy.sh {} {} && sudo docker-compose up -d",
     "Elasticpot": "sudo mkdir /Elasticpot && cd /Elasticpot && sudo wget \"{}/api/script/?text=true&script_id=5\" --no-check-certificate -O deploy.sh && sudo bash deploy.sh {} {} && sudo docker-compose up -d",
+    "ssh-auth-logger": "sudo mkdir /ssh-auth-logger && cd /ssh-auth-logger && sudo wget \"{}/api/script/?text=true&script_id=8\" --no-check-certificate -O deploy.sh && sudo bash deploy.sh {} {} && sudo docker-compose up -d"
 }
 
 @app.route('/deployHoneyPot', methods=['POST'])

@@ -49,8 +49,8 @@ function HoneypotDashboard() {
         <Typography variant="body2" color="text.secondary" align="center">
           {/* {'Copyright © '} */}
           Powered by&nbsp;
-          <Link color="inherit" href="https://stingar-docs.cloud.duke.edu/prepare_hp_host/register_in_stingar.html">
-            STINGAR
+          <Link color="inherit" href="https://communityhoneynetwork.readthedocs.io/en/stable/">
+            CommunityHoneyNet (CHN)
           </Link>{' '}
           {'.'}
         </Typography>
