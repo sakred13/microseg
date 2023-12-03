@@ -79,6 +79,71 @@ exports.createHoneyPot = async (req, res) => {
     }
 };
 
+exports.undeployHoneypot = async (req, res) => {
+    try {
+        const { authToken } = req.query;
+
+        // Check if the user has an admin role
+        isAdminUser(getUserFromToken(authToken), async (roleErr, isAdmin) => {
+            if (roleErr) {
+                console.error(roleErr);
+                return res.status(500).json({ message: 'Internal Server Error' });
+            }
+
+            if (isAdmin) {
+                const { honeypotTarget, honeypotType } = req.query;
+
+                // Find the deployed honeypot based on the target and type
+                const deployedHoneypotIndex = deployedHoneypots.findIndex((honeypot) =>
+                    honeypot.honeypotTarget === honeypotTarget && honeypot.honeypotType === honeypotType
+                );
+
+                if (deployedHoneypotIndex === -1) {
+                    return res.status(404).json({ message: 'Honeypot not found' });
+                }
+
+                // Create the full URL to the honeypot service API
+                const honeypotApiUrl = `http://${honeypotTarget}:5000/undeployHoneypot`;
+
+                // Make a request to the honeypot API to undeploy the honeypot
+                try {
+                    const response = await axios({
+                        method: 'DELETE',
+                        url: honeypotApiUrl,
+                        headers: {
+                            // Other headers as needed to mimic the dashboard request
+                        },
+                        data: {
+                            url: honeypotConfig.url,
+                            potType: honeypotType
+                        },
+                    });
+
+                    // Check if the API call was successful
+                    if (response.status === 200) {
+                        // Remove the deployed honeypot from the global variable
+                        deployedHoneypots.splice(deployedHoneypotIndex, 1);
+                        console.log("Undeployed: ", deployedHoneypots);
+                    }
+
+                    // Forward the honeypot service response to the client
+                    res.status(response.status).json(response.data);
+                } catch (error) {
+                    // Handle errors from the external API
+                    console.error('Error calling honeypot API:', error);
+
+                    // Return the error response to the client
+                    res.status(error.response ? error.response.status : 500).json({ error: 'Internal Server Error' });
+                }
+            } else {
+                return res.status(403).json({ message: 'Unauthorized: Only users with admin role can undeploy honeypots' });
+            }
+        });
+    } catch (error) {
+        console.error('Error calling honeypot API:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
 
 exports.getDeployedHoneypots = async (req, res) => {
     try {

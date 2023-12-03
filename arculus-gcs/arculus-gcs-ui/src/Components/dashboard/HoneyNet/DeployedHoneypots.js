@@ -10,23 +10,31 @@ import TableRow from '@mui/material/TableRow';
 import IconButton from '@mui/material/IconButton';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CloseIcon from '@mui/icons-material/Close';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import Cookies from 'js-cookie';
+import Button from '@mui/material/Button';
 import { API_URL } from '../../../config';
 
 function DeployedHoneypots() {
-  const [deployedHoneypots, setDeployedHoneypots] = useState([]); // Store deployed honeypots data
+  const [deployedHoneypots, setDeployedHoneypots] = useState([]);
   const [isDeployedHoneypotsLoading, setIsDeployedHoneypotsLoading] = useState(false);
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [selectedHoneypot, setSelectedHoneypot] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [isUndeploying, setIsUndeploying] = useState(false);
 
   const fetchDeployedHoneypots = async () => {
     setIsDeployedHoneypotsLoading(true);
 
     try {
-      // Define the API endpoint URL for deployed honeypots
       const apiEndpoint = `${API_URL}/honeypot-api/getDeployedHoneypots?authToken=${encodeURIComponent(
         Cookies.get('jwtToken')
       )}`;
-      
-      // Make the API call to get deployed honeypots using fetch
+
       const response = await fetch(apiEndpoint, {
         method: 'GET',
         headers: {
@@ -34,16 +42,13 @@ function DeployedHoneypots() {
         },
       });
 
-      // Check if the API call was successful
       if (response.ok) {
         const data = await response.json();
         setDeployedHoneypots(data.deployedHoneypots);
       } else {
-        // Handle API error
         console.error('Failed to fetch deployed honeypots.');
       }
     } catch (error) {
-      // Handle network or API call error
       console.error('Error fetching deployed honeypots:', error);
     } finally {
       setIsDeployedHoneypotsLoading(false);
@@ -51,9 +56,35 @@ function DeployedHoneypots() {
   };
 
   useEffect(() => {
-    // Fetch deployed honeypots when the component mounts
     fetchDeployedHoneypots();
   }, []);
+
+  const handleUndeploy = async () => {
+    setIsUndeploying(true);
+
+    try {
+      const apiEndpoint = `${API_URL}/honeypot-api/undeployHoneypot?honeypotType=${selectedHoneypot.honeypotType}&honeypotTarget=${selectedHoneypot.honeypotTarget}&authToken=${Cookies.get('jwtToken')}`;
+      const response = await fetch(apiEndpoint, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        setSuccessMessage('Honeypot undeployed successfully.');
+        setConfirmationOpen(false);
+        fetchDeployedHoneypots();
+      } else {
+        console.error('Failed to undeploy honeypot.');
+      }
+    } catch (error) {
+      console.error('Error undeploying honeypot:', error);
+    }
+    finally {
+      setIsUndeploying(false); // Set the flag back to false when done
+    }
+  };
 
   return (
     <div className="deployed-honeypots-content">
@@ -90,7 +121,14 @@ function DeployedHoneypots() {
                         <IconButton color="primary" aria-label="View Activity">
                           <VisibilityIcon />
                         </IconButton>
-                        <IconButton color="error" aria-label="Destroy Honeypot">
+                        <IconButton
+                          color="error"
+                          aria-label="Destroy Honeypot"
+                          onClick={() => {
+                            setSelectedHoneypot(honeypot);
+                            setConfirmationOpen(true);
+                          }}
+                        >
                           <CloseIcon />
                         </IconButton>
                       </TableCell>
@@ -101,6 +139,45 @@ function DeployedHoneypots() {
             </TableContainer>
           )}
         </>
+      )}
+      <Dialog
+        open={confirmationOpen}
+        onClose={() => setConfirmationOpen(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Confirm Undeploy</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to undeploy the honeypot '{selectedHoneypot?.honeypotType}' on IP '{selectedHoneypot?.honeypotTarget}'?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setConfirmationOpen(false)}
+            color="primary"
+            disabled={isUndeploying} // Disable the "No" button while undeploying
+          >
+            No
+          </Button>
+          <Button
+            onClick={handleUndeploy}
+            color="primary"
+            autoFocus
+            disabled={isUndeploying} // Disable the "Yes" button while undeploying
+          >
+            Yes
+          </Button>
+          {isUndeploying && <CircularProgress size={24} />} {/* Show spinner while undeploying */}
+        </DialogActions>
+      </Dialog>
+
+      {successMessage && (
+        <div className="success-message">
+          <Typography variant="body1" color="primary">
+            {successMessage}
+          </Typography>
+        </div>
       )}
     </div>
   );

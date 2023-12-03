@@ -47,5 +47,42 @@ def execute_command():
         # Handle exceptions and return a 500 Internal Server Error response
         return jsonify({'error': str(e)}), 500
 
+pot_undep_commands = {
+    "Cowrie": "sudo docker-compose -f /Cowrie/docker-compose.yml down && sudo rm -rf /Cowrie",
+    "Dionaea": "sudo docker-compose -f /Dionaea/docker-compose.yml down && sudo rm -rf /Dionaea",
+    "Conpot": "sudo docker-compose -f /Conpot/docker-compose.yml down && sudo rm -rf /Conpot",
+    "Elasticpot": "sudo docker-compose -f /Elasticpot/docker-compose.yml down && sudo rm -rf /Elasticpot",
+    "ssh-auth-logger": "sudo docker-compose -f /ssh-auth-logger/docker-compose.yml down && sudo rm -rf /ssh-auth-logger"
+}
+
+@app.route('/undeployHoneypot', methods=['DELETE'])
+def undeploy_honeypot():
+    try:
+        data = request.get_json()
+        pot_type = data.get('potType')
+
+        if pot_type in pot_undep_commands.keys():
+            command = pot_undep_commands[pot_type]
+
+            # Run the command and wait for it to complete
+            result = subprocess.run(command, shell=True, capture_output=True, text=True)
+
+            # Check the return code of the command
+            if result.returncode == 0:
+                # Command executed successfully, return a 200 OK response
+                output = result.stdout
+                return jsonify({'message': f"Honeypot {pot_type} undeployed successfully.", 'output': output}), 200
+            else:
+                # Command failed, return a 500 Internal Server Error response
+                error_output = result.stderr
+                return jsonify({'error': f"Failed to undeploy honeypot {pot_type}.", 'output': error_output}), 500
+        else:
+            # Invalid potType specified, return a 400 Bad Request response
+            return jsonify({'message': "Invalid potType specified."}), 400
+
+    except Exception as e:
+        # Handle exceptions and return a 500 Internal Server Error response
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)

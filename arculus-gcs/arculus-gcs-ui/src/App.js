@@ -26,7 +26,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Routing />} />
           <Route path='/signIn' element={<SignInPage />} />
-          <Route path='/downloadTools' element={<DownloadTools />} />
+          <Route path='/downloadTools' element={<Layout component={<AccessWrapper component={<DownloadTools />} />} />}/>
           <Route path='/loggedIn' element={<Layout component={<AccessWrapper component={<IntroDashboard />} />} />} />
           <Route path='/dashboard' element={<Layout component={<AccessWrapper component={<IntroDashboard />} />} />} />
           <Route path='/manageUsers' element={<Layout component={<AccessWrapper component={<ManageUsers />} />} />} />

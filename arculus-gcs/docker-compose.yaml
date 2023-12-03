@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  react-app:
+    build:
+      context: ./arculus-gcs-ui  # Updated to point to the directory containing the React Dockerfile
+      dockerfile: Dockerfile  # Assuming the React Dockerfile is named "Dockerfile"
+    ports:
+      - "3000:3000"  # Expose React app on port 3000
+    depends_on:
+      - arculus-gcs-db  # Ensure the MySQL service is started first
+    environment:
+      - REACT_APP_DB_HOST=arculus-gcs-db  # Set the database host for your React app
+
+  arculus-gcs-db:
+    build:
+      context: ./arculus-gcs-mysql  # Assuming the MySQL Dockerfile is in the root directory
+      dockerfile: Dockerfile  # Assuming the MySQL Dockerfile is named "Dockerfile-mysql"
+    ports:
+      - "3306:3306"  # Expose MySQL on port 3306
+    # environment:
+    #   MYSQL_ROOT_PASSWORD: vimanlab  # Taken from your MySQL Dockerfile ENV
+    #   MYSQL_DATABASE: your-database-name  # Replace with your actual database name
+    #   MYSQL_USER: your-username  # Replace with your actual username
+    #   MYSQL_PASSWORD: your-password  # Replace with your actual password

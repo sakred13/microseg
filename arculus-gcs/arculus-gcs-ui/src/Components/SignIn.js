@@ -136,25 +136,6 @@ function SignIn() {
             )}
             <Grid container>
               <Grid item xs>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  sx={{
-                    mt: 3,
-                    mb: 2,
-                    color: 'white',
-                    backgroundColor: '#4CAF50',
-                    '&:hover': {
-                      backgroundColor: '#45A049',
-                    },
-                  }}
-                  onClick={() => {
-                    // Redirect to the /downloadTools route
-                    navigate('/downloadTools');
-                  }}
-                >
-                  Request to Add Node to Cluster
-                </Button>
               </Grid>
             </Grid>
           </Box>

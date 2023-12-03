@@ -8,4 +8,6 @@ router.post('/deployHoneyPot', honeyPotService.createHoneyPot);
 
 router.get('/getDeployedHoneypots', honeyPotService.getDeployedHoneypots);
 
+router.delete('/undeployHoneypot', honeyPotService.undeployHoneypot);
+
 module.exports = router;

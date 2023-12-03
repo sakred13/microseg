@@ -240,6 +240,12 @@ export function Layout(props) {
                 <ListItemText primary="Manage Edge Devices" />
               </ListItemButton>
             )}
+            <ListItemButton onClick={() => handleManageClick('/downloadTools')}>
+              <ListItemIcon>
+                <img src='/cluster.png' alt="Add Nodes" style={{ width: '24px', height: '24px' }} />
+              </ListItemIcon>
+              <ListItemText primary="Add Nodes" />
+            </ListItemButton>
             {isAdmin && (
               <ListItemButton onClick={() => handleManageClick('/managePolicies')}>
                 <ListItemIcon>
@@ -264,7 +270,7 @@ export function Layout(props) {
                 <ListItemText primary="Deploy Honeypots" />
               </ListItemButton>
             )}
-              <ListItemButton onClick={() => handleManageClick('/attackMetrics')}>
+            <ListItemButton onClick={() => handleManageClick('/attackMetrics')}>
               <ListItemIcon>
                 <BarChartIcon />
               </ListItemIcon>
