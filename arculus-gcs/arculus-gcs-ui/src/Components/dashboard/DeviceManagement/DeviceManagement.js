@@ -385,7 +385,7 @@ const DeviceManagement = (props) => {
                                 <b>Device Type</b> {/* Add a new column header */}
                             </TableCell>
                             <TableCell>
-                                <b>Allowed Tasks</b>
+                                <b>Allowed Functions</b>
                             </TableCell>
                             <TableCell>
                                 <b>Actions</b>

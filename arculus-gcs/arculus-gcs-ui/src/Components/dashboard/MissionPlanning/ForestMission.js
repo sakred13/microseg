@@ -74,7 +74,7 @@ const ForestMission = (props) => {
                     y: direction.y / distance,
                 };
 
-                const speed = 20;
+                const speed = 40;
                 const newPosition = {
                     x: prevPosition.x + normalizedDirection.x * speed,
                     y: prevPosition.y + normalizedDirection.y * speed,
@@ -122,7 +122,7 @@ const ForestMission = (props) => {
                     y: direction.y / distance,
                 };
 
-                const speed = 20;
+                const speed = 40;
                 const newPosition = {
                     x: prevPosition.x + normalizedDirection.x * speed,
                     y: prevPosition.y + normalizedDirection.y * speed,

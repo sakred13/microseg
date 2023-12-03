@@ -47,12 +47,12 @@ const deviceTypes = [
     "Co-ordinate Processing Device"
 ];
 
-const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) => {
+const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks: allowedFunctions }) => {
     const [isSuccess, setIsSuccess] = useState(false);
     const [deviceName, setDeviceName] = useState(nodeName || '');
     const [ipAddress, setIPAddress] = useState(nodeIP || '');
     const [selectedDeviceType, setSelectedDeviceType] = useState('');
-    const [selectedTasks, setSelectedTasks] = useState([]);
+    const [selectedFunctions, setSelectedFunctions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [hasValueSelected, setHasValueSelected] = useState(false);
     const [ingressRules, setIngressRules] = useState('');
@@ -62,35 +62,35 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) =
         // Function to generate ingress and egress rules based on selected tasks
         const generateRules = () => {
         
-            const sendTasks = selectedTasks.filter(task => task.startsWith('send_'));
-            const receiveTasks = selectedTasks.filter(task => task.startsWith('receive_'));
+            const sendFunctions = selectedFunctions.filter(task => task.startsWith('send_'));
+            const receiveFunctions = selectedFunctions.filter(task => task.startsWith('receive_'));
             
             const ingressRulesArr = [];
             const egressRulesArr = [];
         
-            if (sendTasks.includes('send_video')) {
+            if (sendFunctions.includes('send_video')) {
                 egressRulesArr.push('5005/UDP');
             }
-            if (sendTasks.includes('send_posdata')) {
+            if (sendFunctions.includes('send_posdata')) {
                 egressRulesArr.push('5015/TCP');
             }
-            if (sendTasks.includes('send_command')) {
+            if (sendFunctions.includes('send_command')) {
                 egressRulesArr.push('5025/TCP');
             }
-            if (sendTasks.includes('send_sensordata')) {
+            if (sendFunctions.includes('send_sensordata')) {
                 egressRulesArr.push('5035/TCP');
             }
         
-            if (receiveTasks.includes('receive_video')) {
+            if (receiveFunctions.includes('receive_video')) {
                 ingressRulesArr.push('5005/UDP');
             }
-            if (receiveTasks.includes('receive_posdata')) {
+            if (receiveFunctions.includes('receive_posdata')) {
                 ingressRulesArr.push('5015/TCP');
             }
-            if (receiveTasks.includes('receive_command')) {
+            if (receiveFunctions.includes('receive_command')) {
                 ingressRulesArr.push('5025/TCP');
             }
-            if (receiveTasks.includes('receive_sensordata')) {
+            if (receiveFunctions.includes('receive_sensordata')) {
                 ingressRulesArr.push('5035/TCP');
             }
         
@@ -100,7 +100,7 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) =
           
 
         generateRules();
-    }, [selectedTasks]);
+    }, [selectedFunctions]);
 
     const handleAddDevice = async (e) => {
         e.preventDefault();
@@ -124,7 +124,7 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) =
                     deviceName,
                     ipAddress,
                     deviceType: selectedDeviceType, // Include selected device type
-                    tasks: selectedTasks,
+                    tasks: selectedFunctions,
                 }),
             });
 
@@ -149,7 +149,7 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) =
         setDeviceName('');
         setIPAddress('');
         setSelectedDeviceType('');
-        setSelectedTasks([]);
+        setSelectedFunctions([]);
         setIsOpen(false);
     };
 
@@ -234,12 +234,12 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) =
                                         <Autocomplete
                                             multiple
                                             id="allowed-tasks"
-                                            options={allowedTasks.taskNames}
+                                            options={allowedFunctions.taskNames}
                                             required
-                                            value={selectedTasks}
+                                            value={selectedFunctions}
                                             onChange={(_, newValue) => {
                                                 setHasValueSelected(newValue.length > 0);
-                                                setSelectedTasks(newValue);
+                                                setSelectedFunctions(newValue);
                                             }}
                                             isOptionEqualToValue={(option, value) => option === value}
                                             renderTags={(value, getTagProps) =>
@@ -248,7 +248,7 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks }) =
                                                 ))
                                             }
                                             renderInput={(params) => (
-                                                <TextField {...params} variant="outlined" label="Allowed Tasks" fullWidth />
+                                                <TextField {...params} variant="outlined" label="Allowed Functions" fullWidth />
                                             )}
                                         />
                                     </Grid>
