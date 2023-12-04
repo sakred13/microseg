@@ -13,6 +13,7 @@ function IntelFeed() {
     const [intelData, setIntelData] = useState([]);
     const [page, setPage] = useState(0);
     const [totalRecords, setTotalRecords] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(0);
     const { switchToAttackerStats } = useDashboardContext();
 
     const handleChangePage = (event, newPage) => {
@@ -38,6 +39,9 @@ function IntelFeed() {
                 const data = await response.json();
                 setIntelData(data.data);
                 setTotalRecords(data.meta.size);
+                if (data.data) {
+                    setRowsPerPage(Math.min(data.data.length, 10));
+                }
             } else {
                 console.error('Failed to fetch intel data');
             }
@@ -105,7 +109,7 @@ function IntelFeed() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {intelData.slice(page * limit, (page + 1) * limit).map((row, index) => (
+                        {intelData.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map((row, index) => (
                             <TableRow key={index}>
                                 <TableCell
                                     style={{ cursor: 'pointer', textDecoration: 'underline' }}
@@ -124,11 +128,11 @@ function IntelFeed() {
             <TablePagination
                 component="div"
                 count={totalRecords}
-                rowsPerPage={limit}
+                rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}
                 rowsPerPageOptions={[10, 20, 50, 100, 200, 500, 1000]}
-                onRowsPerPageChange={(e) => setLimit(parseInt(e.target.value, 10))}
+                onRowsPerPageChange={(e) => setRowsPerPage(parseInt(e.target.value, 10))}
             />
         </Box>
     );
