@@ -24,6 +24,7 @@ logger = BandwidthLogger()
 print(sys.argv)
 use_cam = not '-no_cam' in sys.argv
 use_mic = not '-no_mic' in sys.argv
+use_security = '-sec' in sys.argv
 camera_conn = None
 if use_cam:
   camera_conn = mavutil.mavlink_connection('tcp:localhost:14540')
@@ -42,17 +43,19 @@ if use_mic:
 
 # Run postprocessing before exiting
 def sigint_handler(signum, frame):
+  print('sigint')
   if should_stop.is_set():
     exit(0)
   cv2.destroyAllWindows()
   should_stop.set()
   logger.stop()
-  if (not use_cam or camera_conn.mav.total_bytes_received == 0) and (not use_mic or mic_conn.mav.total_bytes_received == 0):
-    if use_cam:
-      camera_conn.close()
-    if use_mic:
-      mic_conn.close()
-    exit(0)
+  # if (not use_cam or camera_conn.mav.total_bytes_received == 0) and (not use_mic or mic_conn.mav.total_bytes_received == 0):
+  if use_cam:
+    print('closing cam')
+    camera_conn.close()
+  if use_mic:
+    mic_conn.close()
+  exit(0)
     
 signal.signal(signal.SIGINT, sigint_handler)
 
@@ -138,7 +141,7 @@ while not should_stop.is_set():
   print(msg.get_type())
   if msg.get_type() == 'VIDEO_STREAM_INFORMATION' and use_cam:
     time.sleep(1)
-    Thread(target = handle_video_stream, args = (msg, logger)).start()
+    Thread(target = handle_video_stream, args = (msg, logger, should_stop)).start()
   if msg.get_type() == 'AUDIO_STREAM_INFORMATION' and use_mic:
     time.sleep(1)
     print('starting thread!')

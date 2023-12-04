@@ -3,7 +3,15 @@ import cv2
 from threading import Thread, Event
 import signal
 import time
-import math
+import math, sys
+# sys.path.append('.')
+# from util.AESCipher import AESCipher
+# from Crypto.Cipher import AES
+from Crypto.Cipher import ChaCha20
+from base64 import b64encode, b64decode
+
+key = b64decode('c8O9Xp7HcudRrY5KcnJdNZeQjAfdFrB4lVBkSjWI0hw=')
+
 
 print('Starting video module...')
 
@@ -29,7 +37,17 @@ def send_image(conn):
     return
   
   b = bytearray(cv2.imencode('.jpg', image)[1])
+  print(b64encode(b)[-32:])
+  cipher = ChaCha20.new(key=key)
+  b = cipher.encrypt(b)
   
+  b = cipher.nonce + b
+  print(f"nonce length: {len(cipher.nonce)}")
+  # nonce = b64encode(cipher.nonce).decode('utf-8')
+  # b64t = b64encode(b).decode('utf-8')
+  # result = json.dumps({'nonce':nonce, 'ciphertext':b64t})
+  # print(result)
+
   init_len = len(b)
   # Send image metadata
   conn.mav.data_transmission_handshake_send(

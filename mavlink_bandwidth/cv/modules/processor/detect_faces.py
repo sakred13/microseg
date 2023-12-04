@@ -3,7 +3,7 @@ import cv2
 
 # https://machinelearningmastery.com/how-to-perform-face-detection-with-classical-and-deep-learning-methods-in-python-with-keras/
 def detect_faces(mat):
-  classifier = cv2.CascadeClassifier('./server/haarcascade_frontalface_default.xml')
+  classifier = cv2.CascadeClassifier('./processor/haarcascade_frontalface_default.xml')
 
   aabbs = classifier.detectMultiScale(mat) # Axis-Aligned Bounding Boxes
   for box in aabbs:

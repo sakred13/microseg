@@ -9,6 +9,13 @@ import time
 import signal
 from threading import Thread, Event
 from detect_faces import detect_faces
+# import sys
+# sys.path.append('.')
+# from util.AESCipher import AESCipher
+from Crypto.Cipher import ChaCha20
+from base64 import b64encode, b64decode
+
+key = b64decode('c8O9Xp7HcudRrY5KcnJdNZeQjAfdFrB4lVBkSjWI0hw=')
 
 mavutil.set_dialect('common')
 
@@ -18,11 +25,11 @@ should_stop = Event()
 
 # Run postprocessing before exiting
 def sigint_handler(signum, frame):
-    if should_stop.is_set():
-        exit(0)
-    should_stop.set()
-    if conn.mav.total_bytes_received == 0:
-        exit(0)
+  if should_stop.is_set():
+      exit(0)
+  should_stop.set()
+  if conn.mav.total_bytes_received == 0:
+      exit(0)
     
 signal.signal(signal.SIGINT, sigint_handler)
 
@@ -72,7 +79,7 @@ def handle_data(data_conn):
   buffer = buffer[:-padding_size]
   return buffer
 
-def handle_video_stream(msg, logger):
+def handle_video_stream(msg, logger, stop):
   print(f"Connecting to {msg.uri}...")
   data_conn = mavutil.mavlink_connection(msg.uri, source_component=1)
   logger.add_module('video', data_conn)
@@ -90,13 +97,13 @@ def handle_video_stream(msg, logger):
   tolerance = image_interval * 0.1
   # print(f"tolerance: {tolerance}")
   t0 = time.time()
-  while not should_stop.is_set():
+  while not stop.is_set():
     # print(last_image_requested_at + image_interval - time.time())
     if last_image_requested_at + image_interval > time.time() + tolerance:
       time.sleep(last_image_requested_at + image_interval - time.time() - tolerance/2)
     last_image_requested_at = time.time()
     # Request image
-    # print('Requesting image')
+    print('Requesting image; ' + str(should_stop.is_set()))
     data_conn.mav.data_transmission_handshake_send(
         0, # Data stream type: JPEG
         0, # Total data size (ACK only)
@@ -113,7 +120,15 @@ def handle_video_stream(msg, logger):
     if buffer is None or len(buffer) == 0:
         continue
     
-    mat = cv2.imdecode(np.asarray(buffer), cv2.IMREAD_COLOR)
+    nonce = buffer[:8]
+    ciphertext = buffer[8:]
+    cipher = ChaCha20.new(key=key, nonce=nonce)
+    plaintext = cipher.decrypt(ciphertext)
+    print(b64encode(plaintext)[-32:])
+    # print(plaintext)
+
+    # mat = cv2.imdecode(plaintext, cv2.IMREAD_COLOR)
+    mat = cv2.imdecode(np.asarray(plaintext), cv2.IMREAD_COLOR)
     detect_faces(mat)
     out.write(mat)
 
