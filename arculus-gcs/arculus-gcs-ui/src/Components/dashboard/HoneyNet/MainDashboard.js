@@ -27,6 +27,7 @@ function MainDashboard() {
             hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
         }]
     });
+    const [attackerLocations, setAttackerLocations] = useState({});
     const { switchToAttackerStats } = useDashboardContext();
 
     useEffect(() => {
@@ -59,12 +60,34 @@ function MainDashboard() {
                         }]
                     };
                     setChartData(pieChartData);
+
+                    // Fetch attacker locations
+                    const attackerIps = data.data.map(attack => attack.source_ip).slice(0, 5);
+                    const locations = await fetchAttackerLocations(attackerIps);
+                    setAttackerLocations(locations);
                 } else {
                     console.error('Failed to fetch attack data');
                 }
             } catch (error) {
                 console.error('Error fetching attack data:', error);
             }
+        };
+
+        // Function to fetch attacker locations
+        const fetchAttackerLocations = async (ipAddresses) => {
+            const locations = {};
+            for (const ipAddress of ipAddresses) {
+                try {
+                    const response = await fetch(`https://api.iplocation.net/?ip=${ipAddress}`);
+                    if (response.ok) {
+                        const locationData = await response.json();
+                        locations[ipAddress] = locationData.country_code2.toLowerCase();
+                    }
+                } catch (error) {
+                    console.error(`Error fetching location for IP ${ipAddress}:`, error);
+                }
+            }
+            return locations;
         };
 
         fetchAttackData();
@@ -112,7 +135,6 @@ function MainDashboard() {
                     </Grid>
 
                     {/* Conditional rendering based on attackData length */}
-
                     <React.Fragment>
                         {/* Rest of your content */}
                         <Grid item xs={12} md={6}>
@@ -124,8 +146,9 @@ function MainDashboard() {
                                     <TableHead>
                                         <TableRow>
                                             <TableCell><b>Honeypot</b></TableCell>
-                                            <TableCell align="right"><b>Source IP</b></TableCell>
-                                            <TableCell align="right"><b>Attacks</b></TableCell>
+                                            <TableCell align="center"><b>Source IP</b></TableCell>
+                                            <TableCell align="center"><b>Attacks</b></TableCell>
+                                            <TableCell align="center"><b>Location</b></TableCell> {/* New column for location */}
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -134,10 +157,17 @@ function MainDashboard() {
                                                 <TableCell component="th" scope="row">
                                                     {row.honeypot}
                                                 </TableCell>
-                                                <TableCell align="right" onClick={() => switchToAttackerStats(row.source_ip)} style={{ cursor: 'pointer' }}>
+                                                <TableCell align="center" onClick={() => switchToAttackerStats(row.source_ip)} style={{ cursor: 'pointer' }}>
                                                     {row.source_ip}
                                                 </TableCell>
-                                                <TableCell align="right">{row.count}</TableCell>
+                                                <TableCell align="center">{row.count}</TableCell>
+                                                <TableCell align="center">
+                                                    {attackerLocations[row.source_ip] && (
+                                                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                            <img src={`flags/${attackerLocations[row.source_ip]}.png`} alt="Flag" width="24" height="16" />
+                                                        </div>
+                                                    )}
+                                                </TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
