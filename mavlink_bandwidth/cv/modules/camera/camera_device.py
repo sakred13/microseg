@@ -5,11 +5,12 @@ import math
 import signal
 from threading import Thread, Event
 import subprocess
-import os
+import os, sys
 os.environ['MAVLINK20'] = "1" # Change to MAVLink 20 for video commands
 mavutil.set_dialect('common')
 
 
+use_security = '-sec' in sys.argv
 
 should_stop = Event()
 capturing = Event()
@@ -37,7 +38,10 @@ t0 = 0
 def handle_start_video_capture_request(conn):
   if not capturing.is_set():
     print('video cap start')
-    proc = subprocess.Popen(['python3', './camera/camera_video_module.py'])
+    proc_args = ['python3', './camera/camera_video_module.py']
+    if use_security:
+      proc_args += '-sec'
+    proc = subprocess.Popen(proc_args)
     print('done')
     capturing.set()
   else:

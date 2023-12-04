@@ -79,7 +79,7 @@ def handle_data(data_conn):
   buffer = buffer[:-padding_size]
   return buffer
 
-def handle_video_stream(msg, logger, stop):
+def handle_video_stream(msg, logger, stop, sec):
   print(f"Connecting to {msg.uri}...")
   data_conn = mavutil.mavlink_connection(msg.uri, source_component=1)
   logger.add_module('video', data_conn)
@@ -119,16 +119,19 @@ def handle_video_stream(msg, logger, stop):
 
     if buffer is None or len(buffer) == 0:
         continue
-    
-    nonce = buffer[:8]
-    ciphertext = buffer[8:]
-    cipher = ChaCha20.new(key=key, nonce=nonce)
-    plaintext = cipher.decrypt(ciphertext)
-    print(b64encode(plaintext)[-32:])
-    # print(plaintext)
+
+    if sec:
+      nonce = buffer[:8]
+      ciphertext = buffer[8:]
+      cipher = ChaCha20.new(key=key, nonce=nonce)
+      plaintext = bytearray(cipher.decrypt(ciphertext))
+      print(b64encode(plaintext)[-32:])
+      print(len(plaintext))
+      buffer = plaintext
+      # print(plaintext)
 
     # mat = cv2.imdecode(plaintext, cv2.IMREAD_COLOR)
-    mat = cv2.imdecode(np.asarray(plaintext), cv2.IMREAD_COLOR)
+    mat = cv2.imdecode(np.asarray(buffer), cv2.IMREAD_COLOR)
     detect_faces(mat)
     out.write(mat)
 

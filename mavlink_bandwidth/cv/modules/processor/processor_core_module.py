@@ -141,7 +141,7 @@ while not should_stop.is_set():
   print(msg.get_type())
   if msg.get_type() == 'VIDEO_STREAM_INFORMATION' and use_cam:
     time.sleep(1)
-    Thread(target = handle_video_stream, args = (msg, logger, should_stop)).start()
+    Thread(target = handle_video_stream, args = (msg, logger, should_stop, use_security)).start()
   if msg.get_type() == 'AUDIO_STREAM_INFORMATION' and use_mic:
     time.sleep(1)
     print('starting thread!')

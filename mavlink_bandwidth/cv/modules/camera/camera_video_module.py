@@ -13,6 +13,8 @@ from base64 import b64encode, b64decode
 key = b64decode('c8O9Xp7HcudRrY5KcnJdNZeQjAfdFrB4lVBkSjWI0hw=')
 
 
+use_security = '-sec' in sys.argv
+
 print('Starting video module...')
 
 cam = cv2.VideoCapture(0)
@@ -37,16 +39,18 @@ def send_image(conn):
     return
   
   b = bytearray(cv2.imencode('.jpg', image)[1])
-  print(b64encode(b)[-32:])
-  cipher = ChaCha20.new(key=key)
-  b = cipher.encrypt(b)
-  
-  b = cipher.nonce + b
-  print(f"nonce length: {len(cipher.nonce)}")
-  # nonce = b64encode(cipher.nonce).decode('utf-8')
-  # b64t = b64encode(b).decode('utf-8')
-  # result = json.dumps({'nonce':nonce, 'ciphertext':b64t})
-  # print(result)
+  if use_security:
+    print(b64encode(b)[-32:])
+    print(len(b))
+    cipher = ChaCha20.new(key=key)
+    b = cipher.encrypt(b)
+    
+    b = cipher.nonce + b
+    print(f"nonce length: {len(cipher.nonce)}")
+    # nonce = b64encode(cipher.nonce).decode('utf-8')
+    # b64t = b64encode(b).decode('utf-8')
+    # result = json.dumps({'nonce':nonce, 'ciphertext':b64t})
+    # print(result)
 
   init_len = len(b)
   # Send image metadata
