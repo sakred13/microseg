@@ -145,6 +145,12 @@ const rfStyle = {
   padding: "10%"
 };
 
+const rfInsepectStyle = {
+  width: '20%',
+  height: '80vh',
+  backgroundColor: '#ff0000'
+};
+
 function DeviceManagementTopology() {
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
@@ -241,65 +247,72 @@ function DeviceManagementTopology() {
         `}
       </style>
       <div style={{
-        width: '80%',
-        height: '80vh',
-        border: '2px solid black',
-        margin: 'auto', // Centers the div horizontally
-        boxSizing: 'border-box' // Ensures the border doesn't add to the width/height
+        display: 'flex'
       }}>
-        <Typography
-          variant="subtitle1"
-          component="div"
-          style={{
-            position: 'absolute',
-            top: 20, // Adjust this value as needed
-            left: '10%', // Adjust based on the position of your joinRequests nodes
-          }}>
-          Cluster Join Requests
-        </Typography>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onNodeClick={onNodeClick}
-          fitView
-          style={rfStyle}
-          attributionPosition="top-right"
-        >
-          <Background />
-          <Controls />
-        </ReactFlow>
-        {selectedNode && (
-          <Box
-            ref={menuRef}
-            sx={{
+        <div style={{
+          width: '80%',
+          height: '80vh',
+          border: '2px solid black',
+          margin: 'auto', // Centers the div horizontally
+          boxSizing: 'border-box' // Ensures the border doesn't add to the width/height
+        }}>
+          <Typography
+            variant="subtitle1"
+            component="div"
+            style={{
               position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: 'auto',
-              bgcolor: 'background.paper',
-              boxShadow: 24,
-              border: "1px solid black",
-              p: 1,
-            }}
+              top: 20, // Adjust this value as needed
+              left: '10%', // Adjust based on the position of your joinRequests nodes
+            }}>
+            Cluster Join Requests
+          </Typography>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onNodeClick={onNodeClick}
+            fitView
+            style={rfStyle}
+            attributionPosition="top-right"
           >
-            <Typography variant="h6" component="h2">
-              {selectedNode.data.label}
-            </Typography>
-            {/* Check if the selected node is a cluster device for displaying the trusted device configuration button */}
-            {clusterDevices.includes(selectedNode.id) ? (
-              <Button onClick={handleConfigureAsTrusted} color="primary">
-                Configure as trusted device
-              </Button>
-            ) : (
-              <>
-                <Button onClick={handleApprove}>Approve</Button>
-                <Button onClick={handleReject} color="error">Reject</Button>
-              </>)}
-          </Box>
-        )}
+            <Background />
+            <Controls />
+          </ReactFlow>
+          {selectedNode && (
+            <Box
+              ref={menuRef}
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 'auto',
+                bgcolor: 'background.paper',
+                boxShadow: 24,
+                border: "1px solid black",
+                p: 1,
+              }}
+            >
+              <Typography variant="h6" component="h2">
+                {selectedNode.data.label}
+              </Typography>
+              {/* Check if the selected node is a cluster device for displaying the trusted device configuration button */}
+              {clusterDevices.includes(selectedNode.id) ? (
+                <Button onClick={handleConfigureAsTrusted} color="primary">
+                  Configure as trusted device
+                </Button>
+              ) : (
+                <>
+                  <Button onClick={handleApprove}>Approve</Button>
+                  <Button onClick={handleReject} color="error">Reject</Button>
+                </>)}
+            </Box>
+          )}
+        </div>
+        <div id='deviceInspectioDiv' style={rfInsepectStyle}>
+            {'I exist only to please my master'}
+        </div>
       </div>
     </Box>
   );
