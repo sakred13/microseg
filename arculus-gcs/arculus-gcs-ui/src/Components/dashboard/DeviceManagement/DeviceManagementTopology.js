@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import DeviceInspection from './deviceInspection';
 import ReactFlow, {
   applyEdgeChanges,
   applyNodeChanges,
@@ -143,12 +144,6 @@ const rfStyle = {
   height: '100vh',
   backgroundColor: '#aec9f5',
   padding: "10%"
-};
-
-const rfInsepectStyle = {
-  width: '20%',
-  height: '80vh',
-  backgroundColor: '#ff0000'
 };
 
 function DeviceManagementTopology() {
@@ -310,9 +305,7 @@ function DeviceManagementTopology() {
             </Box>
           )}
         </div>
-        <div id='deviceInspectioDiv' style={rfInsepectStyle}>
-            {'I exist only to please my master'}
-        </div>
+        <DeviceInspection/>
       </div>
     </Box>
   );
