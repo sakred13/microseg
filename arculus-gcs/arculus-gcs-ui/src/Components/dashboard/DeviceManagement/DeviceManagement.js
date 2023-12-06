@@ -8,7 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Cookies from 'js-cookie';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import { DialogContent, DialogContentText, Typography } from '@mui/material';
 import AddUserModal from '../UserManagement/AddUserModal';
 import EditIcon from '@mui/icons-material/Edit';
@@ -201,7 +201,7 @@ const DeviceManagement = (props) => {
     const [deleteDevice, setDeleteDevice] = useState(null);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [triggerRender, setTriggerRender] = useState(false);
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const [isAddDeviceModalOpen, setIsAddDeviceModalOpen] = useState(false);
     const [selectedNode, setSelectedNode] = useState({ nodeName: '', nodeIP: '' });
     const [tasks, setTasks] = useState([]);
@@ -218,8 +218,9 @@ const DeviceManagement = (props) => {
                 const tasksList = await getTasks();
                 setTasks(tasksList);
             } catch (error) {
-                Cookies.remove('jwtToken');
-                navigate('/signIn');
+                // Cookies.remove('jwtToken');
+                // navigate('/signIn');
+                console.log('error');
             }
         };
 
@@ -242,8 +243,9 @@ const DeviceManagement = (props) => {
                 setTrustedDevices(trustedDevicesList);
                 setMoreNodes(filteredMoreNodes);
             } catch (error) {
-                Cookies.remove('jwtToken');
-                navigate('/signIn');
+                // Cookies.remove('jwtToken');
+                // navigate('/signIn');
+                console.log('error');
             }
         };
 

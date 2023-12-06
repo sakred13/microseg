@@ -8,6 +8,10 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { Box, Typography, Button } from '@mui/material';
+import { API_URL } from '../../../config';
+import Cookies from 'js-cookie';
+// import { useNavigate } from 'react-router-dom';
+
 
 
 // Node dimensions
@@ -34,6 +38,56 @@ const labelStyle = {
   height: 'auto',
   color: 'black', // Optional: set the text color to match Cluster Join Requests
   fontSize: '16px' // Optional: set the text size to match Cluster Join Requests
+};
+
+const getTrustedDevices = async () => {
+  try {
+      const url = `${API_URL}/api/getTrustedDevices?authToken=${encodeURIComponent(
+          Cookies.get('jwtToken')
+      )}`;
+
+      const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+      });
+
+      if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+  } catch (error) {
+      console.error('Error fetching trusted devices:', error.message);
+      throw error;
+  }
+};
+
+const getMoreNodes = async () => {
+  try {
+      const url = `${API_URL}/api/getMoreNodes?authToken=${encodeURIComponent(
+          Cookies.get('jwtToken')
+      )}`;
+
+      const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+      });
+
+      if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+  } catch (error) {
+      console.error('Error fetching more nodes:', error.message);
+      throw error;
+  }
 };
 
 // Create nodes from lists
@@ -147,10 +201,56 @@ const rfStyle = {
 };
 
 function DeviceManagementTopology() {
+  const [trustedDevices, setTrustedDevices] = useState([]);
+  const [moreNodes, setMoreNodes] = useState([]);
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
   const [selectedNode, setSelectedNode] = useState(null);
   const menuRef = useRef(null); // Reference to the menu box
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteDevice, setDeleteDevice] = useState(null);
+  // const navigate = useNavigate();
+
+  const testDevice = {
+    "device_id": 23,
+    "device_name": "controller",
+    "ip_address": "10.42.0.26",
+    "personnel_rank": null,
+    "device_type": "Video Analytic Controller",
+    "allowedTasks": [
+        "send_command",
+        "receive_posdata",
+        "receive_sensordata",
+        "receive_video"
+    ]
+  };
+
+  // useEffect(() => {
+  //   const fetchDevices = async () => {
+  //       try {
+  //           const trustedDevicesList = await getTrustedDevices();
+  //           const moreNodesList = await getMoreNodes();
+
+  //           const filteredMoreNodes = moreNodesList.filter(
+  //               (node) =>
+  //                   !trustedDevicesList.some(
+  //                       (device) => device.device_name === node.nodeName
+  //                   )
+  //           );
+
+  //           setTrustedDevices(trustedDevicesList);
+  //           setMoreNodes(filteredMoreNodes);
+  //       } catch (error) {
+  //           // Cookies.remove('jwtToken');
+  //           // navigate('/signIn');
+  //           console.log('error');
+  //       }
+  //   };
+
+  //   if (!isModalOpen && !isAddDeviceModalOpen && !isEditDeviceModalOpen) {
+  //       fetchDevices();
+  //   }
+  // }, [isModalOpen, isAddDeviceModalOpen, isEditDeviceModalOpen, deleteDevice]);
 
   const onNodeClick = (event, node) => {
     if (node.type === 'input' || clusterDevices.includes(node.id)) { // Assuming 'input' type is used for Cluster Join Request nodes
@@ -305,7 +405,7 @@ function DeviceManagementTopology() {
             </Box>
           )}
         </div>
-        <DeviceInspection/>
+        <DeviceInspection device={testDevice}/>
       </div>
     </Box>
   );
