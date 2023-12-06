@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import DeviceInspection from './deviceInspection';
 import ReactFlow, {
-  applyEdgeChanges,
   applyNodeChanges,
   Background,
   Controls
@@ -18,11 +17,6 @@ import Cookies from 'js-cookie';
 const nodeWidth = 150;
 const nodeHeight = 50;
 const nodeGap = 25; // Gap between nodes
-
-// Lists
-const joinRequests = ['120.32.343.32', '43.43.232.42'];
-const clusterDevices = ['dev1', 'dev2', 'dev3', 'dev4'];
-const configuredDevices = ['pod5', 'pod1', 'pod2', 'pod3', 'pod4'];
 
 const nodeStyle = {
   // ... your existing styles
@@ -90,14 +84,104 @@ const getMoreNodes = async () => {
   }
 };
 
+const handleDeclineDevice = async (ipAddress, nodeName) => {
+  try {
+      const url = `${API_URL}/api/addToCluster`;
+      const authToken = Cookies.get('jwtToken');
+      const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${encodeURIComponent(Cookies.get('jwtToken'))}`,
+          },
+          body: JSON.stringify({
+              ipAddress,
+              nodeName,
+              authToken,
+              decline: true
+          }),
+      });
+
+      if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Success:', data);
+      // Perform any additional actions after a successful API call
+  } catch (error) {
+      console.error('Error handling device decline:', error.message);
+      // Handle errors or show an error message to the user
+  }
+};
+
+const handleRemoveNode = async (nodeName) => {
+  try {
+      const authToken = Cookies.get('jwtToken');
+      const response = await fetch(
+          `${API_URL}/api/removeFromCluster`,
+          {
+              method: 'DELETE',
+              headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${encodeURIComponent(authToken)}`,
+              },
+              body: JSON.stringify({
+                  authToken,
+                  nodeName,
+              }),
+          }
+      );
+
+      if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+      }
+
+      console.log('Node removed successfully');
+  } catch (error) {
+      console.error('Error removing node from the cluster:', error.message);
+      // Handle errors or show an error message to the user
+  }
+};
+
+const handleApproveDevice = async (ipAddress, nodeName) => {
+  try {
+      const url = `${API_URL}/api/addToCluster`;
+      const authToken = Cookies.get('jwtToken');
+      const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${encodeURIComponent(Cookies.get('jwtToken'))}`,
+          },
+          body: JSON.stringify({
+              ipAddress,
+              nodeName,
+              authToken,
+          }),
+      });
+
+      if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Success:', data);
+      // Perform any additional actions after a successful API call
+  } catch (error) {
+      console.error('Error handling device approval:', error.message);
+      // Handle errors or show an error message to the user
+  }
+};
+
 // Create nodes from lists
-const joinRequestsNodes = joinRequests.map((request, index) => ({
-  id: `join-${index}`,
-  type: 'input',
-  data: { label: `join-${request}` },
-  position: { x: -1 * (nodeWidth + nodeGap), y: index * nodeHeight },
-  style: nodeStyle,
-}));
+// const joinRequestsNodes = joinRequests.map((request, index) => ({
+//   id: `join-${index}`,
+//   type: 'input',
+//   data: { label: `join-${request}` },
+//   position: { x: -1 * (nodeWidth + nodeGap), y: index * nodeHeight },
+//   style: nodeStyle,
+// }));
 
 const clusterJoinRequestsLabel = {
   id: 'cluster-join-requests-label',
@@ -109,90 +193,13 @@ const clusterJoinRequestsLabel = {
   style: labelStyle
 };
 
-const clusterDevicesNodes = clusterDevices.map((device, index) => ({
-  id: device,
-  data: { label: device },
-  position: { x: 0.5 * nodeGap, y: index * nodeHeight },
-  parentNode: 'notConfigured',
-  draggable: false,
-  extent: 'parent',
-  style: nodeStyle,
-}));
-
-const configuredDevicesNodes = configuredDevices.map((device, index) => ({
-  id: device,
-  data: { label: device },
-  position: { x: 0.5 * nodeGap, y: index * nodeHeight },
-  parentNode: 'configured',
-  draggable: false,
-  extent: 'parent',
-  style: nodeStyle,
-}));
 
 // Parent and group nodes
-const groupNodes = [
-  {
-    id: 'controller',
-    data: { label: 'Controller' },
-    position: { x: nodeWidth, y: 0 },
-  },
-  {
-    id: 'configured',
-    type: 'output',
-    data: { label: 'Configured Devices' },
-    position: { x: 1.5 * (nodeWidth + nodeGap), y: 5 * nodeGap },
-    style: { width: nodeWidth + nodeGap, height: configuredDevices.length * nodeHeight, backgroundColor: '#1976D2' },
-  },
-  {
-    id: 'notConfigured',
-    data: { label: 'Configured Devices' },
-    type: 'output',
-    position: { x: .25 * (nodeWidth + nodeGap), y: 5 * nodeGap },
-    style: { width: nodeWidth + nodeGap, height: clusterDevices.length * nodeHeight, backgroundColor: 'rgba(255, 255, 0, 0.2)' },
-  }
-];
 
-const initialEdges = [{ id: 'controller-configured', source: 'controller', target: 'configured', label: 'Configured Devices' }];
+
 const yOffset = -40; // Adjust the offset as needed for visual appearance
-const clusterDevicesParentNode = groupNodes.find(node => node.id === 'notConfigured');
-const configuredDevicesParentNode = groupNodes.find(node => node.id === 'configured');
-
-const clusterDevicesLabel = {
-  id: 'cluster-devices-label',
-  type: 'default',
-  data: { label: 'Devices in the Cluster' },
-  position: {
-    x: clusterDevicesParentNode.position.x + (clusterDevicesParentNode.style.width / 2) - (nodeWidth / 2),
-    y: clusterDevicesParentNode.position.y + yOffset
-  },
-  draggable: false,
-  selectable: false,
-  style: labelStyle
-};
-
-const configuredDevicesLabel = {
-  id: 'configured-devices-label',
-  type: 'default',
-  data: { label: 'Configured Devices' },
-  position: {
-    x: configuredDevicesParentNode.position.x + (configuredDevicesParentNode.style.width / 2) - (nodeWidth / 2),
-    y: configuredDevicesParentNode.position.y + yOffset
-  },
-  draggable: false,
-  selectable: false,
-  style: labelStyle
-};
 
 // Add the label nodes to the initialNodes array
-const initialNodes = [
-  clusterJoinRequestsLabel,
-  clusterDevicesLabel,
-  configuredDevicesLabel,
-  ...joinRequestsNodes,
-  ...groupNodes,
-  ...clusterDevicesNodes,
-  ...configuredDevicesNodes
-];
 const rfStyle = {
   width: '100%',
   height: '100vh',
@@ -203,11 +210,8 @@ const rfStyle = {
 function DeviceManagementTopology() {
   const [trustedDevices, setTrustedDevices] = useState([]);
   const [moreNodes, setMoreNodes] = useState([]);
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
   const [selectedNode, setSelectedNode] = useState(null);
   const menuRef = useRef(null); // Reference to the menu box
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteDevice, setDeleteDevice] = useState(null);
   // const navigate = useNavigate();
 
@@ -225,35 +229,110 @@ function DeviceManagementTopology() {
     ]
   };
 
-  // useEffect(() => {
-  //   const fetchDevices = async () => {
-  //       try {
-  //           const trustedDevicesList = await getTrustedDevices();
-  //           const moreNodesList = await getMoreNodes();
+  const clusterDevicesNodes = moreNodes.map((device, index) => ({
+    id: device,
+    data: { label: device },
+    position: { x: 0.5 * nodeGap, y: index * nodeHeight },
+    parentNode: 'notConfigured',
+    draggable: false,
+    extent: 'parent',
+    style: nodeStyle,
+  }));
 
-  //           const filteredMoreNodes = moreNodesList.filter(
-  //               (node) =>
-  //                   !trustedDevicesList.some(
-  //                       (device) => device.device_name === node.nodeName
-  //                   )
-  //           );
+  const configuredDevicesNodes = trustedDevices.map((device, index) => ({
+    id: device,
+    data: { label: device },
+    position: { x: 0.5 * nodeGap, y: index * nodeHeight },
+    parentNode: 'configured',
+    draggable: false,
+    extent: 'parent',
+    style: nodeStyle,
+  }));
 
-  //           setTrustedDevices(trustedDevicesList);
-  //           setMoreNodes(filteredMoreNodes);
-  //       } catch (error) {
-  //           // Cookies.remove('jwtToken');
-  //           // navigate('/signIn');
-  //           console.log('error');
-  //       }
-  //   };
+  const groupNodes = [
+    {
+      id: 'configured',
+      type: 'output',
+      position: { x: 1.5 * (nodeWidth + nodeGap), y: 5 * nodeGap },
+      style: { width: nodeWidth + nodeGap, height: trustedDevices.length * nodeHeight, backgroundColor: '#1976D2' },
+    },
+    {
+      id: 'notConfigured',
+      type: 'output',
+      position: { x: .25 * (nodeWidth + nodeGap), y: 5 * nodeGap },
+      style: { width: nodeWidth + nodeGap, height: moreNodes.length * nodeHeight, backgroundColor: 'rgba(255, 255, 0, 0.2)' },
+    }
+  ];
 
-  //   if (!isModalOpen && !isAddDeviceModalOpen && !isEditDeviceModalOpen) {
-  //       fetchDevices();
-  //   }
-  // }, [isModalOpen, isAddDeviceModalOpen, isEditDeviceModalOpen, deleteDevice]);
+  const clusterDevicesParentNode = groupNodes.find(node => node.id === 'notConfigured');
+  const configuredDevicesParentNode = groupNodes.find(node => node.id === 'configured');
+
+  const clusterDevicesLabel = {
+    id: 'cluster-devices-label',
+    type: 'default',
+    data: { label: 'Devices in the Cluster' },
+    position: {
+      x: clusterDevicesParentNode.position.x + (clusterDevicesParentNode.style.width / 2) - (nodeWidth / 2),
+      y: clusterDevicesParentNode.position.y + yOffset
+    },
+    draggable: false,
+    selectable: false,
+    style: labelStyle
+  };
+  
+  const configuredDevicesLabel = {
+    id: 'configured-devices-label',
+    type: 'default',
+    data: { label: 'Configured Devices' },
+    position: {
+      x: configuredDevicesParentNode.position.x + (configuredDevicesParentNode.style.width / 2) - (nodeWidth / 2),
+      y: configuredDevicesParentNode.position.y + yOffset
+    },
+    draggable: false,
+    selectable: false,
+    style: labelStyle
+  };
+
+  const initialNodes = [
+    clusterJoinRequestsLabel,
+    clusterDevicesLabel,
+    configuredDevicesLabel,
+    // ...joinRequestsNodes,
+    ...groupNodes,
+    ...clusterDevicesNodes,
+    ...configuredDevicesNodes
+  ];
+
+  const [nodes, setNodes] = useState(initialNodes);
+
+  useEffect(() => {
+    const fetchDevices = async () => {
+        try {
+            const trustedDevicesList = await getTrustedDevices();
+            const moreNodesList = await getMoreNodes();
+
+            const filteredMoreNodes = moreNodesList.filter(
+                (node) =>
+                    !trustedDevicesList.some(
+                        (device) => device.device_name === node.nodeName
+                    )
+            );
+
+            setTrustedDevices(trustedDevicesList);
+            setMoreNodes(filteredMoreNodes);
+        } catch (error) {
+            // Cookies.remove('jwtToken');
+            // navigate('/signIn');
+            console.log('error');
+        }
+    };
+
+    fetchDevices();
+
+  }, []);  
 
   const onNodeClick = (event, node) => {
-    if (node.type === 'input' || clusterDevices.includes(node.id)) { // Assuming 'input' type is used for Cluster Join Request nodes
+    if (node.type === 'input' || moreNodes.includes(node.id)) { // Assuming 'input' type is used for Cluster Join Request nodes
       setSelectedNode(node);
     }
   };
@@ -324,10 +403,10 @@ function DeviceManagementTopology() {
     [setNodes]
   );
 
-  const onEdgesChange = useCallback(
-    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [setEdges]
-  );
+  // const onEdgesChange = useCallback(
+  //   (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+  //   [setEdges]
+  // );
 
   return (
     <Box sx={{ textAlign: 'center', padding: '0 10%' }}>
@@ -363,9 +442,8 @@ function DeviceManagementTopology() {
           </Typography>
           <ReactFlow
             nodes={nodes}
-            edges={edges}
             onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
+            // onEdgesChange={onEdgesChange}
             onNodeClick={onNodeClick}
             fitView
             style={rfStyle}
@@ -393,7 +471,7 @@ function DeviceManagementTopology() {
                 {selectedNode.data.label}
               </Typography>
               {/* Check if the selected node is a cluster device for displaying the trusted device configuration button */}
-              {clusterDevices.includes(selectedNode.id) ? (
+              {trustedDevices.includes(selectedNode.id) ? (
                 <Button onClick={handleConfigureAsTrusted} color="primary">
                   Configure as trusted device
                 </Button>

@@ -245,7 +245,7 @@ const DeviceManagement = (props) => {
             } catch (error) {
                 // Cookies.remove('jwtToken');
                 // navigate('/signIn');
-                console.log('error');
+                console.log({error});
             }
         };
 
