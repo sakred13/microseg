@@ -230,8 +230,8 @@ function DeviceManagementTopology() {
   };
 
   const clusterDevicesNodes = moreNodes.map((device, index) => ({
-    id: device,
-    data: { label: device },
+    id: device.nodeIP,
+    data: { label: device.nodeName },
     position: { x: 0.5 * nodeGap, y: index * nodeHeight },
     parentNode: 'notConfigured',
     draggable: false,
@@ -320,6 +320,39 @@ function DeviceManagementTopology() {
 
             setTrustedDevices(trustedDevicesList);
             setMoreNodes(filteredMoreNodes);
+
+            const updatedClusterNodes = moreNodes.map((device, index) => ({
+              id: device.nodeIP,
+              data: { label: device.nodeName },
+              position: { x: 0.5 * nodeGap, y: index * nodeHeight },
+              parentNode: 'notConfigured',
+              draggable: false,
+              extent: 'parent',
+              style: nodeStyle,
+            }));
+          
+
+            const configuredDevicesNodes = trustedDevices.map((device, index) => ({
+              id: device,
+              data: { label: device },
+              position: { x: 0.5 * nodeGap, y: index * nodeHeight },
+              parentNode: 'configured',
+              draggable: false,
+              extent: 'parent',
+              style: nodeStyle,
+            }));
+
+            const currentNodes = [
+              clusterJoinRequestsLabel,
+              clusterDevicesLabel,
+              configuredDevicesLabel,
+              ...groupNodes,
+              ...clusterDevicesNodes,
+              ...configuredDevicesNodes
+            ];
+
+            setNodes(currentNodes);
+
         } catch (error) {
             // Cookies.remove('jwtToken');
             // navigate('/signIn');
