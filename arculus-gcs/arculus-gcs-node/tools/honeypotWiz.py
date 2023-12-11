@@ -3,6 +3,12 @@ import subprocess
 
 app = Flask(__name__)
 
+if len(sys.argv) < 2:
+    print("Usage: python3 honeypotWiz.py <your_ipv4_address>")
+    sys.exit(1)
+
+allowed_ip = sys.argv[1]
+
 pot_type_commands = {
     "Cowrie": "sudo mkdir /Cowrie && cd /Cowrie && sudo wget \"{}/api/script/?text=true&script_id=3\" --no-check-certificate -O deploy.sh && sudo bash deploy.sh {} {} && sudo docker-compose up -d",
     "Dionaea": "sudo mkdir /Dionaea && cd /Dionaea && sudo wget \"{}/api/script/?text=true&script_id=4\" --no-check-certificate -O deploy.sh && sudo bash deploy.sh {} {} && sudo docker-compose up -d",
@@ -11,6 +17,16 @@ pot_type_commands = {
     "ssh-auth-logger": "sudo mkdir /ssh-auth-logger && cd /ssh-auth-logger && sudo wget \"{}/api/script/?text=true&script_id=8\" --no-check-certificate -O deploy.sh && sudo bash deploy.sh {} {} && sudo docker-compose up -d"
 }
 
+def is_allowed_ip(remote_ip):
+    return remote_ip == allowed_ip
+
+# Middleware to check the source IP address before processing requests
+@app.before_request
+def before_request():
+    remote_ip = request.remote_addr
+    if not is_allowed_ip(remote_ip):
+        return jsonify({'error': 'Unauthorized access.'}), 401
+        
 @app.route('/deployHoneyPot', methods=['POST'])
 def execute_command():
     try:

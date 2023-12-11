@@ -1,0 +1,11 @@
+ * Serving Flask app 'honeypotWiz'
+ * Debug mode: on
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.31.88.8:5000
+Press CTRL+C to quit
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 691-551-470
+172.31.88.8 - - [03/Dec/2023 21:01:06] "POST /deployHoneyPot HTTP/1.1" 200 -
