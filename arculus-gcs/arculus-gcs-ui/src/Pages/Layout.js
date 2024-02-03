@@ -25,6 +25,7 @@ import HiveIcon from '@mui/icons-material/Hive';
 import EdgesensorHighIcon from '@mui/icons-material/EdgesensorHigh';
 import SecurityIcon from '@mui/icons-material/Security';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
+import PublicOffIcon from '@mui/icons-material/PublicOff';
 import { API_URL } from '../config';
 import { useState, useEffect } from 'react';
 
@@ -212,70 +213,80 @@ export function Layout(props) {
           </Toolbar>
           <Divider />
           <List component="nav">
-            <ListItemButton onClick={() => handleManageClick('/dashboard')}>
-              <ListItemIcon>
-                <DashboardIcon />
-              </ListItemIcon>
-              <ListItemText primary="Dashboard" />
-            </ListItemButton>
-            <ListItemButton>
-              <ListItemIcon>
-                <AccountCircleIcon />
-              </ListItemIcon>
-              <ListItemText primary="Account" />
-            </ListItemButton>
-            {isAdmin && (
-              <ListItemButton onClick={() => handleManageClick('/manageUsers')}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+
+              <ListItemButton onClick={() => handleManageClick('/dashboard')}>
                 <ListItemIcon>
-                  <PeopleIcon />
+                  <DashboardIcon />
                 </ListItemIcon>
-                <ListItemText primary="Manage Users" />
+                <ListItemText primary="Dashboard" />
               </ListItemButton>
-            )}
-            {isAdmin && (
-              <ListItemButton onClick={() => handleManageClick('/manageDevices')}>
+              <ListItemButton>
                 <ListItemIcon>
-                  <EdgesensorHighIcon />
+                  <AccountCircleIcon />
                 </ListItemIcon>
-                <ListItemText primary="Manage Edge Devices" />
+                <ListItemText primary="Account" />
               </ListItemButton>
-            )}
-            <ListItemButton onClick={() => handleManageClick('/downloadTools')}>
-              <ListItemIcon>
-                <img src='/cluster.png' alt="Add Nodes" style={{ width: '24px', height: '24px' }} />
-              </ListItemIcon>
-              <ListItemText primary="Add Nodes" />
-            </ListItemButton>
-            {isAdmin && (
-              <ListItemButton onClick={() => handleManageClick('/managePolicies')}>
+              {isAdmin && (
+                <ListItemButton onClick={() => handleManageClick('/manageUsers')}>
+                  <ListItemIcon>
+                    <PeopleIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Manage Users" />
+                </ListItemButton>
+              )}
+              {isAdmin && (
+                <ListItemButton onClick={() => handleManageClick('/manageDevices')}>
+                  <ListItemIcon>
+                    <EdgesensorHighIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Manage Edge Devices" />
+                </ListItemButton>
+              )}
+              <ListItemButton onClick={() => handleManageClick('/downloadTools')}>
                 <ListItemIcon>
-                  <SecurityIcon />
+                  <img src='/cluster.png' alt="Add Nodes" style={{ width: '24px', height: '24px' }} />
                 </ListItemIcon>
-                <ListItemText primary="Manage Policies" />
+                <ListItemText primary="Add Nodes" />
               </ListItemButton>
-            )}
-            {isAdmin && (
-              <ListItemButton onClick={() => handleManageClick('/planMissions')}>
+              {isAdmin && (
+                <ListItemButton onClick={() => handleManageClick('/managePolicies')}>
+                  <ListItemIcon>
+                    <SecurityIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Manage Policies" />
+                </ListItemButton>
+              )}
+              {isAdmin && (
+                <ListItemButton onClick={() => handleManageClick('/planMissions')}>
+                  <ListItemIcon>
+                    <WhatshotIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Execute Missions" />
+                </ListItemButton>
+              )}
+              {isAdmin && (
+                <ListItemButton onClick={() => handleManageClick('/honeypots')}>
+                  <ListItemIcon>
+                    <HiveIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Deploy Honeypots" />
+                </ListItemButton>
+              )}
+              <ListItemButton onClick={() => handleManageClick('/attackMetrics')}>
                 <ListItemIcon>
-                  <WhatshotIcon />
+                  <BarChartIcon />
                 </ListItemIcon>
-                <ListItemText primary="Execute Missions" />
+                <ListItemText primary="Attack Metrics" />
               </ListItemButton>
-            )}
-            {isAdmin && (
-              <ListItemButton onClick={() => handleManageClick('/honeypots')}>
+              <ListItemButton onClick={() => handleManageClick('/blacklist')}>
                 <ListItemIcon>
-                  <HiveIcon />
+                  <PublicOffIcon />
                 </ListItemIcon>
-                <ListItemText primary="Deploy Honeypots" />
+                <ListItemText primary="Blacklist" />
               </ListItemButton>
-            )}
-            <ListItemButton onClick={() => handleManageClick('/attackMetrics')}>
-              <ListItemIcon>
-                <BarChartIcon />
-              </ListItemIcon>
-              <ListItemText primary="Attack Metrics" />
-            </ListItemButton>
+            </Box>
+            <Divider sx={{ my: 1 }} />
             <ListItemButton onClick={handleSignOut}>
               <ListItemIcon>
                 <LogoutIcon />
@@ -283,13 +294,12 @@ export function Layout(props) {
               <ListItemText primary="Sign Out" />
             </ListItemButton>
           </List>
-          <Divider sx={{ my: 1 }} />
           <Box sx={{ flexGrow: 1 }} />
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, overflow: 'auto', marginTop: '100px' }}>
           {componentWithProps}
         </Box>
       </Box>
-    </ThemeProvider>
+    </ThemeProvider >
   );
 }

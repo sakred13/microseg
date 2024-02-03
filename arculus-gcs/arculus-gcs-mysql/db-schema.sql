@@ -200,6 +200,18 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
+
+DROP TABLE IF EXISTS `blacklist`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `blacklist` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `blacklist_ip` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+LOCK TABLES `blacklist` WRITE;
+
 INSERT INTO `user` VALUES (1,'admin@umsystem.edu','admin',1,'$2b$10$H6W0865NkOsLCjSZ1fME7eym05sUZfH8NeoYFrMrmgzXlRGr2JcJy'),(5,'saketh.reddy1307@gmail.coms','Saketh',1,'$2b$10$aGSJbbrReDRAeBLS4nkcGOT1uST.evWKTvYfNazkvU1aWcl1CCGJ.');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;

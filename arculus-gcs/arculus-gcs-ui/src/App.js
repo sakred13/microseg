@@ -14,6 +14,7 @@ import MissionPlanner from './Components/dashboard/MissionPlanning/MissionPlanne
 import HoneypotDashboard from './Components/dashboard/HoneyNet/HoneypotDashboard';
 import IntroDashboard from './Components/dashboard/IntroDashboard';
 import MetricsDashboard from './Components/dashboard/HoneyNet/MetricsDashboard';
+import Blacklist from './Components/dashboard/DeviceManagement/Blacklist';
 import { DashboardProvider } from './Components/dashboard/HoneyNet/DashboardContext';
 import DeviceManagementTopology from './Components/dashboard/DeviceManagement/DeviceManagementTopology';
 import DownloadTools from './Components/DownloadTools';
@@ -35,6 +36,7 @@ function App() {
           <Route path='/planMissions' element={<Layout component={<AccessWrapper component={<MissionPlanner />} />} />} />
           <Route path='/honeypots' element={<Layout component={<AccessWrapper component={<HoneypotDashboard />} />} />} />
           <Route path='/attackMetrics' element={<Layout component={<AccessWrapper component={<MetricsDashboard />} />} />} />
+          <Route path='/blacklist' element={<Layout component={<AccessWrapper component={<Blacklist />} />} />} />
 
         </Routes>
       </DashboardProvider>
