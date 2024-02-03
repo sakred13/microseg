@@ -28,7 +28,7 @@ Running this script installs K3s on the controller machine and sets it up as the
 #!/bin/bash
 cd arculus-gcs/arculus-gcs-mysql
 sudo apt update
-sudo apt install docker.io
+sudo apt install docker.io npm
 sudo docker build -t arculus-gcs-mysql:latest .
 sudo docker run -p 3306:3306 --name arculus-gcs-db arculus-gcs-mysql
 ```
