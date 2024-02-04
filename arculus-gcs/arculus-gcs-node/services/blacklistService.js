@@ -14,13 +14,13 @@ exports.getBlacklist = (req, res) => {
 
         if (isAdmin) {
             // Query to get blacklisted IP addresses
-            pool.query('SELECT ip_address FROM blacklist LIMIT ?', [parseInt(records, 10)], (queryErr, results) => {
+            pool.query('SELECT blacklist_ip FROM blacklist LIMIT ?', [parseInt(records, 10)], (queryErr, results) => {
                 if (queryErr) {
                     console.error(queryErr);
                     return res.status(500).json({ message: 'Internal Server Error' });
                 }
 
-                const blacklistedIPs = results.map(result => result.ip_address);
+                const blacklistedIPs = results.map(result => result.blacklist_ip);
                 return res.status(200).json({ blacklistedIPs });
             });
         } else {
@@ -46,7 +46,7 @@ exports.removeFromBlacklist = (req, res) => {
             const ipArray = ipAddresses.split(',');
 
             // Query to remove IP addresses from the blacklist
-            pool.query('DELETE FROM blacklist WHERE ip_address IN (?)', [ipArray], (queryErr) => {
+            pool.query('DELETE FROM blacklist WHERE blacklist_ip IN (?)', [ipArray], (queryErr) => {
                 if (queryErr) {
                     console.error(queryErr);
                     return res.status(500).json({ message: 'Internal Server Error' });

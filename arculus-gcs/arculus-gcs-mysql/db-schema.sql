@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 8.0.32, for Win64 (x86_64)
+-- MySQL dump 10.13 Distrib 8.0.32, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: policymanager
 -- ------------------------------------------------------
@@ -18,8 +18,8 @@
 --
 -- Table structure for table `device_task`
 --
-CREATE DATABASE `policymanager`;
-use `policymanager`;
+CREATE DATABASE IF NOT EXISTS `policymanager`;
+USE `policymanager`;
 DROP TABLE IF EXISTS `device_task`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -200,6 +200,13 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES (1,'admin@umsystem.edu','admin',1,'$2b$10$H6W0865NkOsLCjSZ1fME7eym05sUZfH8NeoYFrMrmgzXlRGr2JcJy'),(5,'saketh.reddy1307@gmail.coms','Saketh',1,'$2b$10$aGSJbbrReDRAeBLS4nkcGOT1uST.evWKTvYfNazkvU1aWcl1CCGJ.');
+/*!40000 ALTER TABLE `user` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `blacklist`
+--
 
 DROP TABLE IF EXISTS `blacklist`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -209,12 +216,17 @@ CREATE TABLE `blacklist` (
   `blacklist_ip` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `blacklist`
+--
 
 LOCK TABLES `blacklist` WRITE;
-
-INSERT INTO `user` VALUES (1,'admin@umsystem.edu','admin',1,'$2b$10$H6W0865NkOsLCjSZ1fME7eym05sUZfH8NeoYFrMrmgzXlRGr2JcJy'),(5,'saketh.reddy1307@gmail.coms','Saketh',1,'$2b$10$aGSJbbrReDRAeBLS4nkcGOT1uST.evWKTvYfNazkvU1aWcl1CCGJ.');
-/*!40000 ALTER TABLE `user` ENABLE KEYS */;
+/*!40000 ALTER TABLE `blacklist` DISABLE KEYS */;
+/*!40000 ALTER TABLE `blacklist` ENABLE KEYS */;
 UNLOCK TABLES;
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

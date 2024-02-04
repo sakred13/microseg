@@ -13,6 +13,7 @@ const roleRoutes = require('./routes/roleRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const honeyNetProxyRoutes = require('./routes/honeyNetProxyRoutes');
 const honeyPotRoutes = require('./routes/honeyPotRoutes');
+const blacklistRoutes = require('./routes/blacklistRoutes');
 
 const { joinReqsWebSocket, joinStatusWebSocket } = require('./services/deviceService');
 
@@ -49,6 +50,7 @@ app.use('/', deviceRoutes);
 app.use('/', authRoutes);
 app.use('/', roleRoutes);
 app.use('/', taskRoutes);
+app.use('/blacklistapi/', blacklistRoutes);
 app.use('/honeypot-proxy/', honeyNetProxyRoutes);
 app.use('/honeypot-api/', honeyPotRoutes);
 

@@ -6,6 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 import Checkbox from '@mui/material/Checkbox';
+import Cookies from 'js-cookie';
 import { API_URL } from '../../../config';
 
 const Blacklist = () => {
@@ -18,7 +19,9 @@ const Blacklist = () => {
     const fetchBlacklist = async () => {
       try {
         const response = await fetch(
-          `${API_URL}/getBlacklist?records=${recordsToShow}`
+          `${API_URL}/blacklistapi/getBlacklist?records=${recordsToShow}&authToken=${encodeURIComponent(
+            Cookies.get('jwtToken')
+          )}`
         );
 
         if (!response.ok) {
@@ -26,7 +29,12 @@ const Blacklist = () => {
         }
 
         const data = await response.json();
-        setBlacklistedIPs(data);
+        // Ensure data is an array before setting state
+        if (Array.isArray(data)) {
+          setBlacklistedIPs(data);
+        } else {
+          console.error('Invalid data format:', data);
+        }
       } catch (error) {
         console.error('Error fetching blacklisted IPs:', error.message);
       }
@@ -43,8 +51,10 @@ const Blacklist = () => {
     try {
       const ipAddresses = selectedIPs.join(',');
       const response = await fetch(
-        `${API_URL}/removeFromBlacklist?ipAddresses=${encodeURIComponent(
+        `${API_URL}/blacklistapi/removeFromBlacklist?ipAddresses=${encodeURIComponent(
           ipAddresses
+        )}&authToken=${encodeURIComponent(
+          Cookies.get('jwtToken')
         )}`,
         {
           method: 'DELETE',
