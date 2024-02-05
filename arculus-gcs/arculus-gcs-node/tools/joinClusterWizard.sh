@@ -1,14 +1,15 @@
 #!/bin/bash
 
 # Check if the correct number of command line arguments is provided
-if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 <clusterIP> <nodeName>"
+if [ "$#" -ne 3 ]; then
+    echo "Usage: $0 <clusterIP> <privateIP> <nodeName>"
     exit 1
 fi
 
 # Assign command line arguments to variables
 clusterIP=$1
-nodeName=$2
+privateIP=$2
+nodeName=$3
 
 # Download the latest release (adjust the version as needed)
 wget https://github.com/vi/websocat/releases/download/v1.8.0/websocat_amd64-linux -O websocat
@@ -89,8 +90,8 @@ if [ "$http_status_code" -eq 200 ]; then
     sudo apt install -y python3 python3-pip docker-compose
     pip3 install Flask
     export CHN_DOMAIN=$clusterIP
-
-    nohup python3 honeypotWiz.py "$CHN_DOMAIN" > api.log 2>&1 &
+    
+    nohup python3 honeypotWiz.py "$CHN_DOMAIN" "$privateIP" > api.log 2>&1 &
 
     echo "Node added to cluster successfully."
 else

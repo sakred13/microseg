@@ -1,13 +1,15 @@
 from flask import Flask, request, jsonify
+import sys
 import subprocess
 
 app = Flask(__name__)
 
-if len(sys.argv) < 2:
-    print("Usage: python3 honeypotWiz.py <your_ipv4_address>")
+if len(sys.argv) < 3:
+    print("Usage: python3 honeypotWiz.py <arculus_public_ipv4_address> <arculus_private_ipv4_address>")
     sys.exit(1)
 
 allowed_ip = sys.argv[1]
+allowed_ip2 = sys.argv[2]
 
 pot_type_commands = {
     "Cowrie": "sudo mkdir /Cowrie && cd /Cowrie && sudo wget \"{}/api/script/?text=true&script_id=3\" --no-check-certificate -O deploy.sh && sudo bash deploy.sh {} {} && sudo docker-compose up -d",
@@ -18,13 +20,15 @@ pot_type_commands = {
 }
 
 def is_allowed_ip(remote_ip):
-    return remote_ip == allowed_ip
+    return remote_ip == allowed_ip or remote_ip == allowed_ip2
 
 # Middleware to check the source IP address before processing requests
 @app.before_request
 def before_request():
     remote_ip = request.remote_addr
     if not is_allowed_ip(remote_ip):
+        print('remote address: ', remote_ip)
+        print('allowed address: ', allowed_ip)
         return jsonify({'error': 'Unauthorized access.'}), 401
         
 @app.route('/deployHoneyPot', methods=['POST'])

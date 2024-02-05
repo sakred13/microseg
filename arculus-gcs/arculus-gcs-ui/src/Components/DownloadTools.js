@@ -5,7 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { ThemeProvider, createTheme } from '@mui/material/styles'; // Updated import for MUI v5
-import { API_URL } from '../config';
+import { API_URL, PRIVATE_IP } from '../config';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
@@ -27,7 +27,7 @@ function DownloadTools() {
     wait
     chmod +x joinClusterWizard.sh
     chmod +x honeypotWiz.py
-    ./joinClusterWizard.sh ${API_URL.replace('http://', '').replace(':3001', '')} ${nodeName}`;
+    ./joinClusterWizard.sh ${API_URL.replace('http://', '').replace(':3001', '')} ${PRIVATE_IP} ${nodeName}`;
     };
 
     const [textToCopy, setTextToCopy] = useState(generateDownloadScript(''));

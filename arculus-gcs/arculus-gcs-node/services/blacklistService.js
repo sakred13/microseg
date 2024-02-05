@@ -14,7 +14,7 @@ exports.getBlacklist = (req, res) => {
 
         if (isAdmin) {
             // Query to get blacklisted IP addresses
-            pool.query('SELECT blacklist_ip FROM blacklist LIMIT ?', [parseInt(records, 10)], (queryErr, results) => {
+            pool.query('SELECT blacklist_ip FROM blacklist', (queryErr, results) => {
                 if (queryErr) {
                     console.error(queryErr);
                     return res.status(500).json({ message: 'Internal Server Error' });
