@@ -14,7 +14,7 @@ const taskRoutes = require('./routes/taskRoutes');
 const honeyNetProxyRoutes = require('./routes/honeyNetProxyRoutes');
 const honeyPotRoutes = require('./routes/honeyPotRoutes');
 const blacklistRoutes = require('./routes/blacklistRoutes');
-
+const utilizationWebSocketService = require('./services/utilizationWebSocketService');
 const { joinReqsWebSocket, joinStatusWebSocket } = require('./services/deviceService');
 
 const hostIp = execSync("ifconfig eth0 | grep 'inet ' | awk '{print $2}'").toString().trim();
@@ -53,6 +53,7 @@ app.use('/', taskRoutes);
 app.use('/blacklistapi/', blacklistRoutes);
 app.use('/honeypot-proxy/', honeyNetProxyRoutes);
 app.use('/honeypot-api/', honeyPotRoutes);
+utilizationWebSocketService.startUtilizationCollection();
 
 app.get('/tools/downloadJoinWiz', (req, res) => {
   const filePath = path.join(__dirname, '/tools/joinClusterWizard.sh');
@@ -109,4 +110,8 @@ joinStatusServer.listen(3002, () => {
 
 joinReqsServer.listen(3003, () => {
   console.log('Join Requests WebSocket server listening on port 3003');
+});
+
+utilizationWebSocketService.utilizationServer.listen(3004, () => {
+  console.log('Utilization WebSocket server listening on port 3004');
 });

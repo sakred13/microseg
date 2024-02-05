@@ -18,6 +18,7 @@ import Blacklist from './Components/dashboard/DeviceManagement/Blacklist';
 import { DashboardProvider } from './Components/dashboard/HoneyNet/DashboardContext';
 import DeviceManagementTopology from './Components/dashboard/DeviceManagement/DeviceManagementTopology';
 import DownloadTools from './Components/DownloadTools';
+import UtilizationGraphs from './Components/dashboard/UtilizationGraphs';
 
 function App() {
 
@@ -29,7 +30,7 @@ function App() {
           <Route path='/signIn' element={<SignInPage />} />
           <Route path='/downloadTools' element={<Layout component={<AccessWrapper component={<DownloadTools />} />} />}/>
           <Route path='/loggedIn' element={<Layout component={<AccessWrapper component={<IntroDashboard />} />} />} />
-          <Route path='/dashboard' element={<Layout component={<AccessWrapper component={<IntroDashboard />} />} />} />
+          <Route path='/about' element={<Layout component={<AccessWrapper component={<IntroDashboard />} />} />} />
           <Route path='/manageUsers' element={<Layout component={<AccessWrapper component={<ManageUsers />} />} />} />
           <Route path='/manageDevices' element={<Layout component={<AccessWrapper component={<DeviceManagement />} />} />} />
           <Route path='/managePolicies' element={<Layout component={<AccessWrapper component={<DeviceManagementTopology />} />} />} />
@@ -37,6 +38,7 @@ function App() {
           <Route path='/honeypots' element={<Layout component={<AccessWrapper component={<HoneypotDashboard />} />} />} />
           <Route path='/attackMetrics' element={<Layout component={<AccessWrapper component={<MetricsDashboard />} />} />} />
           <Route path='/blacklist' element={<Layout component={<AccessWrapper component={<Blacklist />} />} />} />
+          <Route path='/dashboard' element={<Layout component={<AccessWrapper component={<UtilizationGraphs />} />} />} />
 
         </Routes>
       </DashboardProvider>

@@ -15,31 +15,32 @@ const Blacklist = () => {
   const [recordsToShow, setRecordsToShow] = useState(10);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
 
-  useEffect(() => {
-    const fetchBlacklist = async () => {
-      try {
-        const response = await fetch(
-          `${API_URL}/blacklistapi/getBlacklist?records=${recordsToShow}&authToken=${encodeURIComponent(
-            Cookies.get('jwtToken')
-          )}`
-        );
+  const fetchBlacklist = async () => {
+    try {
+      const response = await fetch(
+        `${API_URL}/blacklistapi/getBlacklist?records=${recordsToShow}&authToken=${encodeURIComponent(
+          Cookies.get('jwtToken')
+        )}`
+      );
 
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        // Ensure data is an array before setting state
-        if (Array.isArray(data)) {
-          setBlacklistedIPs(data);
-        } else {
-          console.error('Invalid data format:', data);
-        }
-      } catch (error) {
-        console.error('Error fetching blacklisted IPs:', error.message);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
       }
-    };
 
+      const data = await response.json();
+
+      // Check if the 'blacklistedIPs' property exists and is an array
+      if (data && Array.isArray(data.blacklistedIPs)) {
+        setBlacklistedIPs(data.blacklistedIPs);
+      } else {
+        console.error('Invalid data format:', data);
+      }
+    } catch (error) {
+      console.error('Error fetching blacklisted IPs:', error.message);
+    }
+  };
+
+  useEffect(() => {
     fetchBlacklist();
   }, [recordsToShow]);
 
@@ -50,32 +51,36 @@ const Blacklist = () => {
   const handleConfirmRemove = async () => {
     try {
       const ipAddresses = selectedIPs.join(',');
+
       const response = await fetch(
-        `${API_URL}/blacklistapi/removeFromBlacklist?ipAddresses=${encodeURIComponent(
-          ipAddresses
-        )}&authToken=${encodeURIComponent(
+        `${API_URL}/blacklistapi/removeFromBlacklist?authToken=${encodeURIComponent(
           Cookies.get('jwtToken')
         )}`,
         {
           method: 'DELETE',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json', // Set the Content-Type header
           },
+          body: JSON.stringify({ ipAddresses }), // Stringify the body as JSON
         }
       );
 
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
+      if (response.ok) {
+        // Successfully removed from blacklist
+
+        // Clear the selectedIPs array after successful removal
+        setSelectedIPs([]);
+
+        // Close the confirmation dialog
+        setShowConfirmationDialog(false);
+
+        // Refetch the blacklist after removal
+        fetchBlacklist();
+      } else {
+        // Handle unsuccessful removal here
+        console.error('Error removing from blacklist:', response.statusText);
+        // You might want to show an error message to the user
       }
-
-      // Update the UI or perform additional actions as needed
-      console.log('Successfully removed from blacklist');
-
-      // Clear the selectedIPs array after successful removal
-      setSelectedIPs([]);
-
-      // Close the confirmation dialog
-      setShowConfirmationDialog(false);
     } catch (error) {
       console.error('Error removing from blacklist:', error.message);
       // Handle errors or show an error message to the user
@@ -95,7 +100,7 @@ const Blacklist = () => {
   };
 
   return (
-    <div style={{ marginTop: '20px' }}>
+    <div style={{ marginTop: '20px', textAlign: 'center' }}>
       <div>
         <h2>Blacklisted IP Addresses</h2>
         <label>
@@ -108,14 +113,14 @@ const Blacklist = () => {
         </label>
       </div>
 
-      <div style={{ marginTop: '20px' }}>
+      <div style={{ marginTop: '20px', display: 'table', margin: 'auto' }}>
         {blacklistedIPs.map((ip) => (
-          <div key={ip}>
+          <div key={ip} style={{ display: 'table-row' }}>
             <Checkbox
               checked={selectedIPs.includes(ip)}
               onChange={() => handleCheckboxChange(ip)}
             />
-            {ip}
+            <div style={{ display: 'table-cell', padding: '8px' }}>{ip}</div>
           </div>
         ))}
       </div>

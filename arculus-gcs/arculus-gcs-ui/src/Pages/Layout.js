@@ -26,10 +26,12 @@ import EdgesensorHighIcon from '@mui/icons-material/EdgesensorHigh';
 import SecurityIcon from '@mui/icons-material/Security';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
 import PublicOffIcon from '@mui/icons-material/PublicOff';
+import InfoIcon from '@mui/icons-material/Info';
 import { API_URL } from '../config';
 import { useState, useEffect } from 'react';
+import ZtModeDropdown from '../Components/dashboard/ZtModeDropdown';
 
-const drawerWidth = 240;
+const drawerWidth = 260;
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -83,6 +85,9 @@ export function Layout(props) {
   const [pendingActions, setPendingActions] = useState({});
   const [pendingActionsCount, setPendingActionsCount] = useState(0);
 
+  // Initialize ztMode from localStorage or default value
+  const [ztMode, setZtMode] = useState(localStorage.getItem('ztMode') || 'no_zt');
+
   useEffect(() => {
     const ws = new WebSocket(`${API_URL.replace('http://', 'ws://').replace(':3001', ':3003')}/joinRequests`);
     ws.addEventListener('message', (event) => {
@@ -95,15 +100,6 @@ export function Layout(props) {
       ws.close();
     };
   }, []);
-
-  const YourNewComponent = () => {
-    // Your new component logic goes here
-    return (
-      <>
-        {props.component}
-      </>
-    );
-  };
 
   const navigate = useNavigate();
 
@@ -124,7 +120,12 @@ export function Layout(props) {
         const response = await fetch(`${API_URL}/api/authorizeAdmin?authToken=${encodeURIComponent(token)}`);
 
         if (response.ok) {
+          const data = await response.json(); // Parse the response body
           setIsAdmin(true);
+          setZtMode(data.mode);
+
+          // Store ztMode in localStorage
+          localStorage.setItem('ztMode', data.mode);
         } else if (response.status === 403) {
           setIsAdmin(false);
         } else {
@@ -190,6 +191,7 @@ export function Layout(props) {
             >
               ARCULUS GROUND CONTROL CLIENT
             </Typography>
+            <ZtModeDropdown currentMode={ztMode} />
             <IconButton color="inherit">
               <Badge badgeContent={'' + pendingActionsCount} color="secondary">
                 <NotificationsIcon />
@@ -287,6 +289,12 @@ export function Layout(props) {
               </ListItemButton>
             </Box>
             <Divider sx={{ my: 1 }} />
+            <ListItemButton onClick={() => handleManageClick('/about')}>
+              <ListItemIcon>
+                <InfoIcon />
+              </ListItemIcon>
+              <ListItemText primary="About Arculus" />
+            </ListItemButton>
             <ListItemButton onClick={handleSignOut}>
               <ListItemIcon>
                 <LogoutIcon />

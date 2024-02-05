@@ -1,6 +1,7 @@
 const pool = require('../modules/arculusDbConnection');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+var ztMode = 'no_zt';
 
 function getUserFromToken(token) {
     if (typeof token !== 'string') {
@@ -133,10 +134,33 @@ exports.authorizeAdmin = (req, res) => {
         }
 
         if (isAdmin) {
-            return res.status(200).json({ message: 'User is an admin' });
+            return res.status(200).json({ message: 'User is an admin', mode: ztMode });
         } else {
             return res.status(403).json({ message: 'Unauthorized: User is not an admin' });
         }
+    });
+};
+
+exports.setZtMode = (req, res) => {
+    const { mode } = req.query;
+    const { authToken } = req.body;
+
+    const user = getUserFromToken(authToken);
+
+    // Check if the user has an admin role
+    isAdminUser(user, (roleErr, isAdmin) => {
+        if (roleErr) {
+            console.error(roleErr);
+            return res.status(500).json({ message: 'Internal Server Error' });
+        }
+
+        if (!isAdmin) {
+            return res.status(403).json({ message: 'Unauthorized: Only admin users can change Zero Trust Settings' });
+        }
+
+        ztMode = mode;
+        return res.status(200).json({ message: 'Zero Trust mode changed successfully' });
+    
     });
 };
 
