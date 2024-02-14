@@ -14,6 +14,7 @@ const Blacklist = () => {
   const [selectedIPs, setSelectedIPs] = useState([]);
   const [recordsToShow, setRecordsToShow] = useState(10);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
+  const [loading, setLoading] = useState(true); // Track loading state
 
   const fetchBlacklist = async () => {
     try {
@@ -35,8 +36,10 @@ const Blacklist = () => {
       } else {
         console.error('Invalid data format:', data);
       }
+      setLoading(false); // Update loading state
     } catch (error) {
       console.error('Error fetching blacklisted IPs:', error.message);
+      setLoading(false); // Update loading state in case of error
     }
   };
 
@@ -101,66 +104,74 @@ const Blacklist = () => {
 
   return (
     <div style={{ marginTop: '20px', textAlign: 'center' }}>
-      <div>
-        <h2>Blacklisted IP Addresses</h2>
-        <label>
-          Records to Show:{' '}
-          <input
-            type="number"
-            value={recordsToShow}
-            onChange={(e) => setRecordsToShow(e.target.value)}
-          />
-        </label>
-      </div>
-
-      <div style={{ marginTop: '20px', display: 'table', margin: 'auto' }}>
-        {blacklistedIPs.map((ip) => (
-          <div key={ip} style={{ display: 'table-row' }}>
-            <Checkbox
-              checked={selectedIPs.includes(ip)}
-              onChange={() => handleCheckboxChange(ip)}
+      {loading && <div>Loading...</div>}
+      {!loading && blacklistedIPs.length === 0 && (
+        <div style={{ width: '50%', height: '50%', margin: 'auto' }}>
+          <img src='blacklist_none.png' alt="No Blacklisted IP Addresses" style={{ width: '100%', height: '100%' }} />
+        </div>
+      )}
+      {!loading && blacklistedIPs.length > 0 && (
+        <div>
+          <h2>Blacklisted IP Addresses</h2>
+          <label>
+            Records to Show:{' '}
+            <input
+              type="number"
+              value={recordsToShow}
+              onChange={(e) => setRecordsToShow(e.target.value)}
             />
-            <div style={{ display: 'table-cell', padding: '8px' }}>{ip}</div>
+          </label>
+
+          <div style={{ marginTop: '20px', display: 'table', margin: 'auto' }}>
+            {blacklistedIPs.map((ip) => (
+              <div key={ip} style={{ display: 'table-row' }}>
+                <Checkbox
+                  checked={selectedIPs.includes(ip)}
+                  onChange={() => handleCheckboxChange(ip)}
+                />
+                <div style={{ display: 'table-cell', padding: '8px' }}>{ip}</div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      <div style={{ marginTop: '20px' }}>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={handleRemoveFromBlacklist}
-          disabled={selectedIPs.length === 0}
-        >
-          Remove from Blacklist
-        </Button>
-      </div>
+          <div style={{ marginTop: '20px' }}>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleRemoveFromBlacklist}
+              disabled={selectedIPs.length === 0}
+            >
+              Remove from Blacklist
+            </Button>
+          </div>
 
-      {/* Confirmation Dialog */}
-      <Dialog
-        open={showConfirmationDialog}
-        onClose={handleCancelRemove}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          Confirm Removal from Blacklist
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Are you sure you want to remove the selected IP addresses from the
-            blacklist?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancelRemove} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleConfirmRemove} color="secondary" autoFocus>
-            Remove
-          </Button>
-        </DialogActions>
-      </Dialog>
+          {/* Confirmation Dialog */}
+          <Dialog
+            open={showConfirmationDialog}
+            onClose={handleCancelRemove}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">
+              Confirm Removal from Blacklist
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                Are you sure you want to remove the selected IP addresses from the
+                blacklist?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCancelRemove} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={handleConfirmRemove} color="secondary" autoFocus>
+                Remove
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../../config';
 import Cookies from 'js-cookie';
+import Button from '@mui/material/Button';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 const ZtModeDropdown = ({ currentMode }) => {
     const [mode, setMode] = useState(currentMode);
+    const [clicked, setClicked] = useState(false);
     const authToken = Cookies.get('jwtToken');
 
     const handleChange = (newMode) => {
@@ -27,8 +30,36 @@ const ZtModeDropdown = ({ currentMode }) => {
             });
     };
 
+    const handleClick = () => {
+        setClicked(true);
+        setTimeout(() => {
+            setClicked(false);
+        }, 200);
+
+        // Call the API to run experiment in pod
+        fetch(`${API_URL}/api/runExperimentInPod?authToken=${authToken}`)
+            .then((response) => {
+                if (!response.ok) {
+                    console.error('Error running experiment');
+                    return;
+                }
+                // Display alert box with mode information
+                alert(`Experiment running in ${mode}`);
+            })
+            .catch((error) => {
+                console.error('Error running experiment:', error);
+            });
+    };
+
     return (
         <div style={{ display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+            <Button
+                variant="contained"
+                style={{ backgroundColor: clicked ? '#000' : '#fff', color: clicked ? '#fff' : '#000', marginRight: '10px' }}
+                onClick={handleClick}
+            >
+                <PlayArrowIcon />
+            </Button>
             <label htmlFor="ztMode" style={{ marginRight: '10px', marginBottom: '16px' }}>Zero Trust Mode:</label>
             <select
                 id="ztMode"

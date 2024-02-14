@@ -8,8 +8,8 @@ import { useDashboardContext } from './DashboardContext';
 function IntelFeed() {
     const [honeypot, setHoneypot] = useState('None');
     const [protocol, setProtocol] = useState('');
-    const [hoursAgo, setHoursAgo] = useState(4);
-    const [limit, setLimit] = useState(10);
+    const [hoursAgo, setHoursAgo] = useState(24);
+    const [limit, setLimit] = useState(500);
     const [intelData, setIntelData] = useState([]);
     const [page, setPage] = useState(0);
     const [totalRecords, setTotalRecords] = useState(0);

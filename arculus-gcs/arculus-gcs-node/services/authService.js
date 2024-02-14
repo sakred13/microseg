@@ -1,7 +1,9 @@
 const pool = require('../modules/arculusDbConnection');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { exec } = require('child_process');
 var ztMode = 'no_zt';
+var pids = {};
 
 function getUserFromToken(token) {
     if (typeof token !== 'string') {
@@ -160,7 +162,99 @@ exports.setZtMode = (req, res) => {
 
         ztMode = mode;
         return res.status(200).json({ message: 'Zero Trust mode changed successfully' });
-    
+
     });
 };
 
+exports.runExperimentInPod = async (req, res) => {
+    try {
+        const { authToken } = req.query;
+        const username = getUserFromToken(authToken);
+        const podNames = ["node1", "node2", "node3", "node4", "node5", "node6", "node7", "node8", "node9", "node10"]; // Specify the name of the pod where you want to execute the script
+
+        // Check if the user has an admin role
+        const isAdmin = await new Promise((resolve, reject) => {
+            isAdminUser(username, (error, isAdmin) => {
+                if (error) {
+                    console.error(error);
+                    reject(error);
+                } else {
+                    resolve(isAdmin);
+                }
+            });
+        });
+
+        if (!isAdmin) {
+            return res.status(403).json({ message: 'Unauthorized: Only admin users can perform this action' });
+        }
+
+        // Execute the kubectl command to kill processes inside the pods
+        const killPromises = Object.entries(pids).map(([device, pid]) => {
+            return new Promise((resolve, reject) => {
+                console.log(pids);
+                exec(`kubectl exec ${device} --namespace=default -- sh -c 'kill ${pid}'`, (error, stdout, stderr) => {
+                    if (error) {
+                        console.error(`Error killing process in pod ${device}: ${error}`);
+                        // Break out of the loop without emptying the pids object
+                        resolve(); // Resolve to break out of the loop
+                    } else {
+                        console.log(`Process with PID ${pid} killed successfully in pod ${device}`);
+                        resolve();
+                    }
+                });
+            });
+        });
+
+        await Promise.all(killPromises);
+
+        // Check ztMode and set parameters accordingly
+        let m = 4;
+        let n = 5;
+        if (ztMode === 'full_zt') {
+            m = 12;
+            n = 3;
+        }
+
+        // Execute scripts in pods
+        const scriptPromises = podNames.map(podName => {
+            return new Promise((resolve, reject) => {
+                exec(`kubectl exec ${podName} --namespace=default -- sh -c ' /home/run_experiment.sh ${m} ${n}'`, (error, stdout, stderr) => {
+                    if (error) {
+                        console.error(`Error executing script in pod ${podName}: ${error}`);
+                        reject(error);
+                    } else {
+                        console.log(`Script executed successfully in pod ${podName}`);
+                        resolve();
+                    }
+                });
+            });
+        });
+
+        await Promise.all(scriptPromises);
+
+        res.status(200).send('Scripts executed successfully in all pods');
+    } catch (error) {
+        console.error(`An error occurred: ${error}`);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+
+exports.authenticate = (req, res) => {
+    const { processInfo } = req.query;
+    // Check if the user has an admin role
+    // Function to parse and store process information
+    const parseProcessInfo = (processInfo) => {
+        if (processInfo) {
+            console.log('Process Info:', processInfo);
+            const [key, value] = processInfo.split('@');
+            pids[key] = value;
+        }
+    };
+
+    // Parse process information
+    parseProcessInfo(processInfo);
+
+    // Return success response
+    res.status(200).json({ message: 'Process information received and stored successfully' });
+};
