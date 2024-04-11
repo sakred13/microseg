@@ -26,24 +26,23 @@
 }
 
 .top-right {
+    flex: 1;
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
-    height: calc(50% - 20px);
-    /* Adjusted for padding */
-    padding-bottom: 5%;
-    /* Add padding to the bottom */
+    padding-bottom: 2.5%;
+    /* Adjust based on your design */
 }
 
 .bottom-right {
+    flex: 1;
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
-    height: calc(50% - 10px);
-    /* Adjusted for padding */
-    padding-top: 5%;
-    /* Add padding to the top */
+    margin-top: 2.5%;
+    /* Add margin to the top to push it down */
 }
+
 
 .rect-button {
     padding: 10px;
