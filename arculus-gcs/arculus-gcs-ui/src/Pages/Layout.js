@@ -30,6 +30,8 @@ import InfoIcon from '@mui/icons-material/Info';
 import { API_URL } from '../config';
 import { useState, useEffect } from 'react';
 import ZtModeDropdown from '../Components/dashboard/ZtModeDropdown';
+import { useLocation } from 'react-router-dom';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
 const drawerWidth = 260;
 
@@ -84,6 +86,7 @@ export function Layout(props) {
   const [userType, setUserType] = React.useState(null);
   const [pendingActions, setPendingActions] = useState({});
   const [pendingActionsCount, setPendingActionsCount] = useState(0);
+  const location = useLocation();
 
   // Initialize ztMode from localStorage or default value
   const [ztMode, setZtMode] = useState(localStorage.getItem('ztMode') || 'no_zt');
@@ -217,7 +220,12 @@ export function Layout(props) {
           <List component="nav">
             <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
               {userType && ['Mission Creator', 'Mission Supervisor', 'Mission Viewer'].includes(userType) && (
-                <ListItemButton onClick={() => handleManageClick('/dashboard')}>
+                <ListItemButton onClick={() => handleManageClick('/dashboard')} selected={location.pathname === '/dashboard'} sx={{
+                  backgroundColor: location.pathname === '/dashboard' ? '#f0f0f0' : 'transparent',
+                  '&:hover': {
+                    backgroundColor: '#f0f0f0',
+                  },
+                }}>
                   <ListItemIcon>
                     <DashboardIcon />
                   </ListItemIcon>
@@ -233,7 +241,13 @@ export function Layout(props) {
                 </ListItemButton>
               )}
               {userType && ['Mission Creator'].includes(userType) && (
-                <ListItemButton onClick={() => handleManageClick('/manageUsers')}>
+                <ListItemButton onClick={() => handleManageClick('/manageUsers')} selected={location.pathname === '/manageUsers'} sx={{
+                  backgroundColor: location.pathname === '/manageUsers' ? '#f0f0f0' : 'transparent',
+                  '&:hover': {
+                    backgroundColor: '#f0f0f0',
+                  },
+                }}>
+
                   <ListItemIcon>
                     <PeopleIcon />
                   </ListItemIcon>
@@ -241,7 +255,13 @@ export function Layout(props) {
                 </ListItemButton>
               )}
               {userType && ['Mission Creator'].includes(userType) && (
-                <ListItemButton onClick={() => handleManageClick('/manageDevices')}>
+                <ListItemButton onClick={() => handleManageClick('/manageDevices')} selected={location.pathname === '/manageDevices'} sx={{
+                  backgroundColor: location.pathname === '/manageDevices' ? '#f0f0f0' : 'transparent',
+                  '&:hover': {
+                    backgroundColor: '#f0f0f0',
+                  },
+                }}>
+
                   <ListItemIcon>
                     <EdgesensorHighIcon />
                   </ListItemIcon>
@@ -249,7 +269,13 @@ export function Layout(props) {
                 </ListItemButton>
               )}
               {userType && ['Mission Creator', 'Mission Supervisor'].includes(userType) && (
-                <ListItemButton onClick={() => handleManageClick('/downloadTools')}>
+                <ListItemButton onClick={() => handleManageClick('/downloadTools')} selected={location.pathname === '/downloadTools'} sx={{
+                  backgroundColor: location.pathname === '/downloadTools' ? '#f0f0f0' : 'transparent',
+                  '&:hover': {
+                    backgroundColor: '#f0f0f0',
+                  },
+                }}>
+
                   <ListItemIcon>
                     <img src='/cluster.png' alt="Add Nodes" style={{ width: '24px', height: '24px' }} />
                   </ListItemIcon>
@@ -257,23 +283,53 @@ export function Layout(props) {
                 </ListItemButton>
               )}
               {userType && ['Mission Creator', 'Mission Supervisor'].includes(userType) && (
-                <ListItemButton onClick={() => handleManageClick('/managePolicies')}>
+                <ListItemButton onClick={() => handleManageClick('/managePolicies')} selected={location.pathname === '/managePolicies'} sx={{
+                  backgroundColor: location.pathname === '/managePolicies' ? '#f0f0f0' : 'transparent',
+                  '&:hover': {
+                    backgroundColor: '#f0f0f0',
+                  },
+                }}>
+
                   <ListItemIcon>
                     <SecurityIcon />
                   </ListItemIcon>
                   <ListItemText primary="Manage Policies" />
                 </ListItemButton>
               )}
+              {userType && ['Mission Creator', 'Mission Supervisor'].includes(userType) && (
+                <ListItemButton onClick={() => handleManageClick('/planMissions')} selected={location.pathname === '/planMissions'} sx={{
+                  backgroundColor: location.pathname === '/planMissions' ? '#f0f0f0' : 'transparent',
+                  '&:hover': {
+                    backgroundColor: '#f0f0f0',
+                  },
+                }}>
+                  <ListItemIcon>
+                    <AssignmentIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Plan Missions" />
+                </ListItemButton>
+              )}
               {userType && ['Mission Creator', 'Mission Supervisor', 'Mission Viewer'].includes(userType) && (
-                <ListItemButton onClick={() => handleManageClick('/planMissions')}>
+                <ListItemButton onClick={() => handleManageClick('/currentMissions')} selected={location.pathname === '/currentMissions'} sx={{
+                  backgroundColor: location.pathname === '/currentMissions' ? '#f0f0f0' : 'transparent',
+                  '&:hover': {
+                    backgroundColor: '#f0f0f0',
+                  },
+                }}>
                   <ListItemIcon>
                     <WhatshotIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Execute Missions" />
+                  <ListItemText primary="Mission Executions" />
                 </ListItemButton>
               )}
               {userType && ['Mission Creator'].includes(userType) && (
-                <ListItemButton onClick={() => handleManageClick('/honeypots')}>
+                <ListItemButton onClick={() => handleManageClick('/honeypots')} selected={location.pathname === '/honeypots'} sx={{
+                  backgroundColor: location.pathname === '/honeypots' ? '#f0f0f0' : 'transparent',
+                  '&:hover': {
+                    backgroundColor: '#f0f0f0',
+                  },
+                }}>
+
                   <ListItemIcon>
                     <HiveIcon />
                   </ListItemIcon>
@@ -281,7 +337,13 @@ export function Layout(props) {
                 </ListItemButton>
               )}
               {userType && ['Mission Creator', 'Mission Supervisor', 'Mission Viewer'].includes(userType) && (
-                <ListItemButton onClick={() => handleManageClick('/attackMetrics')}>
+                <ListItemButton onClick={() => handleManageClick('/attackMetrics')} selected={location.pathname === '/attackMetrics'} sx={{
+                  backgroundColor: location.pathname === '/attackMetrics' ? '#f0f0f0' : 'transparent',
+                  '&:hover': {
+                    backgroundColor: '#f0f0f0',
+                  },
+                }}>
+
                   <ListItemIcon>
                     <BarChartIcon />
                   </ListItemIcon>
@@ -289,7 +351,13 @@ export function Layout(props) {
                 </ListItemButton>
               )}
               {userType && ['Mission Creator', 'Mission Supervisor'].includes(userType) && (
-                <ListItemButton onClick={() => handleManageClick('/blacklist')}>
+                <ListItemButton onClick={() => handleManageClick('/blacklist')} selected={location.pathname === '/blacklist'} sx={{
+                  backgroundColor: location.pathname === '/blacklist' ? '#f0f0f0' : 'transparent',
+                  '&:hover': {
+                    backgroundColor: '#f0f0f0',
+                  },
+                }}>
+
                   <ListItemIcon>
                     <PublicOffIcon />
                   </ListItemIcon>
@@ -298,7 +366,12 @@ export function Layout(props) {
               )}
             </Box>
             <Divider sx={{ my: 1 }} />
-            <ListItemButton onClick={() => handleManageClick('/about')}>
+            <ListItemButton onClick={() => handleManageClick('/about')} selected={location.pathname === '/about'} sx={{
+              backgroundColor: location.pathname === '/about' ? '#f0f0f0' : 'transparent',
+              '&:hover': {
+                backgroundColor: '#f0f0f0',
+              },
+            }}>
               <ListItemIcon>
                 <InfoIcon />
               </ListItemIcon>

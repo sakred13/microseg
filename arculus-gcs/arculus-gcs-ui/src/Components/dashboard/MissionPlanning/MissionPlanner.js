@@ -9,6 +9,9 @@ import Button from '@mui/material/Button';
 import { API_URL } from '../../../config';
 import Cookies from 'js-cookie';
 import SettingsRemoteIcon from '@mui/icons-material/SettingsRemote';
+import DroneRemote from './DroneRemote';
+import LogConsole from './LogConsole';
+import AlertButton from './AlertButton';
 
 function MissionPlanner() {
   const [activeTab, setActiveTab] = useState('Select Mission Type');
@@ -510,40 +513,9 @@ function MissionPlanner() {
                 {/* Add your content for executing the mission here */}
                 {selectedLocation === '/desert.png' ? <DesertMission handleTabChange={handleTabChange} jwtToken={encodeURIComponent(Cookies.get('jwtToken'))} /> : <ForestMission handleTabChange={handleTabChange} />}
                 <div className="log-container" style={{ width: '20%' }}>
-                  <b>Command Activity</b>
-                  <div className="log-section">
-                    <div className="log" style={{ backgroundColor: 'black', color: 'green' }}>
-                      Move command to supply drone by controller.
-                    </div>
-                    <div className="log" style={{ backgroundColor: 'black', color: 'red' }}>
-                      Move command to supply drone from 122.43.53.23!
-                    </div>
-                    {/* Repeat this div for each log */}
-                  </div>
-                  <div>
-                    <b>Control Remotely</b>
-                    <select>
-                      <option value="surveillance">Surveillance Drone</option>
-                      <option value="supply">Supply Drone</option>
-                    </select>
-                  </div>
-                  <div className="button-section">
-                    <div className="row1">
-                      <button className="arrow-button"><span style={{ transform: 'rotate(315deg)', display: 'inline-block' }}>&#9650;</span></button>
-                      <button className="arrow-button"><span>&#9650;</span></button>
-                      <button className="arrow-button"><span style={{ transform: 'rotate(45deg)', display: 'inline-block' }}>&#9650;</span></button>
-                    </div>
-                    <div className="row2">
-                      <button className="arrow-button"><span>&#9668;</span></button>
-                      <SettingsRemoteIcon style={{fontSize: "40px"}}/>
-                      <button className="arrow-button"><span>&#9654;</span></button>
-                    </div>
-                    <div className="row3">
-                      <button className="arrow-button"><span style={{ transform: 'rotate(225deg)', display: 'inline-block' }}>&#9650;</span></button>
-                      <button className="arrow-button"><span>&#9664;</span></button>
-                      <button className="arrow-button"><span style={{ transform: 'rotate(135deg)', display: 'inline-block' }}>&#9650;</span></button>
-                    </div>
-                  </div>
+                  <LogConsole />
+                  <DroneRemote />
+                  <AlertButton userType={"Mission Viewer"} />
                 </div>
               </div>
             </div>
