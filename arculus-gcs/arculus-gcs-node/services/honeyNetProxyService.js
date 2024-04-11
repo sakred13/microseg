@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const axios = require('axios');
 
-const { isAdminUser, getUserFromToken } = require('./authService');
+const { isUserOfType, getUserFromToken } = require('./authService');
 const proxyConfig = JSON.parse(fs.readFileSync('configs/honeypot_config.json'));
 
 exports.honeyPotApi = async (req, res) => {
@@ -9,7 +9,7 @@ exports.honeyPotApi = async (req, res) => {
         const { authToken, ...queryParams } = req.query; // Destructure authToken and collect the rest in queryParams
         console.log('WebToken: ', authToken);
         // Check if the user has an admin role
-        isAdminUser(getUserFromToken(authToken), async (roleErr, isAdmin) => {
+        isUserOfType(getUserFromToken(authToken), 'Mission Creator', async (roleErr, isAdmin) => {
             if (roleErr) {
                 console.error(roleErr);
                 return res.status(500).json({ message: 'Internal Server Error' });

@@ -117,7 +117,7 @@ CREATE TABLE `role` (
 
 LOCK TABLES `role` WRITE;
 /*!40000 ALTER TABLE `role` DISABLE KEYS */;
-INSERT INTO `role` VALUES (1,'Admin'),(2,'Moderator'),(3,'Viewer');
+INSERT INTO `role` VALUES (1,'Mission Creator'),(2,'Mission Supervisor'),(3,'Mission Viewer');
 /*!40000 ALTER TABLE `role` ENABLE KEYS */;
 UNLOCK TABLES;
 

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import WarningIcon from '@mui/icons-material/Warning';
+import { API_URL } from '../../../config';
 import './MissionPlanner.css';
 
 const DesertMission = (props) => {
     // State for surveillance drone
+    const [missionData, setMissionData] = useState(null);
     const [position, setPosition] = useState({ x: 202, y: 420 });
     const [path, setPath] = useState([]);
     const [showSurveillanceDrone, setShowSurveillanceDrone] = useState(true);
@@ -19,8 +21,8 @@ const DesertMission = (props) => {
     const [showThreatText, setShowThreatText] = useState(true);
 
     // Constants for positions
-    const groundStation = { x: 202, y: 420 };
-    const endPosition = { x: 1340, y: 356 };
+    let groundStation = { x: 202, y: 420 };
+    let endPosition = { x: 1340, y: 356 };
     const airDefensePosition = { x: 915, y: 422 };
     const airDefenseRadius = 180;
 
@@ -34,6 +36,33 @@ const DesertMission = (props) => {
     };
 
     const { handleTabChange } = props;
+
+    useEffect(() => {
+        const fetchMissionData = async () => {
+            try {
+                const response = await fetch(`${API_URL}/mission/getMissionState?authToken=${props.jwtToken}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch mission data');
+                }
+                const data = await response.json();
+                setMissionData(data);
+                groundStation = { x: data.gcX, y: data.gcY };
+                setPosition({ x: data.gcX, y: data.gcY });
+                endPosition = { x: data.destX, y: data.destY };
+            } catch (error) {
+                console.error('Error fetching mission data:', error.message);
+            }
+        };
+
+        const intervalId = setInterval(fetchMissionData, 2000);
+
+        // Cleanup function to clear interval when component unmounts or changes
+        return () => clearInterval(intervalId);
+    }, []);
+
+    // if (!missionData) {
+    //     return <div>Loading...</div>;
+    // }
 
     useEffect(() => {
         const threatTextInterval = setInterval(() => {
@@ -184,7 +213,7 @@ const DesertMission = (props) => {
     };
 
     return (
-        <><svg className="mission-svg"
+        <div style={{ width: '80%' }}><svg className="mission-svg"
             viewBox="0 0 1792 1024"
             preserveAspectRatio="xMidYMid meet">
             <image href="desert.png" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" />
@@ -228,6 +257,15 @@ const DesertMission = (props) => {
 
                 </>
             )}
+            <foreignObject x="80%" y="0%" width="20%" height="20%">
+                <div style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '10px' }}>
+                    <div style={{ color: 'yellow' }}>Ground Control Station: {groundStation.x}, {groundStation.y}</div>
+                    <div style={{ color: 'lightgreen' }}>Surveillance Drone: {position.x}, {position.y}</div>
+                    <div style={{ color: 'lightblue' }}>Supply Drone: {supplyDronePosition.x}, {supplyDronePosition.y}</div>
+                    <div style={{ color: 'pink' }}>Destination: {endPosition.x}, {endPosition.y}</div>
+                    <div style={{ color: 'red' }}>Enemy Air Defense: Unknown</div>
+                </div>
+            </foreignObject>
         </svg>
             {showMissionAccomplished && (
                 <div style={missionAccomplishedStyle}>
@@ -255,7 +293,7 @@ const DesertMission = (props) => {
                     Mission Accomplished! Supplies Have Been Delivered!
                 </div>
             )}
-        </>
+        </div>
     );
 };
 
