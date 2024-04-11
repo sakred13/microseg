@@ -16,7 +16,6 @@ import IntroDashboard from './Components/dashboard/IntroDashboard';
 import MetricsDashboard from './Components/dashboard/HoneyNet/MetricsDashboard';
 import Blacklist from './Components/dashboard/DeviceManagement/Blacklist';
 import { DashboardProvider } from './Components/dashboard/HoneyNet/DashboardContext';
-import DeviceManagementTopology from './Components/dashboard/DeviceManagement/DeviceManagementTopology';
 import DownloadTools from './Components/DownloadTools';
 import UtilizationGraphs from './Components/dashboard/UtilizationGraphs';
 import CurrentMissions from './Components/dashboard/MissionPlanning/CurrentMissions';
@@ -34,7 +33,7 @@ function App() {
           <Route path='/about' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor', 'Mission Viewer']} component={<IntroDashboard />} />} />} />
           <Route path='/manageUsers' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator']} component={<ManageUsers />} />} />} />
           <Route path='/manageDevices' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator']} component={<DeviceManagement />} />} />} />
-          <Route path='/managePolicies' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor']} component={<DeviceManagementTopology />} />} />} />
+          <Route path='/managePolicies' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor']} component={<DeviceManagement />} />} />} />
           <Route path='/planMissions' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor', 'Mission Viewer']} component={<MissionPlanner />} />} />} />
           <Route path='/currentMissions' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor', 'Mission Viewer']} component={<CurrentMissions />} />} />} />
           <Route path='/honeypots' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator']} component={<HoneypotDashboard />} />} />} />

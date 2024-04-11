@@ -1,0 +1,293 @@
+.outer {
+    display: flex;
+    flex-direction: row;
+    width: 75%;
+    margin: 0 auto;
+    border: 2px solid black;
+}
+
+.left,
+.right {
+    border: 1px solid #000;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.left {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+}
+
+.right {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+}
+
+.top-right {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    height: calc(50% - 20px);
+    /* Adjusted for padding */
+    padding-bottom: 5%;
+    /* Add padding to the bottom */
+}
+
+.bottom-right {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    height: calc(50% - 10px);
+    /* Adjusted for padding */
+    padding-top: 5%;
+    /* Add padding to the top */
+}
+
+.rect-button {
+    padding: 10px;
+    margin: 5px;
+    /* Add some space around the buttons */
+    border: 1px solid #000;
+    background-color: #fff;
+    cursor: pointer;
+    white-space: nowrap;
+    /* Ensure the text in the buttons doesn't wrap */
+}
+
+/* Center the header text and add spacing */
+h2 {
+    width: 100%;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 20px;
+    /* Add some space below the header */
+}
+
+/* You can add more styling to h2, button, etc., as per your design. */
+/* Rest of your CSS stays the same */
+
+.square-button {
+    width: 70px;
+    /* Adjust size to your preference */
+    height: 70px;
+    /* Adjust size to your preference */
+    padding: 0;
+    /* Remove padding for square shape */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 5px;
+    position: relative;
+    /* Needed for absolute positioning of the question mark */
+}
+
+.question-mark {
+    background-color: transparent;
+    border: 1px solid #000;
+}
+
+.question-mark::before {
+    content: '?';
+    color: white;
+    background-color: grey;
+    border-radius: 50%;
+    width: 30px;
+    /* Adjust size to your preference */
+    height: 30px;
+    /* Adjust size to your preference */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+}
+
+.button-with-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.button-with-text span {
+    margin-top: 5px;
+    /* Adjust space between button and text */
+}
+
+/* You might need to adjust the flex properties on .top-right and .bottom-right if you want the buttons to be properly aligned. */
+.top-right,
+.bottom-right {
+    align-items: flex-start;
+    /* This will align the buttons to the top of the div */
+}
+
+/* Existing CSS stays the same */
+
+.icon-button {
+    position: relative;
+    /* For absolute positioning of the icon */
+}
+
+/* Style for the MemoryIcon, if necessary */
+.icon-button .MuiSvgIcon-root {
+    font-size: 30px;
+    /* Adjust the icon size as needed */
+    color: #000;
+    /* Adjust the icon color as needed */
+}
+
+/* Existing CSS stays the same */
+
+.square-button img {
+    width: 80%;
+    /* Make the image fill the button */
+    height: 80%;
+    /* Make the image fill the button */
+    object-fit: cover;
+    /* Resize the image to maintain aspect ratio while filling the button */
+}
+
+/* Rest of your CSS stays the same */
+
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.button-with-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 5px;
+}
+
+.square-button {
+    width: 70px;
+    height: 70px;
+    margin: 5px;
+    border: 1px solid #000;
+    background-color: #fff;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.square-button .button-image {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* For the MemoryIcon, adjust as necessary */
+.square-button svg {
+    width: 50px;
+    height: 50px;
+}
+
+/* Ensure the button label appears below the button */
+.button-with-label span {
+    margin-top: 5px;
+    text-align: center;
+}
+
+.outer,
+.outer * {
+    background-color: #f0f0f0;
+    /* Light grey background */
+}
+
+/* Specific styles for buttons and containers to maintain their design */
+.square-button,
+.question-mark,
+.button-with-label span,
+h2 {
+    background-color: #f0f0f0;
+    /* Ensure consistency in background color */
+    /* Add any additional styling needed to maintain the design */
+}
+
+/* Ensure the icons inside buttons inherit the same background color */
+.square-button .MuiSvgIcon-root {
+    background-color: #f0f0f0;
+    /* Light grey for icons */
+}
+
+/* If you want the buttons to stand out, you can give them a different background color */
+.square-button,
+.question-mark {
+    background-color: #fff;
+    /* This will make buttons white, for example */
+}
+
+/* Sets the cursor to a pointer for all buttons */
+.square-button,
+.question-mark {
+    cursor: pointer;
+}
+
+/* Adds a grey thick border when hovering over the buttons */
+.square-button:hover,
+.question-mark:hover {
+    border: 3px solid grey;
+    /* Adjust thickness and color as needed */
+}
+
+.square-button,
+.question-mark {
+    cursor: pointer;
+    border-radius: 10px;
+    /* Adjust the value to get the desired roundness */
+}
+
+.square-button:hover,
+.question-mark:hover {
+    border: 3px solid grey;
+    /* This will also apply to the hover state */
+    border-radius: 10px;
+    /* Ensure the rounded corners persist on hover */
+}
+
+.circle-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    /* Makes the button a circle */
+    border: 2px solid #000;
+    /* Adjust the thickness and color as you like */
+    width: 70px;
+    /* Diameter of the circle */
+    height: 70px;
+    /* Diameter of the circle */
+    background-color: grey;
+    /* Or any color you prefer */
+    color: white;
+    /* Color of the question mark */
+    cursor: pointer;
+    font-size: 20px;
+    /* Adjust the size of the question mark as needed */
+    transition: all 0.3s;
+    /* Smooth transition for the hover effect */
+}
+
+.circle-button:hover {
+    border: 3px solid grey;
+    /* Thicker border on hover */
+    background-color: darkgrey;
+    /* Slightly darker background on hover */
+}
+
+/* Maintain the layout with text below the button */
+.button-with-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 5px;
+}
+
+.button-with-label span {
+    margin-top: 5px;
+    /* Space between the button and the text */
+}
