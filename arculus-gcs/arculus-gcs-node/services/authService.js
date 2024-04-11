@@ -25,25 +25,44 @@ function getUserFromToken(token) {
 };
 exports.getUserFromToken = getUserFromToken;
 
-const isUserOfType = (username, userType, callback) => {
+const isUserOfType = (username, userTypes, callback) => {
     pool.query("SELECT r.role_name FROM user u JOIN role r ON u.role_id = r.role_id WHERE u.username = ?", [username], (err, results) => {
         if (err) {
             console.error(err);
             return callback(err, null);
         }
 
-        const isOfRightType = results.some((row) => row.role_name === userType);
+        // Check if the user's role matches any of the types in the provided list.
+        const isOfRightType = results.some((row) => userTypes.includes(row.role_name));
         callback(null, isOfRightType);
     });
 };
 exports.isUserOfType = isUserOfType;
 
+const getUserRole = (username, callback) => {
+    pool.query("SELECT r.role_name FROM user u JOIN role r ON u.role_id = r.role_id WHERE u.username = ?", [username], (err, results) => {
+        if (err) {
+            console.error(err);
+            return callback(err, null);
+        }
+
+        // Extract the role name from the query result
+        if (results.length > 0) {
+            const roleName = results[0].role_name;
+            callback(null, roleName);
+        } else {
+            // If no role found for the user, return null
+            callback(null, null);
+        }
+    });
+};
+exports.getUserRole = getUserRole;
 
 exports.signup = (req, res) => {
     const { jwtToken, username, email, password, role } = req.body;
 
     // Check if the user has an admin role
-    isUserOfType(getUserFromToken(jwtToken), 'Mission Creator', (roleErr, isAdmin) => {
+    isUserOfType(getUserFromToken(jwtToken), ['Mission Creator'], (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });
@@ -124,25 +143,21 @@ exports.login = (req, res) => {
 
 exports.authorize = (req, res) => {
     const { authToken } = req.query;
-
-
-}
-exports.authorizeAdmin = (req, res) => {
-    const { authToken } = req.query;
     const username = getUserFromToken(authToken);
 
-    // Check if the user has an admin role
-    isUserOfType(username, 'Mission Creator', (roleErr, isAdmin) => {
+    // Check if the user exists
+    if (!username) {
+        return res.status(403).json({ message: 'Unauthorized: User not found' });
+    }
+
+    // Get user's role
+    getUserRole(username, (roleErr, userType) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });
         }
 
-        if (isAdmin) {
-            return res.status(200).json({ message: 'User is an admin', mode: ztMode });
-        } else {
-            return res.status(403).json({ message: 'Unauthorized: User is not an admin' });
-        }
+        return res.status(200).json({ message: 'User is authorized', userType });
     });
 };
 
@@ -153,7 +168,7 @@ exports.setZtMode = (req, res) => {
     const user = getUserFromToken(authToken);
 
     // Check if the user has an admin role
-    isUserOfType(user, 'Mission Creator', (roleErr, isAdmin) => {
+    isUserOfType(user, ['Mission Creator'], (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });
@@ -177,7 +192,7 @@ exports.runExperimentInPod = async (req, res) => {
 
         // Check if the user has an admin role
         const isAdmin = await new Promise((resolve, reject) => {
-            isUserOfType(username, 'Mission Creator', (error, isAdmin) => {
+            isUserOfType(username, ['Mission Creator'], (error, isAdmin) => {
                 if (error) {
                     console.error(error);
                     reject(error);

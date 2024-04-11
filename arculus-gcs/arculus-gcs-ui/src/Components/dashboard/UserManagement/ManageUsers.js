@@ -24,7 +24,7 @@ import { API_URL } from '../../../config';
 
 const getUsers = async () => {
     try {
-        const url = `${API_URL}/api/getUsers?authToken=${encodeURIComponent(
+        const url = `${API_URL}/user/getUsers?authToken=${encodeURIComponent(
             Cookies.get('jwtToken')
         )}`;
 
@@ -90,7 +90,7 @@ const ManageUsers = () => {
     const handleDeleteUser = async () => {
         try {
             const response = await fetch(
-                `${API_URL}/api/deleteUser?username=${deleteUser}&authToken=${Cookies.get('jwtToken')}`,
+                `${API_URL}/user/deleteUser?username=${deleteUser}&authToken=${Cookies.get('jwtToken')}`,
                 {
                     method: 'DELETE',
                     headers: {

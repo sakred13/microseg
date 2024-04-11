@@ -13,7 +13,7 @@ const ZtModeDropdown = ({ currentMode }) => {
         setMode(newMode);
         currentMode = newMode;
         // Update the mode on the server with a PUT request
-        fetch(`${API_URL}/api/setZtMode?mode=${newMode}`, {
+        fetch(`${API_URL}/auth/setZtMode?mode=${newMode}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -37,7 +37,7 @@ const ZtModeDropdown = ({ currentMode }) => {
         }, 200);
 
         // Call the API to run experiment in pod
-        fetch(`${API_URL}/api/runExperimentInPod?authToken=${authToken}`)
+        fetch(`${API_URL}/auth/runExperimentInPod?authToken=${authToken}`)
             .then((response) => {
                 if (!response.ok) {
                     console.error('Error running experiment');

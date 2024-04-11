@@ -47,15 +47,15 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use('/', userRoutes);
-app.use('/', deviceRoutes);
-app.use('/', authRoutes);
-app.use('/', roleRoutes);
-app.use('/', taskRoutes);
+app.use('/user/', userRoutes);
+app.use('/device/', deviceRoutes);
+app.use('/auth/', authRoutes);
+app.use('/role/', roleRoutes);
+app.use('/task/', taskRoutes);
 app.use('/blacklistapi/', blacklistRoutes);
 app.use('/honeypot-proxy/', honeyNetProxyRoutes);
 app.use('/honeypot-api/', honeyPotRoutes);
-app.use('/', utilizationRoutes);
+app.use('/utilization/', utilizationRoutes);
 app.use('/mission/', missionRoutes);
 
 app.get('/tools/downloadJoinWiz', (req, res) => {

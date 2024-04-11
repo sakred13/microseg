@@ -100,7 +100,7 @@ const AddUserModal = ({ isOpen, setIsOpen }) => {
 
             try {
                 // Make the API call to create a new user
-                const response = await fetch(`${API_URL}/api/signup`, {
+                const response = await fetch(`${API_URL}/auth/signup`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

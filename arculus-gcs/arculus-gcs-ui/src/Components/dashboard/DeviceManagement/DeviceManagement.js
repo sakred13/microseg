@@ -30,7 +30,7 @@ import { API_URL } from '../../../config';
 
 const getTasks = async () => {
     try {
-        const url = `${API_URL}/api/getTasks?authToken=${encodeURIComponent(
+        const url = `${API_URL}/task/getTasks?authToken=${encodeURIComponent(
             Cookies.get('jwtToken')
         )}`;
 
@@ -55,7 +55,7 @@ const getTasks = async () => {
 
 const getTrustedDevices = async () => {
     try {
-        const url = `${API_URL}/api/getTrustedDevices?authToken=${encodeURIComponent(
+        const url = `${API_URL}/device/getTrustedDevices?authToken=${encodeURIComponent(
             Cookies.get('jwtToken')
         )}`;
 
@@ -81,7 +81,7 @@ const getTrustedDevices = async () => {
 
 const getMoreNodes = async () => {
     try {
-        const url = `${API_URL}/api/getMoreNodes?authToken=${encodeURIComponent(
+        const url = `${API_URL}/device/getMoreNodes?authToken=${encodeURIComponent(
             Cookies.get('jwtToken')
         )}`;
 
@@ -106,7 +106,7 @@ const getMoreNodes = async () => {
 
 const handleDeclineDevice = async (ipAddress, nodeName) => {
     try {
-        const url = `${API_URL}/api/addToCluster`;
+        const url = `${API_URL}/device/addToCluster`;
         const authToken = Cookies.get('jwtToken');
         const response = await fetch(url, {
             method: 'POST',
@@ -139,7 +139,7 @@ const handleRemoveNode = async (nodeName) => {
     try {
         const authToken = Cookies.get('jwtToken');
         const response = await fetch(
-            `${API_URL}/api/removeFromCluster`,
+            `${API_URL}/device/removeFromCluster`,
             {
                 method: 'DELETE',
                 headers: {
@@ -166,7 +166,7 @@ const handleRemoveNode = async (nodeName) => {
 
 const handleApproveDevice = async (ipAddress, nodeName) => {
     try {
-        const url = `${API_URL}/api/addToCluster`;
+        const url = `${API_URL}/device/addToCluster`;
         const authToken = Cookies.get('jwtToken');
         const response = await fetch(url, {
             method: 'POST',
@@ -271,7 +271,7 @@ const DeviceManagement = (props) => {
     const handleDeleteDevice = async (deviceName) => {
         try {
             const response = await fetch(
-                `${API_URL}/api/removeTrustedDevice?authToken=${encodeURIComponent(
+                `${API_URL}/device/removeTrustedDevice?authToken=${encodeURIComponent(
                     Cookies.get('jwtToken')
                 )}&deviceName=${deviceName}`,
                 {

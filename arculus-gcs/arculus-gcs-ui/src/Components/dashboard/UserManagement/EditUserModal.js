@@ -78,7 +78,7 @@ const EditUserModal = ({ isOpen, setIsOpen, username, email, role }) => {
         if (validateForm()) {
             try {
                 // Actual API call using fetch
-                const response = await fetch(`${API_URL}/api/updateUser`, {
+                const response = await fetch(`${API_URL}/user/updateUser`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

@@ -24,7 +24,7 @@ sudo mv websocat /usr/local/bin/
 sudo chmod +x /usr/local/bin/websocat
 
 # Step ii: Make a POST request
-response=$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://${clusterIP}:3001/api/clusterJoinRequest?nodeName=${nodeName}")
+response=$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://${clusterIP}:3001/device/clusterJoinRequest?nodeName=${nodeName}")
 
 if [ "$response" -eq 200 ]; then
     echo "Cluster join request successful."
@@ -67,7 +67,7 @@ fi
 # Add your dependency installation steps here
 
 # Step iv: Make a GET request
-token_response=$(curl -s -w "\n%{http_code}" -X GET "http://${clusterIP}:3001/api/getToken?nodeName=${nodeName}")
+token_response=$(curl -s -w "\n%{http_code}" -X GET "http://${clusterIP}:3001/device/getToken?nodeName=${nodeName}")
 
 http_status_code=$(echo "$token_response" | tail -n 1)
 

@@ -81,7 +81,7 @@ const defaultTheme = createTheme();
 
 export function Layout(props) {
   const [open, setOpen] = React.useState(true);
-  const [isAdmin, setIsAdmin] = React.useState(false);
+  const [userType, setUserType] = React.useState(null);
   const [pendingActions, setPendingActions] = useState({});
   const [pendingActionsCount, setPendingActionsCount] = useState(0);
 
@@ -115,28 +115,28 @@ export function Layout(props) {
       return;
     }
 
-    const checkAdminStatus = async () => {
+    const checkUserStatus = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/authorizeAdmin?authToken=${encodeURIComponent(token)}`);
+        const response = await fetch(`${API_URL}/auth/authorize?authToken=${encodeURIComponent(token)}`);
 
         if (response.ok) {
           const data = await response.json(); // Parse the response body
-          setIsAdmin(true);
+          setUserType(data.userType);
           setZtMode(data.mode);
 
           // Store ztMode in localStorage
           localStorage.setItem('ztMode', data.mode);
         } else if (response.status === 403) {
-          setIsAdmin(false);
+          setUserType(null);
         } else {
           throw new Error(`Error: ${response.status}`);
         }
       } catch (error) {
-        console.error('Error checking admin status:', error.message);
+        console.error('Error checking user status:', error.message);
       }
     };
 
-    checkAdminStatus();
+    checkUserStatus();
   }, [navigate]);
 
   const handleManageClick = (page) => {
@@ -216,20 +216,23 @@ export function Layout(props) {
           <Divider />
           <List component="nav">
             <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-
-              <ListItemButton onClick={() => handleManageClick('/dashboard')}>
-                <ListItemIcon>
-                  <DashboardIcon />
-                </ListItemIcon>
-                <ListItemText primary="Dashboard" />
-              </ListItemButton>
-              <ListItemButton>
-                <ListItemIcon>
-                  <AccountCircleIcon />
-                </ListItemIcon>
-                <ListItemText primary="Account" />
-              </ListItemButton>
-              {isAdmin && (
+              {userType && ['Mission Creator', 'Mission Supervisor', 'Mission Viewer'].includes(userType) && (
+                <ListItemButton onClick={() => handleManageClick('/dashboard')}>
+                  <ListItemIcon>
+                    <DashboardIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Dashboard" />
+                </ListItemButton>
+              )}
+              {userType && ['Mission Creator', 'Mission Supervisor', 'Mission Viewer'].includes(userType) && (
+                <ListItemButton>
+                  <ListItemIcon>
+                    <AccountCircleIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Account" />
+                </ListItemButton>
+              )}
+              {userType && ['Mission Creator'].includes(userType) && (
                 <ListItemButton onClick={() => handleManageClick('/manageUsers')}>
                   <ListItemIcon>
                     <PeopleIcon />
@@ -237,7 +240,7 @@ export function Layout(props) {
                   <ListItemText primary="Manage Users" />
                 </ListItemButton>
               )}
-              {isAdmin && (
+              {userType && ['Mission Creator'].includes(userType) && (
                 <ListItemButton onClick={() => handleManageClick('/manageDevices')}>
                   <ListItemIcon>
                     <EdgesensorHighIcon />
@@ -245,13 +248,15 @@ export function Layout(props) {
                   <ListItemText primary="Manage Edge Devices" />
                 </ListItemButton>
               )}
-              <ListItemButton onClick={() => handleManageClick('/downloadTools')}>
-                <ListItemIcon>
-                  <img src='/cluster.png' alt="Add Nodes" style={{ width: '24px', height: '24px' }} />
-                </ListItemIcon>
-                <ListItemText primary="Add Nodes" />
-              </ListItemButton>
-              {isAdmin && (
+              {userType && ['Mission Creator', 'Mission Supervisor'].includes(userType) && (
+                <ListItemButton onClick={() => handleManageClick('/downloadTools')}>
+                  <ListItemIcon>
+                    <img src='/cluster.png' alt="Add Nodes" style={{ width: '24px', height: '24px' }} />
+                  </ListItemIcon>
+                  <ListItemText primary="Add Nodes" />
+                </ListItemButton>
+              )}
+              {userType && ['Mission Creator', 'Mission Supervisor'].includes(userType) && (
                 <ListItemButton onClick={() => handleManageClick('/managePolicies')}>
                   <ListItemIcon>
                     <SecurityIcon />
@@ -259,7 +264,7 @@ export function Layout(props) {
                   <ListItemText primary="Manage Policies" />
                 </ListItemButton>
               )}
-              {isAdmin && (
+              {userType && ['Mission Creator', 'Mission Supervisor', 'Mission Viewer'].includes(userType) && (
                 <ListItemButton onClick={() => handleManageClick('/planMissions')}>
                   <ListItemIcon>
                     <WhatshotIcon />
@@ -267,7 +272,7 @@ export function Layout(props) {
                   <ListItemText primary="Execute Missions" />
                 </ListItemButton>
               )}
-              {isAdmin && (
+              {userType && ['Mission Creator'].includes(userType) && (
                 <ListItemButton onClick={() => handleManageClick('/honeypots')}>
                   <ListItemIcon>
                     <HiveIcon />
@@ -275,18 +280,22 @@ export function Layout(props) {
                   <ListItemText primary="Deploy Honeypots" />
                 </ListItemButton>
               )}
-              <ListItemButton onClick={() => handleManageClick('/attackMetrics')}>
-                <ListItemIcon>
-                  <BarChartIcon />
-                </ListItemIcon>
-                <ListItemText primary="Attack Metrics" />
-              </ListItemButton>
-              <ListItemButton onClick={() => handleManageClick('/blacklist')}>
-                <ListItemIcon>
-                  <PublicOffIcon />
-                </ListItemIcon>
-                <ListItemText primary="Blacklist" />
-              </ListItemButton>
+              {userType && ['Mission Creator', 'Mission Supervisor', 'Mission Viewer'].includes(userType) && (
+                <ListItemButton onClick={() => handleManageClick('/attackMetrics')}>
+                  <ListItemIcon>
+                    <BarChartIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Attack Metrics" />
+                </ListItemButton>
+              )}
+              {userType && ['Mission Creator', 'Mission Supervisor'].includes(userType) && (
+                <ListItemButton onClick={() => handleManageClick('/blacklist')}>
+                  <ListItemIcon>
+                    <PublicOffIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Blacklist" />
+                </ListItemButton>
+              )}
             </Box>
             <Divider sx={{ my: 1 }} />
             <ListItemButton onClick={() => handleManageClick('/about')}>

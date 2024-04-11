@@ -6,7 +6,7 @@ exports.getBlacklist = (req, res) => {
     const { authToken, records } = req.query;
 
     // Check if the user has an admin role
-    isUserOfType(getUserFromToken(authToken), 'Mission Creator', (roleErr, isAdmin) => {
+    isUserOfType(getUserFromToken(authToken), ['Mission Creator'], (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });

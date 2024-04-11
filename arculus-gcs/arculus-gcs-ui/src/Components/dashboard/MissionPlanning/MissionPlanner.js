@@ -32,7 +32,7 @@ function MissionPlanner() {
 
   useEffect(() => {
     // Fetch trusted devices from your API using fetch
-    fetch(`${API_URL}/api/getTrustedDevices?authToken=${encodeURIComponent(
+    fetch(`${API_URL}/device/getTrustedDevices?authToken=${encodeURIComponent(
       Cookies.get('jwtToken')
     )}`)
       .then((response) => {

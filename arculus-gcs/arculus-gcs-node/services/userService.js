@@ -8,7 +8,7 @@ exports.updateUser = (req, res) => {
     const username = getUserFromToken(authToken);
 
     // Check if the user has an admin role
-    isUserOfType(username, 'Mission Creator', (roleErr, isAdmin) => {
+    isUserOfType(username, ['Mission Creator'], (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });
@@ -68,7 +68,7 @@ exports.deleteUser = (req, res) => {
     const user = getUserFromToken(authToken);
 
     // Check if the user has an admin role
-    isUserOfType(user, 'Mission Creator', (roleErr, isAdmin) => {
+    isUserOfType(user, ['Mission Creator'], (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });

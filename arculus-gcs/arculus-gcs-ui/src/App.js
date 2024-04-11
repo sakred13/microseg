@@ -28,17 +28,17 @@ function App() {
         <Routes>
           <Route path='/' element={<Routing />} />
           <Route path='/signIn' element={<SignInPage />} />
-          <Route path='/downloadTools' element={<Layout component={<AccessWrapper component={<DownloadTools />} />} />}/>
-          <Route path='/loggedIn' element={<Layout component={<AccessWrapper component={<IntroDashboard />} />} />} />
-          <Route path='/about' element={<Layout component={<AccessWrapper component={<IntroDashboard />} />} />} />
-          <Route path='/manageUsers' element={<Layout component={<AccessWrapper component={<ManageUsers />} />} />} />
-          <Route path='/manageDevices' element={<Layout component={<AccessWrapper component={<DeviceManagement />} />} />} />
-          <Route path='/managePolicies' element={<Layout component={<AccessWrapper component={<DeviceManagementTopology />} />} />} />
-          <Route path='/planMissions' element={<Layout component={<AccessWrapper component={<MissionPlanner />} />} />} />
-          <Route path='/honeypots' element={<Layout component={<AccessWrapper component={<HoneypotDashboard />} />} />} />
-          <Route path='/attackMetrics' element={<Layout component={<AccessWrapper component={<MetricsDashboard />} />} />} />
-          <Route path='/blacklist' element={<Layout component={<AccessWrapper component={<Blacklist />} />} />} />
-          <Route path='/dashboard' element={<Layout component={<AccessWrapper component={<UtilizationGraphs />} />} />} />
+          <Route path='/downloadTools' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor']} component={<DownloadTools />} />} />}/>
+          <Route path='/loggedIn' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor', 'Mission Viewer']} component={<IntroDashboard />} />} />} />
+          <Route path='/about' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor', 'Mission Viewer']} component={<IntroDashboard />} />} />} />
+          <Route path='/manageUsers' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator']} component={<ManageUsers />} />} />} />
+          <Route path='/manageDevices' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator']} component={<DeviceManagement />} />} />} />
+          <Route path='/managePolicies' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor']} component={<DeviceManagementTopology />} />} />} />
+          <Route path='/planMissions' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor', 'Mission Viewer']} component={<MissionPlanner />} />} />} />
+          <Route path='/honeypots' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator']} component={<HoneypotDashboard />} />} />} />
+          <Route path='/attackMetrics' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor', 'Mission Viewer']} component={<MetricsDashboard />} />} />} />
+          <Route path='/blacklist' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor']} component={<Blacklist />} />} />} />
+          <Route path='/dashboard' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor', 'Mission Viewer']} component={<UtilizationGraphs />} />} />} />
 
         </Routes>
       </DashboardProvider>

@@ -1,10 +1,15 @@
 *.ipynb_checkpoints
+# config
+arculus-gcs/arculus-gcs-node/configs/honeypot_config.json
+arculus-gcs/arculus-gcs-ui/src/config.js
 
 # dependencies
 **/node_modules/
 **/mysql_db
 /.pnp
 .pnp.js
+arculus-gcs/arculus-gcs-ui/package-lock.json
+arculus-gcs/arculus-gcs-ui/package.json
 
 # testing
 /coverage

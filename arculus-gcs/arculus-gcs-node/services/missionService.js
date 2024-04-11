@@ -21,7 +21,7 @@ exports.startMission = (req, res) => {
     const { authToken, gcX: newGcX, gcY: newGcY, destX: newDestX, destY: newDestY, survDroneName: newSurvDroneName, survDroneIp: newSurvDroneIp, supplyDroneName: newSupplyDroneName, supplyDroneIp: newSupplyDroneIp } = req.body;
 
     // Check if the user has an admin role
-    isUserOfType(getUserFromToken(authToken), 'Mission Creator', (roleErr, isAdmin) => {
+    isUserOfType(getUserFromToken(authToken), ['Mission Creator'], (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });
@@ -69,7 +69,7 @@ exports.startMission = (req, res) => {
 exports.getMissionState = (req, res) => {
     // Check if the user has an admin role
     const { authToken } = req.query;
-    isUserOfType(getUserFromToken(authToken), 'Mission Creator', (roleErr, isAdmin) => {
+    isUserOfType(getUserFromToken(authToken), ['Mission Creator'], (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });

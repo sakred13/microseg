@@ -64,7 +64,7 @@ function DeployHoneypots(props) {
     const fetchIpAddresses = async () => {
         try {
             // Replace with your actual API endpoint
-            const url = `${API_URL}/api/getMoreNodes?authToken=${encodeURIComponent(
+            const url = `${API_URL}/device/getMoreNodes?authToken=${encodeURIComponent(
                 Cookies.get('jwtToken')
             )}`;
 

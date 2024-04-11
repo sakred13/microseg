@@ -102,7 +102,7 @@ const EditDeviceModal = ({ isOpen, setIsOpen, deviceDetails, allowedTasks: allow
         const authToken = Cookies.get('jwtToken');
 
         try {
-            const response = await fetch(`${API_URL}/api/updateTrustedDevice`, {
+            const response = await fetch(`${API_URL}/device/updateTrustedDevice`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

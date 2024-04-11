@@ -411,7 +411,7 @@ exports.addTrustedDevice = (req, res) => {
     const { authToken, deviceName, tasks, deviceType } = req.body;
 
     // Check if the user has an admin role
-    isUserOfType(getUserFromToken(authToken), 'Mission Creator', (roleErr, isAdmin) => {
+    isUserOfType(getUserFromToken(authToken), ['Mission Creator'], (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });
@@ -520,7 +520,7 @@ exports.updateTrustedDevice = async (req, res) => {
     const { authToken, currentName, deviceName, ipAddress, tasks } = req.body;
 
     // Check if the user has an admin role
-    isUserOfType(getUserFromToken(authToken), 'Mission Creator', async (roleErr, isAdmin) => {
+    isUserOfType(getUserFromToken(authToken), ['Mission Creator'], async (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });
@@ -573,7 +573,7 @@ exports.removeTrustedDevice = (req, res) => {
     const { authToken, deviceName } = req.query;
 
     // Check if the user has an admin role
-    isUserOfType(getUserFromToken(authToken), 'Mission Creator', async (roleErr, isAdmin) => {
+    isUserOfType(getUserFromToken(authToken), ['Mission Creator'], async (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });
@@ -705,7 +705,7 @@ exports.addToCluster = (req, res) => {
     const { ipAddress, nodeName, authToken, decline } = req.body;
 
     // Check if the user has an admin role
-    isUserOfType(getUserFromToken(authToken), 'Mission Creator', async (roleErr, isAdmin) => {
+    isUserOfType(getUserFromToken(authToken), ['Mission Creator'], async (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });
@@ -737,7 +737,7 @@ exports.removeFromCluster = (req, res) => {
     const { authToken, nodeName } = req.body;
 
     // Check if the user has an admin role
-    isUserOfType(getUserFromToken(authToken), 'Mission Creator', async (roleErr, isAdmin) => {
+    isUserOfType(getUserFromToken(authToken), ['Mission Creator'], async (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });

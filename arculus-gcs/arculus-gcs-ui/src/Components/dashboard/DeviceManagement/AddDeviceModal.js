@@ -114,7 +114,7 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks: all
         const authToken = Cookies.get('jwtToken');
 
         try {
-            const response = await fetch(`${API_URL}/api/addTrustedDevice`, {
+            const response = await fetch(`${API_URL}/device/addTrustedDevice`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
