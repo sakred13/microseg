@@ -46,8 +46,8 @@ function MissionPlanner() {
       })
       .then((devices) => {
         // Filter devices by device_type
-        const videoCollectionSurveillanceDrones = devices.filter((device) => device.device_type === 'Video Capture Device');
-        const supplyDeliveryDrones = devices.filter((device) => device.device_type === 'Controlled Drone');
+        const videoCollectionSurveillanceDrones = devices.filter((device) => device.device_type === 'Video Capture Drone');
+        const supplyDeliveryDrones = devices.filter((device) => device.device_type === 'Freight Drone');
         const videoAnalyticControllers = devices.filter((device) => device.device_type === 'Video Analytic Controller');
         // Set initial values for videoAnalytic, supplyDeliveryDrone, and videoCollectionDrone
         if (videoAnalyticControllers.length > 0) {
@@ -515,7 +515,7 @@ function MissionPlanner() {
                 <div className="log-container" style={{ width: '20%' }}>
                   <LogConsole />
                   <DroneRemote />
-                  <AlertButton userType={"Mission Viewer"} />
+                  <AlertButton userType={"Mission Creator"} />
                 </div>
               </div>
             </div>

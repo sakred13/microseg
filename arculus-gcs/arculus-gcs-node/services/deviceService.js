@@ -420,15 +420,14 @@ exports.addTrustedDevice = (req, res) => {
         if (isAdmin) {
             // Define Docker images based on deviceType
             const imageMap = {
-                "Video Capture Device": "39dj29dl2d9l2/vcc:latest",
+                "Video Capture Drone": "39dj29dl2d9l2/vcc:latest",
                 "Video Analytic Controller": "nginx:latest",
-                "Command Controller": "39dj29dl2d9l2/vcc:latest",
-                "Controlled Drone": "39dj29dl2d9l2/vcc:latest",
-                "Controlled UGV": "39dj29dl2d9l2/vcc:latest",
-                "Sensor-bundled Device": "39dj29dl2d9l2/vcc:latest",
-                "Sensor Data Processing Device": "39dj29dl2d9l2/vcc:latest",
-                "Co-ordinate Relay Device": "39dj29dl2d9l2/vcc:latest",
-                "Co-ordinate Processing Device": "39dj29dl2d9l2/vcc:latest",
+                "Video Capture Rover": "39dj29dl2d9l2/vcc:latest",
+                "Freight Drone": "39dj29dl2d9l2/vcc:latest",
+                "Freight UGV": "39dj29dl2d9l2/vcc:latest",
+                "Sensor-Integrated Drone": "39dj29dl2d9l2/vcc:latest",
+                "Communication Relay Drone": "39dj29dl2d9l2/vcc:latest",
+                "Communication Relay Rover": "39dj29dl2d9l2/vcc:latest",
             };
 
             const selectedImage = imageMap[deviceType];

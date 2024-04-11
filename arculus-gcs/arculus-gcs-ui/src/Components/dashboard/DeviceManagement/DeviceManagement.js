@@ -215,6 +215,16 @@ function DeviceManagement(props) {
   const [showRemoveClusterDialog, setShowRemoveClusterDialog] = useState(false);
   const [removeClusterNode, setRemoveClusterNode] = useState(null);
   const [removeTrustedDevice, setRemoveTrustedDevice] = useState(false);
+  const deviceTypeImages = {
+    "Video Capture Drone": "surveillanceDrone.png",
+    "Video Analytic Controller": "videoAnalyticController.png",
+    "Video Capture Rover": "reconRover.png",
+    "Freight Drone": "freightDrone.png",
+    "Freight UGV": "freightRover.png",
+    "Sensor-Integrated Drone": "sensorIntegratedDrone.png",
+    "Communication Relay Drone": "commRelayDrone.png",
+    "Communication Relay Rover": "commRelayRover.png",
+  };
 
   const handleOpen = (text) => {
     setInfoModalContent(text);
@@ -484,7 +494,8 @@ function DeviceManagement(props) {
                     </Button>
                   </TableContainer>
                   </>)}>
-                    <img src={`drone.png`} alt="Drone" className="button-image" />
+                    {/* Render the correct image based on device type */}
+                    <img src={deviceTypeImages[device.device_type]} alt={device.device_type} className="button-image" />
                   </button>
                   <span>{device.device_name}</span>
                 </div>

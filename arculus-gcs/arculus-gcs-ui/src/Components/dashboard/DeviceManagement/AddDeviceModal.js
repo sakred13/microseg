@@ -36,15 +36,14 @@ const successStyles = {
 };
 
 const deviceTypes = [
-    "Video Capture Device",
+    "Video Capture Drone",
     "Video Analytic Controller",
-    "Command Controller",
-    "Controlled Drone",
-    "Controlled UGV",
-    "Sensor-bundled Device",
-    "Sensor Data Processing Device",
-    "Co-ordinate Relay Device",
-    "Co-ordinate Processing Device"
+    "Video Capture Rover",
+    "Freight Drone",
+    "Freight UGV",
+    "Sensor-Integrated Drone",
+    "Communication Relay Drone",
+    "Communication Relay Rover"
 ];
 
 const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks: allowedFunctions }) => {
