@@ -209,9 +209,9 @@ const AddUserModal = ({ isOpen, setIsOpen }) => {
                                                 error={Boolean(errors.role)}
                                                 helperText={errors.role}
                                             >
-                                                <MenuItem value="Admin">Admin</MenuItem>
-                                                <MenuItem value="Moderator">Moderator</MenuItem>
-                                                <MenuItem value="Viewer">Viewer</MenuItem>
+                                                <MenuItem value="Mission Creator">Mission Creator</MenuItem>
+                                                <MenuItem value="Mission Supervisor">Mission Supervisor</MenuItem>
+                                                <MenuItem value="Mission Viewer">Mission Viewer</MenuItem>
                                             </TextField>
                                         </Grid>
                                         <Grid item xs={12}>

@@ -1,11 +1,11 @@
-const { isAdminUser, getUserFromToken } = require('./authService');
+const { isUserOfType, getUserFromToken } = require('./authService');
 const pool = require('../modules/arculusDbConnection');
 
 exports.getTasks = (req, res) => {
     const { authToken } = req.query;
 
     // Check if the user has an admin role
-    isAdminUser(getUserFromToken(authToken), (roleErr, isAdmin) => {
+    isUserOfType(getUserFromToken(authToken), 'Mission Creator', (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });
