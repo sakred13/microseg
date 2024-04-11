@@ -8,8 +8,6 @@ arculus-gcs/arculus-gcs-ui/src/config.js
 **/mysql_db
 /.pnp
 .pnp.js
-arculus-gcs/arculus-gcs-ui/package-lock.json
-arculus-gcs/arculus-gcs-ui/package.json
 
 # testing
 /coverage
