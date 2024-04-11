@@ -458,7 +458,7 @@ spec:
       - "3600000"`;
 
                 const yamlFilePath = temp.openSync({ suffix: '.yaml' });
-                fs.writeSync(yamlFilePath.fd, podYAML);
+                fs.writeSync(yamlFilePath.fd, policyYAML);
                 fs.closeSync(yamlFilePath.fd);
 
                 // Apply the YAML file to create the Pod using exec
