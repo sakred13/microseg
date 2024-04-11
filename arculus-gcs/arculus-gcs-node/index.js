@@ -14,9 +14,10 @@ const taskRoutes = require('./routes/taskRoutes');
 const honeyNetProxyRoutes = require('./routes/honeyNetProxyRoutes');
 const honeyPotRoutes = require('./routes/honeyPotRoutes');
 const blacklistRoutes = require('./routes/blacklistRoutes');
-const utilizationWebSocketService = require('./services/utilizationWebSocketService');
+const missionRoutes = require('./routes/missionRoutes')
+const utilizationService = require('./services/utilizationService');
 const { joinReqsWebSocket, joinStatusWebSocket } = require('./services/deviceService');
-
+const utilizationRoutes = require('./routes/utilizationRoutes');
 const hostIp = execSync("ifconfig eth0 | grep 'inet ' | awk '{print $2}'").toString().trim();
 const publicIp = execSync("curl -s ifconfig.me").toString().trim();
 console.log('Public IP: ', publicIp);
@@ -38,6 +39,7 @@ const joinReqsWss = new WebSocket.Server({ server: joinReqsServer, path: '/joinR
 
 const joinStatusServer = http.createServer();
 const joinStatusWss = new WebSocket.Server({ server: joinStatusServer, path: '/getJoinStatus' });
+utilizationService.startUtilizationCollection();
 
 app.use(cors({
   origin: allowCors,
@@ -53,15 +55,16 @@ app.use('/', taskRoutes);
 app.use('/blacklistapi/', blacklistRoutes);
 app.use('/honeypot-proxy/', honeyNetProxyRoutes);
 app.use('/honeypot-api/', honeyPotRoutes);
-utilizationWebSocketService.startUtilizationCollection();
+app.use('/', utilizationRoutes);
+app.use('/mission/', missionRoutes);
 
 app.get('/tools/downloadJoinWiz', (req, res) => {
   const filePath = path.join(__dirname, '/tools/joinClusterWizard.sh');
   res.download(filePath, 'joinClusterWizard.sh', (err) => {
-      if (err) {
-          console.error('Error while downloading joinClusterWizard.sh:', err);
-          res.status(500).send('Internal Server Error');
-      }
+    if (err) {
+      console.error('Error while downloading joinClusterWizard.sh:', err);
+      res.status(500).send('Internal Server Error');
+    }
   });
 });
 
@@ -69,10 +72,10 @@ app.get('/tools/downloadJoinWiz', (req, res) => {
 app.get('/tools/downloadHoneyWiz', (req, res) => {
   const filePath = path.join(__dirname, '/tools/honeypotWiz.py');
   res.download(filePath, 'honeypotWiz.py', (err) => {
-      if (err) {
-          console.error('Error while downloading honeypotWiz.py:', err);
-          res.status(500).send('Internal Server Error');
-      }
+    if (err) {
+      console.error('Error while downloading honeypotWiz.py:', err);
+      res.status(500).send('Internal Server Error');
+    }
   });
 });
 
@@ -110,8 +113,4 @@ joinStatusServer.listen(3002, () => {
 
 joinReqsServer.listen(3003, () => {
   console.log('Join Requests WebSocket server listening on port 3003');
-});
-
-utilizationWebSocketService.utilizationServer.listen(3004, () => {
-  console.log('Utilization WebSocket server listening on port 3004');
 });

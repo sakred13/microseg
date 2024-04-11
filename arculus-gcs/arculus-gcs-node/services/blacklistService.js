@@ -1,4 +1,4 @@
-const { isAdminUser, getUserFromToken } = require('./authService');
+const { isUserOfType, getUserFromToken } = require('./authService');
 const pool = require('../modules/arculusDbConnection');
 
 // GET API to retrieve blacklisted IP addresses
@@ -6,7 +6,7 @@ exports.getBlacklist = (req, res) => {
     const { authToken, records } = req.query;
 
     // Check if the user has an admin role
-    isAdminUser(getUserFromToken(authToken), (roleErr, isAdmin) => {
+    isUserOfType(getUserFromToken(authToken), 'Mission Creator', (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });
@@ -35,7 +35,7 @@ exports.removeFromBlacklist = (req, res) => {
     const { ipAddresses } = req.body;
 
     // Check if the user has an admin role
-    isAdminUser(getUserFromToken(authToken), (roleErr, isAdmin) => {
+    isUserOfType(getUserFromToken(authToken), (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });

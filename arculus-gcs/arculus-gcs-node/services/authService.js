@@ -25,25 +25,25 @@ function getUserFromToken(token) {
 };
 exports.getUserFromToken = getUserFromToken;
 
-const isAdminUser = (username, callback) => {
+const isUserOfType = (username, userType, callback) => {
     pool.query("SELECT r.role_name FROM user u JOIN role r ON u.role_id = r.role_id WHERE u.username = ?", [username], (err, results) => {
         if (err) {
             console.error(err);
             return callback(err, null);
         }
 
-        const isAdmin = results.some((row) => row.role_name === 'Admin');
-        callback(null, isAdmin);
+        const isOfRightType = results.some((row) => row.role_name === userType);
+        callback(null, isOfRightType);
     });
 };
-exports.isAdminUser = isAdminUser;
+exports.isUserOfType = isUserOfType;
 
 
 exports.signup = (req, res) => {
     const { jwtToken, username, email, password, role } = req.body;
 
     // Check if the user has an admin role
-    isAdminUser(getUserFromToken(jwtToken), (roleErr, isAdmin) => {
+    isUserOfType(getUserFromToken(jwtToken), 'Mission Creator', (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });
@@ -122,14 +122,17 @@ exports.login = (req, res) => {
     });
 };
 
-exports.authorizeAdmin = (req, res) => {
+exports.authorize = (req, res) => {
     const { authToken } = req.query;
 
-    // Assuming getUserFromToken and isAdminUser functions are defined elsewhere
+
+}
+exports.authorizeAdmin = (req, res) => {
+    const { authToken } = req.query;
     const username = getUserFromToken(authToken);
 
     // Check if the user has an admin role
-    isAdminUser(username, (roleErr, isAdmin) => {
+    isUserOfType(username, 'Mission Creator', (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });
@@ -150,7 +153,7 @@ exports.setZtMode = (req, res) => {
     const user = getUserFromToken(authToken);
 
     // Check if the user has an admin role
-    isAdminUser(user, (roleErr, isAdmin) => {
+    isUserOfType(user, 'Mission Creator', (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });
@@ -174,7 +177,7 @@ exports.runExperimentInPod = async (req, res) => {
 
         // Check if the user has an admin role
         const isAdmin = await new Promise((resolve, reject) => {
-            isAdminUser(username, (error, isAdmin) => {
+            isUserOfType(username, 'Mission Creator', (error, isAdmin) => {
                 if (error) {
                     console.error(error);
                     reject(error);

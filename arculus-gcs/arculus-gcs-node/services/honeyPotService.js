@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const axios = require('axios');
 
-const { isAdminUser, getUserFromToken } = require('./authService');
+const { isUserOfType, getUserFromToken } = require('./authService');
 const honeypotConfig = JSON.parse(fs.readFileSync('configs/honeypot_config.json'));
 const deployedHoneypots = [];
 
@@ -10,7 +10,7 @@ exports.createHoneyPot = async (req, res) => {
         const { authToken } = req.query;
 
         // Check if the user has an admin role
-        isAdminUser(getUserFromToken(authToken), async (roleErr, isAdmin) => {
+        isUserOfType(getUserFromToken(authToken), 'Mission Creator', async (roleErr, isAdmin) => {
             if (roleErr) {
                 console.error(roleErr);
                 return res.status(500).json({ message: 'Internal Server Error' });
@@ -84,7 +84,7 @@ exports.undeployHoneypot = async (req, res) => {
         const { authToken } = req.query;
 
         // Check if the user has an admin role
-        isAdminUser(getUserFromToken(authToken), async (roleErr, isAdmin) => {
+        isUserOfType(getUserFromToken(authToken), 'Mission Creator', async (roleErr, isAdmin) => {
             if (roleErr) {
                 console.error(roleErr);
                 return res.status(500).json({ message: 'Internal Server Error' });
@@ -150,7 +150,7 @@ exports.getDeployedHoneypots = async (req, res) => {
         const { authToken } = req.query;
 
         // Check if the user has an admin role
-        isAdminUser(getUserFromToken(authToken), (roleErr, isAdmin) => {
+        isUserOfType(getUserFromToken(authToken), 'Mission Creator', (roleErr, isAdmin) => {
             if (roleErr) {
                 console.error(roleErr);
                 return res.status(500).json({ message: 'Internal Server Error' });

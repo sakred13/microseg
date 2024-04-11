@@ -1,4 +1,4 @@
-const { isAdminUser, getUserFromToken } = require('./authService');
+const { isUserOfType, getUserFromToken } = require('./authService');
 const pool = require('../modules/arculusDbConnection');
 
 // Route to handle user update without changing password
@@ -8,7 +8,7 @@ exports.updateUser = (req, res) => {
     const username = getUserFromToken(authToken);
 
     // Check if the user has an admin role
-    isAdminUser(username, (roleErr, isAdmin) => {
+    isUserOfType(username, 'Mission Creator', (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });
@@ -68,7 +68,7 @@ exports.deleteUser = (req, res) => {
     const user = getUserFromToken(authToken);
 
     // Check if the user has an admin role
-    isAdminUser(user, (roleErr, isAdmin) => {
+    isUserOfType(user, 'Mission Creator', (roleErr, isAdmin) => {
         if (roleErr) {
             console.error(roleErr);
             return res.status(500).json({ message: 'Internal Server Error' });

@@ -8,6 +8,7 @@ import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
 import { API_URL } from '../../../config';
 import Cookies from 'js-cookie';
+import SettingsRemoteIcon from '@mui/icons-material/SettingsRemote';
 
 function MissionPlanner() {
   const [activeTab, setActiveTab] = useState('Select Mission Type');
@@ -68,7 +69,6 @@ function MissionPlanner() {
       });
   }, []);
 
-
   useEffect(() => {
     // Initialize an empty privileges object
     const privileges = {
@@ -104,21 +104,6 @@ function MissionPlanner() {
     // Update the devicePrivileges state with the privileges object
     setDevicePrivileges(privileges);
 
-    // Check if videoAnalyticControllers, videoCollectionDrones, and supplyDeliveryDrones have values
-    if (videoAnalyticControllers.length > 0 && videoCollectionDrones.length > 0 && supplyDeliveryDrones.length > 0) {
-      // Find the corresponding device and assign its allowedTasks to privileges
-      const videoAnalyticDevice = videoAnalyticControllers.find(device => device.device_name === videoAnalytic);
-      const videoCollectionDevice = videoCollectionDrones.find(device => device.device_name === videoCollectionDrone);
-      const supplyDeliveryDevice = supplyDeliveryDrones.find(device => device.device_name === supplyDeliveryDrone);
-
-      privileges.videoAnalytic.has = videoAnalyticDevice ? videoAnalyticDevice.allowedTasks : [];
-      privileges.videoCollectionDrone.has = videoCollectionDevice ? videoCollectionDevice.allowedTasks : [];
-      privileges.supplyDeliveryDrone.has = supplyDeliveryDevice ? supplyDeliveryDevice.allowedTasks : [];
-    }
-
-    // Update the devicePrivileges state with the privileges object
-    setDevicePrivileges(privileges);
-
     const anyRequiredPrivilegeAbsent = Object.keys(privileges).some((deviceType) => {
       return privileges[deviceType].required.some((privilege) => !privileges[deviceType].has.includes(privilege));
     });
@@ -126,9 +111,7 @@ function MissionPlanner() {
     // Set insufficientPrivileges to true if any required privilege is absent
     setInsufficientPrivileges(anyRequiredPrivilegeAbsent);
 
-    // Log the updated devicePrivileges
-    console.log("Device Privileges: ", privileges);
-  });
+  }, [videoAnalytic, videoCollectionDrone, supplyDeliveryDrone, videoAnalyticControllers, videoCollectionDrones, supplyDeliveryDrones]);
 
 
   const handleTabChange = (tabName) => {
@@ -177,12 +160,48 @@ function MissionPlanner() {
   const handleExecuteMissionClick = () => {
     if (isExecuteMissionDisabled) {
       setIsSelectionsIncompleteModalOpen(true); // Open the modal when the button is disabled
-    }
-    else if (insufficientPrivileges) {
+    } else if (insufficientPrivileges) {
       setInsufficientPrivilegesModalOpen(true);
-    }
-    else {
-      switchToExecuteTab();
+    } else {
+      // Find the drone objects based on their names
+      const surveillanceDrone = videoCollectionDrones.find(drone => drone.device_name === videoCollectionDrone);
+      const supplyDrone = supplyDeliveryDrones.find(drone => drone.device_name === supplyDeliveryDrone);
+
+      if (!surveillanceDrone || !supplyDrone) {
+        console.error('Could not find drones with the given names.');
+        return;
+      }
+
+      // Make API call to start mission
+      const payload = {
+        gcX: gcX,
+        gcY: gcY,
+        destX: soldierPosition.x * 1792,
+        destY: soldierPosition.y * 1024,
+        survDroneName: surveillanceDrone.device_name,
+        survDroneIp: surveillanceDrone.ip_address,
+        supplyDroneName: supplyDrone.device_name,
+        supplyDroneIp: supplyDrone.ip_address,
+        authToken: encodeURIComponent(Cookies.get('jwtToken'))
+      };
+
+      fetch(`${API_URL}/mission/startMission`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Failed to start mission');
+          }
+          // Continue with existing functionality
+          switchToExecuteTab();
+        })
+        .catch((error) => {
+          console.error('Error starting mission:', error);
+        });
     }
   };
 
@@ -486,12 +505,48 @@ function MissionPlanner() {
 
         {activeTab === 'Execute Mission' && (
           <>             <h2>Mission in Execution...</h2>
-
-            <div className='tabs mission-container' style={{ border: '2px solid black', padding: '10px' }}>
-              {/* Add your content for executing the mission here */}
-              {selectedLocation === '/desert.png' ? <DesertMission handleTabChange={handleTabChange} /> : <ForestMission handleTabChange={handleTabChange} />}
+            <div className='container'>
+              <div className='tabs mission-container' style={{ border: '2px solid black', padding: '10px' }}>
+                {/* Add your content for executing the mission here */}
+                {selectedLocation === '/desert.png' ? <DesertMission handleTabChange={handleTabChange} jwtToken={encodeURIComponent(Cookies.get('jwtToken'))} /> : <ForestMission handleTabChange={handleTabChange} />}
+                <div className="log-container" style={{ width: '20%' }}>
+                  <b>Command Activity</b>
+                  <div className="log-section">
+                    <div className="log" style={{ backgroundColor: 'black', color: 'green' }}>
+                      Move command to supply drone by controller.
+                    </div>
+                    <div className="log" style={{ backgroundColor: 'black', color: 'red' }}>
+                      Move command to supply drone from 122.43.53.23!
+                    </div>
+                    {/* Repeat this div for each log */}
+                  </div>
+                  <div>
+                    <b>Control Remotely</b>
+                    <select>
+                      <option value="surveillance">Surveillance Drone</option>
+                      <option value="supply">Supply Drone</option>
+                    </select>
+                  </div>
+                  <div className="button-section">
+                    <div className="row1">
+                      <button className="arrow-button"><span style={{ transform: 'rotate(315deg)', display: 'inline-block' }}>&#9650;</span></button>
+                      <button className="arrow-button"><span>&#9650;</span></button>
+                      <button className="arrow-button"><span style={{ transform: 'rotate(45deg)', display: 'inline-block' }}>&#9650;</span></button>
+                    </div>
+                    <div className="row2">
+                      <button className="arrow-button"><span>&#9668;</span></button>
+                      <SettingsRemoteIcon style={{fontSize: "40px"}}/>
+                      <button className="arrow-button"><span>&#9654;</span></button>
+                    </div>
+                    <div className="row3">
+                      <button className="arrow-button"><span style={{ transform: 'rotate(225deg)', display: 'inline-block' }}>&#9650;</span></button>
+                      <button className="arrow-button"><span>&#9664;</span></button>
+                      <button className="arrow-button"><span style={{ transform: 'rotate(135deg)', display: 'inline-block' }}>&#9650;</span></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-
           </>)}
       </div>
     </div>

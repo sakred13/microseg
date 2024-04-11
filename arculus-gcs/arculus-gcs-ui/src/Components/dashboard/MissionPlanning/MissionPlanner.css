@@ -47,7 +47,6 @@
   background-color: #f0f0f0;
 }
 
-/* Additional styles for the active tab */
 .active {
   background-color: #888;
   color: #fff;
@@ -92,7 +91,6 @@ select {
   height: auto; /* Maintain the aspect ratio */
   max-width: 100%; /* Ensure the image doesn't exceed its original dimensions */
 }
-
 
 /* Style for the soldier image */
 img.soldier {
@@ -174,4 +172,98 @@ li.no-privilege::before {
 
 .modal-button:hover {
   background-color: #003d82;
+}
+
+.container {
+  display: flex;
+}
+
+.svg-container {
+  flex: 1; /* Adjusted width to take up 50% of the container */
+  padding-right: 10px; /* Add some spacing between the two divs */
+}
+
+.log-container {
+  flex: 1; /* Adjusted width to take up 50% of the container */
+  display: flex;
+  flex-direction: column;
+  padding-left: 1%;
+}
+
+.log-section {
+  background-color: black;
+  flex: 1; /* Ensure the log section takes up all available space */
+  overflow-y: auto; /* Enable vertical scrolling if needed */
+}
+
+
+
+
+.log {
+  background-color: black;
+  color: pink;
+  padding-top: 2px; /* Add padding to the log */
+  margin-bottom: 5px; /* Add margin between logs */
+  align-items: start;
+  padding-left: 2px;
+  text-align: left;
+}
+
+.button-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.button-section button {
+  margin-bottom: 5px; /* Add margin between buttons */
+  padding: 10px; /* Add padding to the buttons */
+  background-color: #f0f0f0; /* Background color for buttons */
+  border: 1px solid #ccc; /* Add border to buttons */
+  border-radius: 4px; /* Add border radius to buttons */
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 33%;
+  height: 50px;
+}
+
+.button-section .row1 {
+  display: flex;
+  justify-content: space-between;
+}
+
+.button-section .row2 {
+  display: flex;
+  justify-content: space-between;
+}
+
+.button-section .row3 {
+  display: flex;
+  justify-content: space-between;
+}
+
+.arrow-button {
+  margin-bottom: 5px; /* Add margin between buttons */
+  padding: 10px; /* Add padding to the buttons */
+  background-color: #f0f0f0; /* Background color for buttons */
+  border: 1px solid #ccc; /* Add border to buttons */
+  border-radius: 4px; /* Add border radius to buttons */
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.arrow-button:hover {
+  background-color: #ddd; /* Background color for buttons on hover */
+}
+
+.mission-container {
+  width: 100%;
+}
+
+.log-container {
+  width: 20%;
+}
+
+.arrow-button span {
+  font-weight: bold;
+  font-size: 30px;
 }
