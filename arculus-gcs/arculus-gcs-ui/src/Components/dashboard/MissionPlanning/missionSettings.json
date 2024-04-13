@@ -35,7 +35,53 @@
                         "receive_command",
                         "send_posdata"
                     ],
-                    "Rescue Vehicle::Freight Rover": [
+                    "Rescue Vehicle::Freight UGV": [
+                        "receive_command",
+                        "send_posdata"
+                    ]
+                }
+            ]
+        },
+        {
+            "mission": "Infrastructure Inspection",
+            "devices": [
+                {
+                    "Video-Analytic Route Planner (Ground Control)::Video Analytic Controller": [
+                        "send_command",
+                        "receive_video",
+                        "receive_posdata"
+                    ],
+                    "Video Collection Surveillance Rover::Video Capture Rover": [
+                        "send_video",
+                        "receive_command",
+                        "send_posdata"
+                    ]
+                }
+            ]
+        },
+        {
+            "mission": "Disaster Assessment and Recovery",
+            "devices": [
+                {
+                    "Video-Analytic Route Planner (Ground Control)::Video Analytic Controller": [
+                        "send_command",
+                        "receive_video",
+                        "receive_posdata"
+                    ],
+                    "Video Collection Surveillance Rover::Video Capture Rover": [
+                        "send_video",
+                        "receive_command",
+                        "send_posdata"
+                    ],
+                    "Recovery Vehicle::Freight UGV": [
+                        "receive_command",
+                        "send_posdata"
+                    ],
+                    "Night-vision Sensor Drone::Sensor-Integrated Drone": [
+                        "receive_command",
+                        "send_posdata"
+                    ],
+                    "Recovery Drone::Freight Drone": [
                         "receive_command",
                         "send_posdata"
                     ]

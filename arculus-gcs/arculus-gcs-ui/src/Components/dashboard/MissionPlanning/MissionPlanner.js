@@ -29,8 +29,9 @@ function MissionPlanner() {
   const [lifeThreat, setLifeThreat] = useState('Low');
   const [dataSensitivity, setDataSensitivity] = useState('Low');
   const [strategicImportance, setStrategicImportance] = useState('Low');
+  const [missionCreated, setMissionCreated] = useState(false);
+  const [missionImage, setMissionImage] = useState({ src: 'soldier.png', text: 'Supply Destination' });
 
-  // Update selections state when dropDownOptions changes
   useEffect(() => {
     // Set default selections based on dropDownOptions
     const defaultSelections = {};
@@ -41,6 +42,18 @@ function MissionPlanner() {
     });
     setSelections(defaultSelections);
   }, [dropDownOptions]);
+
+  useEffect(() => {
+    if (missionCreated) {
+      // Navigate to "/currentMissions" after 5 seconds
+      const timer = setTimeout(() => {
+        setMissionCreated(false); // Reset missionCreated state after navigation
+        window.location.href = '/currentMissions';
+      }, 5000);
+
+      return () => clearTimeout(timer); // Cleanup function to clear the timer
+    }
+  }, [missionCreated]);
 
   useEffect(() => {
     if (selectedMission) {
@@ -129,6 +142,34 @@ function MissionPlanner() {
     setActiveTab('Plan Mission');
     setRequiredDeviceTypes({});
     setRequiredPrivileges({});
+
+    // Update the missionImage state based on the mission type
+    let imageSrc = 'soldier.png';
+    let imageText = 'Supply Destination';
+
+    switch (missionType) {
+      case 'Stealthy Reconnaissance and Resupply':
+        imageSrc = 'soldier.png';
+        imageText = 'Supply Destination';
+        break;
+      case 'Mine-Aware Search and Rescue':
+        imageSrc = 'soldier.png';
+        imageText = 'Rescue Destination';
+        break;
+      case 'Infrastructure Inspection':
+        imageSrc = 'inspection.png';
+        imageText = 'Inspection Location';
+        break;
+      case 'Disaster Assessment and Recovery':
+        imageSrc = 'inspection.png';
+        imageText = 'Disaster Location';
+        break;
+      default:
+        imageSrc = 'soldier.png';
+        imageText = 'Supply Destination';
+    }
+
+    setMissionImage({ src: imageSrc, text: imageText });
   };
 
   const handleSvgClick = (e) => {
@@ -140,18 +181,32 @@ function MissionPlanner() {
     setSoldierPosition({ x, y });
   };
 
-  // Define the handleChangeLocation function
   const handleChangeLocation = (location) => {
-    if (location === 'Battlefield 1: Paleto Forest') {
-      setSelectedLocation('/forest.png');
-      // Calculate gcX and gcY based on the width and height ratio
-      setGcX(0.3867); // Example: 202 / 1792
-      setGcY(0.7031); // Example: 420 / 1024
-    } else if (location === 'Battlefield 2: Grand Senora Desert') {
-      setSelectedLocation('/desert.png');
-      // Calculate gcX and gcY based on the width and height ratio
-      setGcX(0.1129); // Example: 202 / 1792
-      setGcY(0.4102); // Example: 420 / 1024
+    switch (location) {
+      case 'Battlefield 1: Paleto Forest':
+        setSelectedLocation('/forest.png');
+        setGcX(0.3867);
+        setGcY(0.7031);
+        break;
+      case 'Battlefield 2: Grand Senora Desert':
+        setSelectedLocation('/desert.png');
+        setGcX(0.1129);
+        setGcY(0.4102);
+        break;
+      case 'Battlefield 3: Liberty City':
+        setSelectedLocation('/libertycity.png');
+        setGcX(0.1129); // Same as Grand Senora Desert
+        setGcY(0.4102); // Same as Grand Senora Desert
+        break;
+      case 'Battlefield 4: Murrieta Heights':
+        setSelectedLocation('/murrietaHeights.png');
+        setGcX(0.3867); // Same as Paleto Forest
+        setGcY(0.7031); // Same as Paleto Forest
+        break;
+      default:
+        setSelectedLocation('/forest.png'); // Default case
+        setGcX(0.3867);
+        setGcY(0.7031);
     }
   };
 
@@ -235,8 +290,7 @@ function MissionPlanner() {
           if (!response.ok) {
             throw new Error('Failed to start mission');
           }
-          // Continue with existing functionality
-          switchToExecuteTab();
+          setMissionCreated(true);
         })
         .catch((error) => {
           console.error('Error starting mission:', error);
@@ -257,7 +311,7 @@ function MissionPlanner() {
   return (
     <div className="missionPlanner">
       <Typography variant="h4" component="div" gutterBottom>
-        Mission Planning And Execution Dashboard
+        Mission Planning Dashboard
       </Typography>
       <div className="tabs">
         <button
@@ -315,6 +369,8 @@ function MissionPlanner() {
                 >
                   <option value="Battlefield 1: Paleto Forest">Battlefield 1: Paleto Forest</option>
                   <option value="Battlefield 2: Grand Senora Desert">Battlefield 2: Grand Senora Desert</option>
+                  <option value="Battlefield 3: Liberty City">Battlefield 3: Liberty City</option>
+                  <option value="Battlefield 4: Murrieta Heights">Battlefield 4: Murrieta Heights</option>
                 </select>
               </div>
               {Object.keys(dropDownOptions).map((deviceType) => (
@@ -347,7 +403,7 @@ function MissionPlanner() {
                 <label htmlFor="assetCrit">Asset Criticality:</label>
                 <select
                   id="assetCrit"
-                  value={missionLocation}
+                  value={assetCriticality}
                   onChange={(e) => setAssetCriticality(e.target.value)}
                 >
                   <option value="Low">Low</option>
@@ -359,7 +415,7 @@ function MissionPlanner() {
                 <label htmlFor="lifeThreat">Life Threat:</label>
                 <select
                   id="lifeThreat"
-                  value={missionLocation}
+                  value={lifeThreat}
                   onChange={(e) => setLifeThreat(e.target.value)}
                 >
                   <option value="Low">Low</option>
@@ -371,7 +427,7 @@ function MissionPlanner() {
                 <label htmlFor="dataSens">Data Sensitivity:</label>
                 <select
                   id="dataSens"
-                  value={missionLocation}
+                  value={dataSensitivity}
                   onChange={(e) => setDataSensitivity(e.target.value)}
                 >
                   <option value="Low">Low</option>
@@ -383,7 +439,7 @@ function MissionPlanner() {
                 <label htmlFor="stratImp">Strategic Importance:</label>
                 <select
                   id="stratImp"
-                  value={missionLocation}
+                  value={strategicImportance}
                   onChange={(e) => setStrategicImportance(e.target.value)}
                 >
                   <option value="Low">Low</option>
@@ -410,40 +466,37 @@ function MissionPlanner() {
                   Ground Station
                 </text>
 
-                {/* Soldier */}
                 {soldierPosition && (
-                  <image
-                    href="soldier.png"
-                    x={soldierPosition.x * 1792 - 35}
-                    y={soldierPosition.y * 1024 - 35}
-                    width="70"
-                    height="70"
-                  />
-                )}
-                {soldierPosition && (
-                  <rect
-                    x={soldierPosition.x * 1792 - 75} // Adjust the x-coordinate for the rect element
-                    y={soldierPosition.y * 1024 + 50} // Adjust the y-coordinate for the rect element
-                    width="150"
-                    height="30"
-                    fill="black"
-                    stroke="white"
-                    strokeWidth="2"
-                    rx="15"
-                    ry="15"
-                  />
-                )}
-                {soldierPosition && (
-                  <text
-                    x={soldierPosition.x * 1792}
-                    y={soldierPosition.y * 1024 + 70} // Adjust the y-coordinate for the text element
-                    fill="white"
-                    fontSize="15"
-                    textAnchor="middle"
-                    fontWeight="bold"
-                  >
-                    Supply Destination
-                  </text>
+                  <>
+                    <image
+                      href={missionImage.src}
+                      x={soldierPosition.x * 1792 - 35}
+                      y={soldierPosition.y * 1024 - 35}
+                      width="70"
+                      height="70"
+                    />
+                    <rect
+                      x={soldierPosition.x * 1792 - 75}
+                      y={soldierPosition.y * 1024 + 50}
+                      width="150"
+                      height="30"
+                      fill="black"
+                      stroke="white"
+                      strokeWidth="2"
+                      rx="15"
+                      ry="15"
+                    />
+                    <text
+                      x={soldierPosition.x * 1792}
+                      y={soldierPosition.y * 1024 + 70}
+                      fill="white"
+                      fontSize="15"
+                      textAnchor="middle"
+                      fontWeight="bold"
+                    >
+                      {missionImage.text}
+                    </text>
+                  </>
                 )}
               </svg>
             </div>
@@ -570,6 +623,30 @@ function MissionPlanner() {
           </div>
         )}
       </div>
+      <Modal
+        open={missionCreated} // Show modal if mission is successfully created
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <div style={{
+          backgroundColor: 'white',
+          padding: '20px',
+          borderRadius: '5px',
+          outline: 'none',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+          textAlign: 'center',
+        }}>
+          <h1 id="modal-title">Mission Created Successfully!</h1>
+          <div style={{ fontSize: '36px', color: 'green' }}>
+            <span role="img" aria-label="tick-mark">✔️</span>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

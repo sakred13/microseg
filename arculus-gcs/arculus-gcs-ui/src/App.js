@@ -34,7 +34,7 @@ function App() {
           <Route path='/manageUsers' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator']} component={<ManageUsers />} />} />} />
           <Route path='/manageDevices' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator']} component={<DeviceManagement />} />} />} />
           <Route path='/managePolicies' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor']} component={<DeviceManagement />} />} />} />
-          <Route path='/planMissions' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor', 'Mission Viewer']} component={<MissionPlanner />} />} />} />
+          <Route path='/planMissions' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator']} component={<MissionPlanner />} />} />} />
           <Route path='/currentMissions' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor', 'Mission Viewer']} component={<CurrentMissions />} />} />} />
           <Route path='/honeypots' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator']} component={<HoneypotDashboard />} />} />} />
           <Route path='/attackMetrics' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor', 'Mission Viewer']} component={<MetricsDashboard />} />} />} />

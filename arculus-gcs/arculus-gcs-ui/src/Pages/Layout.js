@@ -296,7 +296,7 @@ export function Layout(props) {
                   <ListItemText primary="Manage Policies" />
                 </ListItemButton>
               )}
-              {userType && ['Mission Creator', 'Mission Supervisor'].includes(userType) && (
+              {userType && ['Mission Creator'].includes(userType) && (
                 <ListItemButton onClick={() => handleManageClick('/planMissions')} selected={location.pathname === '/planMissions'} sx={{
                   backgroundColor: location.pathname === '/planMissions' ? '#f0f0f0' : 'transparent',
                   '&:hover': {
