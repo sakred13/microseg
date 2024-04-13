@@ -58,6 +58,23 @@ const getUserRole = (username, callback) => {
 };
 exports.getUserRole = getUserRole;
 
+const getUserIdFromName = (username) => {
+    pool.query("SELECT user_id FROM user WHERE username = ?", [username], (err, results) => {
+        if (err) {
+            console.error(err);
+            return err;
+        }
+
+        if (results.length === 0) {
+            return { message: 'User not found' };
+        }
+
+        const userId = results[0].user_id;
+        return userId;
+    });
+};
+exports.getUserIdFromName = getUserIdFromName;
+
 exports.signup = (req, res) => {
     const { jwtToken, username, email, password, role } = req.body;
 

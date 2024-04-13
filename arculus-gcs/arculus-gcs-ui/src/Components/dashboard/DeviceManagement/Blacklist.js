@@ -112,7 +112,7 @@ const Blacklist = () => {
       )}
       {!loading && blacklistedIPs.length > 0 && (
         <div>
-          <h2>Blacklisted IP Addresses</h2>
+          <h1>Blacklisted IP Addresses</h1>
           <label>
             Records to Show:{' '}
             <input

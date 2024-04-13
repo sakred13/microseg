@@ -1,121 +1,124 @@
 import React, { useState, useEffect } from 'react';
 import './MissionPlanner.css';
 import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
-import DesertMission from './DesertMission';
-import ForestMission from './ForestMission';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
 import { API_URL } from '../../../config';
 import Cookies from 'js-cookie';
-import SettingsRemoteIcon from '@mui/icons-material/SettingsRemote';
-import DroneRemote from './DroneRemote';
-import LogConsole from './LogConsole';
-import AlertButton from './AlertButton';
+import missionSettings from './missionSettings.json';
 
 function MissionPlanner() {
   const [activeTab, setActiveTab] = useState('Select Mission Type');
   const [selectedMission, setSelectedMission] = useState(null);
   const [soldierPosition, setSoldierPosition] = useState(null);
   const [missionLocation, setMissionLocation] = useState('');
-  const [videoAnalytic, setVideoAnalytic] = useState('');
-  const [videoCollectionDrone, setVideoCollectionDrone] = useState('');
-  const [supplyDeliveryDrone, setSupplyDeliveryDrone] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('/forest.png');
   const [gcX, setGcX] = useState(693);
   const [gcY, setGcY] = useState(720);
-  const [videoCollectionDrones, setVideoCollectionDrones] = useState([]);
-  const [supplyDeliveryDrones, setSupplyDeliveryDrones] = useState([]);
-  const [videoAnalyticControllers, setVideoAnalyticControllers] = useState([]);
-  const isExecuteMissionDisabled = !videoAnalytic || !videoCollectionDrone || !supplyDeliveryDrone;
   const [isSelectionsIncompleteModalOpen, setIsSelectionsIncompleteModalOpen] = useState(false);
   const [insufficientPrivileges, setInsufficientPrivileges] = useState(false);
   const [insufficientPrivilegesModalOpen, setInsufficientPrivilegesModalOpen] = useState(false);
   const [devicePrivileges, setDevicePrivileges] = useState({});
+  const [requiredDeviceTypes, setRequiredDeviceTypes] = useState({});
+  const [requiredPrivileges, setRequiredPrivileges] = useState({});
+  const [dropDownOptions, setDropDownOptions] = useState({});
+  const [selections, setSelections] = useState({});
+  const [allPrivileges, setAllPrivileges] = useState({});
+  const [assetCriticality, setAssetCriticality] = useState('Low');
+  const [lifeThreat, setLifeThreat] = useState('Low');
+  const [dataSensitivity, setDataSensitivity] = useState('Low');
+  const [strategicImportance, setStrategicImportance] = useState('Low');
 
+  // Update selections state when dropDownOptions changes
   useEffect(() => {
-    // Fetch trusted devices from your API using fetch
-    fetch(`${API_URL}/device/getTrustedDevices?authToken=${encodeURIComponent(
-      Cookies.get('jwtToken')
-    )}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((devices) => {
-        // Filter devices by device_type
-        const videoCollectionSurveillanceDrones = devices.filter((device) => device.device_type === 'Video Capture Drone');
-        const supplyDeliveryDrones = devices.filter((device) => device.device_type === 'Freight Drone');
-        const videoAnalyticControllers = devices.filter((device) => device.device_type === 'Video Analytic Controller');
-        // Set initial values for videoAnalytic, supplyDeliveryDrone, and videoCollectionDrone
-        if (videoAnalyticControllers.length > 0) {
-          setVideoAnalytic(videoAnalyticControllers[0].device_name);
-        }
-        if (videoCollectionSurveillanceDrones.length > 0) {
-          setVideoCollectionDrone(videoCollectionSurveillanceDrones[0].device_name);
-        }
-        if (supplyDeliveryDrones.length > 0) {
-          setSupplyDeliveryDrone(supplyDeliveryDrones[0].device_name);
-        }
-
-        // Update state variables with filtered devices
-        setVideoCollectionDrones(videoCollectionSurveillanceDrones);
-        setSupplyDeliveryDrones(supplyDeliveryDrones);
-        setVideoAnalyticControllers(videoAnalyticControllers);
-
-      })
-      .catch((error) => {
-        // Handle error if the API request fails
-        console.error('Error fetching trusted devices:', error);
-      });
-  }, []);
-
-  useEffect(() => {
-    // Initialize an empty privileges object
-    const privileges = {
-      videoAnalytic: {
-        "device": videoAnalytic,
-        "required": ["send_command", "receive_video", "receive_posdata"],
-        "has": []
-      },
-      videoCollectionDrone: {
-        "device": videoCollectionDrone,
-        "required": ["send_video", "receive_command", "send_posdata"],
-        "has": []
-      },
-      supplyDeliveryDrone: {
-        "device": supplyDeliveryDrone,
-        "required": ["receive_command", "send_posdata"],
-        "has": []
+    // Set default selections based on dropDownOptions
+    const defaultSelections = {};
+    Object.keys(dropDownOptions).forEach(deviceType => {
+      if (dropDownOptions[deviceType].length > 0) {
+        defaultSelections[deviceType] = dropDownOptions[deviceType][0]; // Select the first option by default
       }
-    };
+    });
+    setSelections(defaultSelections);
+  }, [dropDownOptions]);
 
-    // Check if videoAnalyticControllers, videoCollectionDrones, and supplyDeliveryDrones have values
-    if (videoAnalyticControllers.length > 0 && videoCollectionDrones.length > 0 && supplyDeliveryDrones.length > 0) {
-      // Find the corresponding device and assign its allowedTasks to privileges
-      const videoAnalyticDevice = videoAnalyticControllers.find(device => device.device_name === videoAnalytic);
-      const videoCollectionDevice = videoCollectionDrones.find(device => device.device_name === videoCollectionDrone);
-      const supplyDeliveryDevice = supplyDeliveryDrones.find(device => device.device_name === supplyDeliveryDrone);
+  useEffect(() => {
+    if (selectedMission) {
+      const selectedMissionSettings = missionSettings.settings.find((mission) => mission.mission === selectedMission).devices;
+      var deviceTypes = {};
+      var devicePrivileges = {};
+      selectedMissionSettings.forEach(device => {
+        Object.entries(device).forEach(([key, value]) => {
+          const [deviceName, deviceType] = key.split('::');
+          deviceTypes[deviceName] = deviceType;
+          devicePrivileges[deviceName] = value;
+        });
+      });
+      setRequiredDeviceTypes(deviceTypes);
+      setRequiredPrivileges(devicePrivileges);
+    }
+  }, [selectedMission]);
 
-      privileges.videoAnalytic.has = videoAnalyticDevice ? videoAnalyticDevice.allowedTasks : [];
-      privileges.videoCollectionDrone.has = videoCollectionDevice ? videoCollectionDevice.allowedTasks : [];
-      privileges.supplyDeliveryDrone.has = supplyDeliveryDevice ? supplyDeliveryDevice.allowedTasks : [];
+  useEffect(() => {
+    if (selectedMission && Object.keys(requiredDeviceTypes).length > 0) {
+      fetch(`${API_URL}/device/getTrustedDevices?authToken=${encodeURIComponent(
+        Cookies.get('jwtToken')
+      )}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then((devices) => {
+          const dropdownOptions = {};
+          const allPrivileges = {}; // Initialize allPrivileges dictionary
+
+          for (const deviceType of Object.keys(requiredDeviceTypes)) {
+            dropdownOptions[deviceType] = devices
+              .filter((device) => device.device_type === requiredDeviceTypes[deviceType])
+              .map((device) => device.device_name);
+
+            // Iterate through the fetched devices and populate allPrivileges
+            devices.forEach(device => {
+              if (requiredDeviceTypes[deviceType] === device.device_type) {
+                allPrivileges[device.device_name] = device.allowedTasks;
+              }
+            });
+          }
+
+          setDropDownOptions(dropdownOptions);
+          setAllPrivileges(allPrivileges); // Set allPrivileges state
+        })
+        .catch((error) => {
+          // Handle error if the API request fails
+          console.error('Error fetching trusted devices:', error);
+        });
+    }
+  }, [selectedMission, requiredDeviceTypes]);
+
+  useEffect(() => {
+    const privileges = {};
+    let anyRequiredPrivilegeAbsent = false;
+
+    for (const [deviceType, deviceName] of Object.entries(selections)) {
+      const required = requiredPrivileges[deviceType];
+      const has = allPrivileges[deviceName] || [];
+
+      privileges[deviceType] = {
+        device: deviceName,
+        required: required,
+        has: has
+      };
+
+      if (required.some(privilege => !has.includes(privilege))) {
+        anyRequiredPrivilegeAbsent = true;
+      }
     }
 
-    // Update the devicePrivileges state with the privileges object
     setDevicePrivileges(privileges);
-
-    const anyRequiredPrivilegeAbsent = Object.keys(privileges).some((deviceType) => {
-      return privileges[deviceType].required.some((privilege) => !privileges[deviceType].has.includes(privilege));
-    });
-
-    // Set insufficientPrivileges to true if any required privilege is absent
     setInsufficientPrivileges(anyRequiredPrivilegeAbsent);
-
-  }, [videoAnalytic, videoCollectionDrone, supplyDeliveryDrone, videoAnalyticControllers, videoCollectionDrones, supplyDeliveryDrones]);
-
+  }, [selections, requiredPrivileges, allPrivileges]);
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
@@ -124,6 +127,8 @@ function MissionPlanner() {
   const handleMissionSelect = (missionType) => {
     setSelectedMission(missionType);
     setActiveTab('Plan Mission');
+    setRequiredDeviceTypes({});
+    setRequiredPrivileges({});
   };
 
   const handleSvgClick = (e) => {
@@ -160,35 +165,66 @@ function MissionPlanner() {
     setActiveTab('Execute Mission');
   };
 
-  const handleExecuteMissionClick = () => {
-    if (isExecuteMissionDisabled) {
+  useEffect(() => {
+    const privileges = {};
+    let anyRequiredPrivilegeAbsent = false;
+
+    // Iterate through selections
+    for (const [deviceType, deviceName] of Object.entries(selections)) {
+      const required = requiredPrivileges[deviceType];
+      const has = allPrivileges[deviceName] || [];
+
+      // Update availablePrivileges for the deviceType
+      privileges[deviceType] = {
+        device: deviceName,
+        required: required,
+        has: has
+      };
+
+      // Check if any required privilege is absent
+      if (required.some(privilege => !has.includes(privilege))) {
+        anyRequiredPrivilegeAbsent = true;
+      }
+    }
+
+    // Update the devicePrivileges state with the privileges object
+    setDevicePrivileges(privileges);
+
+    // Set insufficientPrivileges to true if any required privilege is absent
+    setInsufficientPrivileges(anyRequiredPrivilegeAbsent);
+  }, [selections, requiredPrivileges, allPrivileges]);
+
+
+  const handleCreateMissionClick = () => {
+    console.log(selections);
+
+    if (Object.keys(requiredPrivileges).length != Object.keys(selections).length) {
       setIsSelectionsIncompleteModalOpen(true); // Open the modal when the button is disabled
     } else if (insufficientPrivileges) {
       setInsufficientPrivilegesModalOpen(true);
     } else {
-      // Find the drone objects based on their names
-      const surveillanceDrone = videoCollectionDrones.find(drone => drone.device_name === videoCollectionDrone);
-      const supplyDrone = supplyDeliveryDrones.find(drone => drone.device_name === supplyDeliveryDrone);
-
-      if (!surveillanceDrone || !supplyDrone) {
-        console.error('Could not find drones with the given names.');
-        return;
-      }
-
+      const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
       // Make API call to start mission
       const payload = {
-        gcX: gcX,
-        gcY: gcY,
-        destX: soldierPosition.x * 1792,
-        destY: soldierPosition.y * 1024,
-        survDroneName: surveillanceDrone.device_name,
-        survDroneIp: surveillanceDrone.ip_address,
-        supplyDroneName: supplyDrone.device_name,
-        supplyDroneIp: supplyDrone.ip_address,
-        authToken: encodeURIComponent(Cookies.get('jwtToken'))
+        authToken: encodeURIComponent(Cookies.get('jwtToken')),
+        missionData: {
+          mission_type: selectedMission,
+          mission_config: JSON.stringify({
+            gcX: gcX,
+            gcY: gcY,
+            destX: soldierPosition.x * 1792,
+            destY: soldierPosition.y * 1024,
+            selections: selections,
+          }),
+          create_time: timestamp,
+          duration_sec: 120,
+          criticality: 1
+        },
+        supervisors: [5],
+        viewers: [11]
       };
 
-      fetch(`${API_URL}/mission/startMission`, {
+      fetch(`${API_URL}/mission/createMission`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -236,97 +272,126 @@ function MissionPlanner() {
         >
           Plan Mission
         </button>
-        <button
-          className={activeTab === 'Execute Mission' ? 'tab-button active execute-button' : 'tab-button execute-button'}
-        // onClick={switchToExecuteTab}
-        >
-          Execute Mission
-        </button>
       </div>
 
       <div className="tab-content">
         {activeTab === 'Select Mission Type' && (
-          <div className="mission-type-container">
-            <h2>Select Mission Type</h2>
-            <button className="mission-button" onClick={() => handleMissionSelect('Mine-Aware Search and Rescue')}>
-              Mine-Aware Search and Rescue
-            </button>
-            <button className="mission-button" onClick={() => handleMissionSelect('Stealthy Reconnaissance and Resupply')}>
-              Stealthy Reconnaissance and Resupply
-            </button>
+          <div className="mission-type-container" style={{ maxWidth: "60%", margin: "0 auto" }}>
+            <h1>Select Mission Type</h1>
+            <div className="mission-images">
+              <div className="mission-image" onClick={() => handleMissionSelect('Mine-Aware Search and Rescue')}>
+                <img src="mineAwareSearchRescue.png" alt="Mine-Aware Search and Rescue" />
+                <p>Mine-Aware Search and Rescue</p>
+              </div>
+              <div className="mission-image" onClick={() => handleMissionSelect('Stealthy Reconnaissance and Resupply')}>
+                <img src="stealthyReconResupply.png" alt="Stealthy Reconnaissance and Resupply" />
+                <p>Stealthy Reconnaissance and Resupply</p>
+              </div>
+              <div className="mission-image" onClick={() => handleMissionSelect('Infrastructure Inspection')}>
+                <img src="infraInspection.png" alt="Infrastructure Inspection" />
+                <p>Infrastructure Inspection</p>
+              </div>
+              <div className="mission-image" onClick={() => handleMissionSelect('Disaster Assessment and Recovery')}>
+                <img src="disasterAssessRecover.png" alt="Disaster Assessment and Recovery" />
+                <p>Disaster Assessment and Recovery</p>
+              </div>
+            </div>
           </div>
         )}
 
         {activeTab === 'Plan Mission' && (
           <div>
-            <h2>Plan Mission</h2>
+            <h1>Plan Mission</h1>
 
             {selectedMission && <p>Selected Mission Type: {selectedMission}</p>}
 
-            <label htmlFor="missionLocation">Mission Location:</label>
-            <select
-              id="missionLocation"
-              value={missionLocation}
-              onChange={(e) => setMissionLocation(e.target.value)}
-            >
-              <option value="Battlefield 1: Paleto Forest">Battlefield 1: Paleto Forest</option>
-              <option value="Battlefield 2: Grand Senora Desert">Battlefield 2: Grand Senora Desert</option>
-            </select>
-
-            {/* Video-Analytic Route Planner dropdown */}
-            <label htmlFor="videoAnalytic">Video-Analytic Route Planner (Ground Control):</label>
-            <select
-              id="videoAnalytic"
-              value={videoAnalytic}
-              onChange={(e) => setVideoAnalytic(e.target.value)}
-            >
-              {videoAnalyticControllers.length === 0 ? ( // Check if there are no suitable devices
-                <option disabled>No suitable device available</option>
-              ) : (
-                videoAnalyticControllers.map((device) => (
-                  <option key={device.id} value={device.device_name}>
-                    {device.device_name}
-                  </option>
-                ))
-              )}
-            </select>
-
-            {/* Video Collection Surveillance Drone dropdown */}
-            <label htmlFor="videoCollectionDrone">Video Collection Surveillance Drone:</label>
-            <select
-              id="videoCollectionDrone"
-              value={videoCollectionDrone}
-              onChange={(e) => setVideoCollectionDrone(e.target.value)}
-            >
-              {videoCollectionDrones.length === 0 ? ( // Check if there are no suitable devices
-                <option disabled>No suitable device available</option>
-              ) : (
-                videoCollectionDrones.map((device) => (
-                  <option key={device.id} value={device.device_name}>
-                    {device.device_name}
-                  </option>
-                ))
-              )}
-            </select>
-
-            {/* Supply Delivery Drone dropdown */}
-            <label htmlFor="supplyDeliveryDrone">Supply Delivery Drone:</label>
-            <select
-              id="supplyDeliveryDrone"
-              value={supplyDeliveryDrone}
-              onChange={(e) => setSupplyDeliveryDrone(e.target.value)}
-            >
-              {supplyDeliveryDrones.length === 0 ? ( // Check if there are no suitable devices
-                <option disabled>No suitable device available</option>
-              ) : (
-                supplyDeliveryDrones.map((device) => (
-                  <option key={device.id} value={device.device_name}>
-                    {device.device_name}
-                  </option>
-                ))
-              )}
-            </select>
-
+            <div className="dropdown-container">
+              <div className="dropdown-wrapper">
+                <label htmlFor="missionLocation">Mission Location:</label>
+                <select
+                  id="missionLocation"
+                  value={missionLocation}
+                  onChange={(e) => setMissionLocation(e.target.value)}
+                >
+                  <option value="Battlefield 1: Paleto Forest">Battlefield 1: Paleto Forest</option>
+                  <option value="Battlefield 2: Grand Senora Desert">Battlefield 2: Grand Senora Desert</option>
+                </select>
+              </div>
+              {Object.keys(dropDownOptions).map((deviceType) => (
+                <div key={deviceType} className="dropdown-wrapper">
+                  <label htmlFor={deviceType}>{deviceType}:</label>
+                  <select
+                    id={deviceType}
+                    value={selections[deviceType] || ''}
+                    onChange={(e) => {
+                      const selectedDevice = e.target.value;
+                      setSelections(prevState => ({
+                        ...prevState,
+                        [deviceType]: selectedDevice
+                      }));
+                    }}
+                  >
+                    {dropDownOptions[deviceType].length === 0 ? (
+                      <option disabled>No suitable device available</option>
+                    ) : (
+                      dropDownOptions[deviceType].map((device) => (
+                        <option key={device} value={device}>
+                          {device}
+                        </option>
+                      ))
+                    )}
+                  </select>
+                </div>
+              ))}
+              <div className="dropdown-wrapper">
+                <label htmlFor="assetCrit">Asset Criticality:</label>
+                <select
+                  id="assetCrit"
+                  value={missionLocation}
+                  onChange={(e) => setAssetCriticality(e.target.value)}
+                >
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </div>
+              <div className="dropdown-wrapper">
+                <label htmlFor="lifeThreat">Life Threat:</label>
+                <select
+                  id="lifeThreat"
+                  value={missionLocation}
+                  onChange={(e) => setLifeThreat(e.target.value)}
+                >
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </div>
+              <div className="dropdown-wrapper">
+                <label htmlFor="dataSens">Data Sensitivity:</label>
+                <select
+                  id="dataSens"
+                  value={missionLocation}
+                  onChange={(e) => setDataSensitivity(e.target.value)}
+                >
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </div>
+              <div className="dropdown-wrapper">
+                <label htmlFor="stratImp">Strategic Importance:</label>
+                <select
+                  id="stratImp"
+                  value={missionLocation}
+                  onChange={(e) => setStrategicImportance(e.target.value)}
+                >
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </div>
+            </div>
             <label htmlFor="mapsvg">Point the supply delivery destination on map.</label>
             <div className='tabs mission-container' style={{ border: '2px solid black', padding: '10px' }}>
               <svg
@@ -386,8 +451,7 @@ function MissionPlanner() {
             <Button
               variant="contained"
               color="primary"
-              onClick={handleExecuteMissionClick}
-              // disabled={isExecuteMissionDisabled}
+              onClick={handleCreateMissionClick}
               style={{
                 backgroundColor: 'green',
                 padding: '10px 20px',
@@ -398,7 +462,7 @@ function MissionPlanner() {
                 fontWeight: 'bold',
               }}// Disable the button if any dropdown is empty
             >
-              <SettingsSuggestIcon /> Execute Mission
+              <SettingsSuggestIcon /> Create Mission
             </Button>
 
             <Modal
@@ -419,7 +483,7 @@ function MissionPlanner() {
                 outline: 'none',
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
               }}>
-                <h2 id="modal-title">Configure all devices first!</h2>
+                <h1 id="modal-title">Configure all devices first!</h1>
                 <Button
                   variant="contained"
                   color="primary"
@@ -453,7 +517,7 @@ function MissionPlanner() {
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                 textAlign: 'center',
               }}>
-                <h2 id="modal-title" style={{ fontWeight: 'bold' }}>Insufficient Privileges for Some Devices</h2>
+                <h1 id="modal-title" style={{ fontWeight: 'bold' }}>Insufficient Privileges for Some Devices</h1>
                 <p>Mission Execution might fail! Please provide sufficient capabilities for necessary ingress and egress.</p>
 
                 <table style={{ margin: '0 auto', textAlign: 'left', borderCollapse: 'collapse' }}>
@@ -505,21 +569,6 @@ function MissionPlanner() {
             <br />
           </div>
         )}
-
-        {activeTab === 'Execute Mission' && (
-          <>             <h2>Mission in Execution...</h2>
-            <div className='container'>
-              <div className='tabs mission-container' style={{ border: '2px solid black', padding: '10px' }}>
-                {/* Add your content for executing the mission here */}
-                {selectedLocation === '/desert.png' ? <DesertMission handleTabChange={handleTabChange} jwtToken={encodeURIComponent(Cookies.get('jwtToken'))} /> : <ForestMission handleTabChange={handleTabChange} />}
-                <div className="log-container" style={{ width: '20%' }}>
-                  <LogConsole />
-                  <DroneRemote />
-                  <AlertButton userType={"Mission Creator"} />
-                </div>
-              </div>
-            </div>
-          </>)}
       </div>
     </div>
   );

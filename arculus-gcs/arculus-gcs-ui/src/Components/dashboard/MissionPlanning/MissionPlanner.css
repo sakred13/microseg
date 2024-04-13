@@ -267,3 +267,53 @@ li.no-privilege::before {
   font-weight: bold;
   font-size: 30px;
 }
+
+.dropdown-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.dropdown-wrapper {
+  flex-basis: 50%; /* Each dropdown wrapper takes up half of the container */
+  padding: 10px; /* Add padding for spacing */
+  box-sizing: border-box; /* Include padding in the width calculation */
+}
+
+.dropdown-wrapper label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.mission-type-container {
+  text-align: center;
+}
+
+.mission-images {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Center the items horizontally */
+}
+
+.mission-image {
+  width: 38%; /* Set width to 45% for two tiles in a row with some spacing */
+  margin: 10px;
+  cursor: pointer;
+  padding: 1%;
+  box-sizing: border-box; /* Include padding in the width */
+}
+
+.mission-image img {
+  width: 100%; /* Set image width to 100% of its container */
+  height: auto;
+  border-radius: 8px;
+  transition: box-shadow 0.3s ease;
+}
+
+.mission-image img:hover {
+  box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.5);
+}
+
+.mission-image p {
+  margin-top: 5px;
+}
+

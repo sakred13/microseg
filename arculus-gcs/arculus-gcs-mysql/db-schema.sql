@@ -227,6 +227,58 @@ LOCK TABLES `blacklist` WRITE;
 /*!40000 ALTER TABLE `blacklist` ENABLE KEYS */;
 UNLOCK TABLES;
 
+DROP TABLE IF EXISTS `mission`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `mission` (
+  `mission_id` INT NOT NULL AUTO_INCREMENT,
+  `mission_type` VARCHAR(50),
+  `creator_id` INT,
+  `mission_config` TEXT,
+  `create_time` TIMESTAMP,
+  `duration_sec` INT,
+  `criticality` FLOAT,
+  PRIMARY KEY (`mission_id`),
+  CONSTRAINT `fk_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+LOCK TABLES `mission` WRITE;
+/*!40000 ALTER TABLE `blacklist` DISABLE KEYS */;
+/*!40000 ALTER TABLE `blacklist` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+DROP TABLE IF EXISTS `supervisor`;
+DROP TABLE IF EXISTS `viewer`;
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+
+CREATE TABLE `supervisor` (
+  `supervisor_id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT,
+  `mission_id` INT,
+  PRIMARY KEY (`supervisor_id`),
+  CONSTRAINT `fk_supervisor_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`),
+  CONSTRAINT `fk_supervisor_mission_id` FOREIGN KEY (`mission_id`) REFERENCES `mission` (`mission_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `viewer` (
+  `viewer_id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT,
+  `mission_id` INT,
+  PRIMARY KEY (`viewer_id`),
+  CONSTRAINT `fk_viewer_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`),
+  CONSTRAINT `fk_viewer_mission_id` FOREIGN KEY (`mission_id`) REFERENCES `mission` (`mission_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+LOCK TABLES `supervisor` WRITE, `viewer` WRITE;
+/*!40000 ALTER TABLE `supervisor` DISABLE KEYS */;
+/*!40000 ALTER TABLE `viewer` DISABLE KEYS */;
+/*!40000 ALTER TABLE `supervisor` ENABLE KEYS */;
+/*!40000 ALTER TABLE `viewer` ENABLE KEYS */;
+UNLOCK TABLES;
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

@@ -1,0 +1,46 @@
+{
+    "settings": [
+        {
+            "mission": "Stealthy Reconnaissance and Resupply",
+            "devices": [
+                {
+                    "Video-Analytic Route Planner (Ground Control)::Video Analytic Controller": [
+                        "send_command",
+                        "receive_video",
+                        "receive_posdata"
+                    ],
+                    "Video Collection Surveillance Drone::Video Capture Drone": [
+                        "send_video",
+                        "receive_command",
+                        "send_posdata"
+                    ],
+                    "Supply Delivery Drone::Freight Drone": [
+                        "receive_command",
+                        "send_posdata"
+                    ]
+                }
+            ]
+        },
+        {
+            "mission": "Mine-Aware Search and Rescue",
+            "devices": [
+                {
+                    "Video-Analytic Route Planner (Ground Control)::Video Analytic Controller": [
+                        "send_command",
+                        "receive_video",
+                        "receive_posdata"
+                    ],
+                    "Video Collection Surveillance Rover::Video Capture Rover": [
+                        "send_video",
+                        "receive_command",
+                        "send_posdata"
+                    ],
+                    "Rescue Vehicle::Freight Rover": [
+                        "receive_command",
+                        "send_posdata"
+                    ]
+                }
+            ]
+        }
+    ]
+}

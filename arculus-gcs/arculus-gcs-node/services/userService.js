@@ -117,7 +117,7 @@ exports.getUsers = (req, res) => {
                 const userId = userRows[0].user_id;
 
                 connection.query(`
-                    SELECT u.username, u.email, r.role_name
+                    SELECT u.username, u.email, u.user_id, r.role_name 
                     FROM user u
                     JOIN role r ON u.role_id = r.role_id
                 `, function (err, rows) {

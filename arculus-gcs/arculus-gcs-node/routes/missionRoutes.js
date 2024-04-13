@@ -4,5 +4,11 @@ const router = express.Router();
 
 router.post('/startMission', missionService.startMission);
 router.get('/getMissionState', missionService.getMissionState);
+router.post('/createMission', missionService.createMission);
+router.get('/getMissionById/:missionId', missionService.getMissionById);
+router.get('/getMissionsByCreatorId', missionService.getMissionsByCreatorId);
+router.get('/getMissionsBySupervisorId', missionService.getMissionsBySupervisorId);
+router.put('/updateMission', missionService.updateMission);
+router.delete('/deleteMission', missionService.deleteMission);
 
 module.exports = router;
