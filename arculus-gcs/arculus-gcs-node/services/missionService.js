@@ -97,57 +97,71 @@ exports.getMissionState = (req, res) => {
     });
 };
 
-// Function to create a new mission
-exports.createMission = (req, res) => {
-    var { authToken, missionData, supervisors, viewers } = req.body;
+exports.createMission = async (req, res) => {
+    try {
+        var { authToken, mission_config, supervisors, viewers } = req.body;
 
-    // Check if the user has a mission creator role
-    isUserOfType(getUserFromToken(authToken), ['Mission Creator'], (roleErr, isMissionCreator) => {
-        if (roleErr) {
-            console.error(roleErr);
-            return res.status(500).json({ message: 'Internal Server Error' });
-        }
-
+        const username = getUserFromToken(authToken);
+        const isMissionCreator = await isUserOfType(username, ['Mission Creator']);
         if (!isMissionCreator) {
+            console.error('Unauthorized: Only mission creators can create missions');
             return res.status(401).json({ message: 'Unauthorized: Only mission creators can create missions' });
         }
 
-        missionData['creator_id'] = getUserIdFromName(getUserFromToken(authToken));
+        const creatorId = await getUserIdFromName(username);
+        const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
-        // Query to insert a new mission into the mission table
-        const insertMissionQuery = 'INSERT INTO mission SET ?';
-        pool.query(insertMissionQuery, missionData, (err, missionResult) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ message: 'Internal Server Error' });
-            }
-
-            const missionId = missionResult.insertId;
-
-            // Insert supervisors
-            const supervisorValues = supervisors.map(supervisorId => [supervisorId, missionId]);
-            const insertSupervisorsQuery = 'INSERT INTO supervisor (user_id, mission_id) VALUES ?';
-            pool.query(insertSupervisorsQuery, [supervisorValues], (supervisorErr, supervisorResult) => {
-                if (supervisorErr) {
-                    console.error(supervisorErr);
-                    return res.status(500).json({ message: 'Internal Server Error' });
+        const insertMissionQuery = `INSERT INTO mission (creator_id, mission_config) VALUES (?, ?)`;
+        const missionResult = await new Promise((resolve, reject) => {
+            pool.query(insertMissionQuery, [creatorId, mission_config], (err, result) => {
+                if (err) {
+                    console.error(err);
+                    reject(err);
+                    return;
                 }
-
-                // Insert viewers
-                const viewerValues = viewers.map(viewerId => [viewerId, missionId]);
-                const insertViewersQuery = 'INSERT INTO viewer (user_id, mission_id) VALUES ?';
-                pool.query(insertViewersQuery, [viewerValues], (viewerErr, viewerResult) => {
-                    if (viewerErr) {
-                        console.error(viewerErr);
-                        return res.status(500).json({ message: 'Internal Server Error' });
-                    }
-
-                    res.status(200).json({ missionId }); // Return the ID of the newly inserted mission
-                });
+                resolve(result);
             });
         });
-    });
+
+        const missionId = missionResult.insertId;
+
+        if (supervisors && supervisors.length > 0) {
+            const supervisorValues = supervisors.map(supervisorId => [supervisorId, missionId]);
+            const insertSupervisorsQuery = 'INSERT INTO supervisor (user_id, mission_id) VALUES ?';
+            await new Promise((resolve, reject) => {
+                pool.query(insertSupervisorsQuery, [supervisorValues], (err) => {
+                    if (err) {
+                        console.error(err);
+                        reject(err);
+                        return;
+                    }
+                    resolve();
+                });
+            });
+        }
+
+        if (viewers && viewers.length > 0) {
+            const viewerValues = viewers.map(viewerId => [viewerId, missionId]);
+            const insertViewersQuery = 'INSERT INTO viewer (user_id, mission_id) VALUES ?';
+            await new Promise((resolve, reject) => {
+                pool.query(insertViewersQuery, [viewerValues], (err) => {
+                    if (err) {
+                        console.error(err);
+                        reject(err);
+                        return;
+                    }
+                    resolve();
+                });
+            });
+        }
+
+        res.status(200).json({ missionId });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
 };
+
 
 // Function to retrieve a mission by ID
 exports.getMissionById = (authToken, missionId, callback) => {
@@ -187,13 +201,13 @@ exports.getMissionById = (authToken, missionId, callback) => {
                     }
 
                     // Combine all information into a single object
-                    const missionData = {
+                    const mission_config = {
                         mission: missionResults[0],
                         supervisors: supervisorResults,
                         viewers: viewerResults
                     };
 
-                    callback(null, missionData); // Return the mission data
+                    callback(null, mission_config); // Return the mission data
                 });
             });
         });
@@ -201,76 +215,158 @@ exports.getMissionById = (authToken, missionId, callback) => {
 };
 
 
-exports.getMissionsByCreatorId = (authToken, callback) => {
-    // Get user ID from the authentication token
-    const userName = getUserFromToken(authToken);
-    getUserIdFromName(userName, (userIdErr, userId) => {
-        if (userIdErr) {
-            console.error(userIdErr);
-            return callback({ message: 'Internal Server Error' });
+exports.getMissionsByCreatorId = async (req, res) => {
+    const authToken = req.query.authToken;
+
+    // Get user ID from token
+    const creatorId = await getUserIdFromName(getUserFromToken(authToken));
+
+    // Query to fetch missions, supervisors, and viewers
+    const selectMissionsQuery = `
+    SELECT 
+        m.mission_config AS config,
+        GROUP_CONCAT(DISTINCT u1.username) AS supervisors,
+        GROUP_CONCAT(DISTINCT u2.username) AS viewers
+    FROM 
+        mission AS m
+    LEFT JOIN 
+        supervisor AS s ON m.mission_id = s.mission_id
+    LEFT JOIN 
+        viewer AS v ON m.mission_id = v.mission_id
+    LEFT JOIN 
+        user AS u1 ON s.user_id = u1.user_id
+    LEFT JOIN 
+        user AS u2 ON v.user_id = u2.user_id
+    WHERE 
+        m.creator_id = ?
+    GROUP BY 
+        m.mission_config;`;
+
+    pool.query(selectMissionsQuery, [creatorId], (err, missionsResult) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: 'Internal Server Error' });
         }
 
-        // Query to retrieve missions by creator ID along with associated supervisor and viewer information
-        const query = `
-            SELECT 
-                mission.*, 
-                GROUP_CONCAT(DISTINCT supervisor.user_id) AS supervisor_ids,
-                GROUP_CONCAT(DISTINCT viewer.user_id) AS viewer_ids
-            FROM 
-                mission 
-            LEFT JOIN 
-                supervisor ON mission.mission_id = supervisor.mission_id
-            LEFT JOIN 
-                viewer ON mission.mission_id = viewer.mission_id
-            WHERE 
-                mission.creator_id = ?
-            GROUP BY 
-                mission.mission_id
-        `;
-        pool.query(query, [userId], (err, results) => {
-            if (err) {
-                console.error(err);
-                return callback({ message: 'Internal Server Error' });
-            }
-            callback(null, results); // Return the list of missions with associated supervisor and viewer IDs
-        });
+        // Check if missionsResult is not null and contains rows
+        if (missionsResult && missionsResult.length > 0) {
+            // Map rows to missions array
+            const missions = missionsResult.map(row => {
+                return {
+                    config: row.config,
+                    supervisors: row.supervisors? row.supervisors.split(','): [], // Split supervisors by comma
+                    viewers: row.viewers ? row.viewers.split(','): [] // Split viewers by comma
+                };
+            });
+
+            res.status(200).json({ missions });
+        } else {
+            res.status(404).json({ message: 'No missions found for the given creator' });
+        }
     });
 };
 
+exports.getMissionsBySupervisorId = async (req, res) => {
+    const authToken = req.query.authToken;
 
-exports.getMissionsBySupervisorId = (authToken, callback) => {
-    // Get the user ID from the authentication token
-    const userName = getUserFromToken(authToken);
-    getUserIdFromName(userName, (userIdErr, userId) => {
-        if (userIdErr) {
-            console.error(userIdErr);
-            return callback({ message: 'Internal Server Error' });
+    // Get user ID from token
+    const supervisorId = await getUserIdFromName(getUserFromToken(authToken));
+
+    // Query to fetch missions for the given supervisor
+    const selectMissionsQuery = `
+    SELECT 
+        m.mission_config AS config,
+        GROUP_CONCAT(DISTINCT u.username) AS supervisors,
+        GROUP_CONCAT(DISTINCT vu.username) AS viewers
+    FROM 
+        mission AS m
+    LEFT JOIN 
+        supervisor AS s ON m.mission_id = s.mission_id
+    LEFT JOIN 
+        viewer AS v ON m.mission_id = v.mission_id
+    LEFT JOIN 
+        user AS u ON s.user_id = u.user_id
+    LEFT JOIN 
+        user AS vu ON v.user_id = vu.user_id
+    WHERE 
+        s.user_id = ?
+    GROUP BY 
+        m.mission_config;
+`;
+
+    pool.query(selectMissionsQuery, [supervisorId], (err, missionsResult) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: 'Internal Server Error' });
         }
 
-        // Query to retrieve missions by supervisor ID along with associated supervisor and viewer information
-        const query = `
-            SELECT 
-                mission.*, 
-                GROUP_CONCAT(DISTINCT supervisor.user_id) AS supervisor_ids,
-                GROUP_CONCAT(DISTINCT viewer.user_id) AS viewer_ids
-            FROM 
-                mission 
-            LEFT JOIN 
-                supervisor ON mission.mission_id = supervisor.mission_id
-            LEFT JOIN 
-                viewer ON mission.mission_id = viewer.mission_id
-            WHERE 
-                ? IN (supervisor.user_id)
-            GROUP BY 
-                mission.mission_id
-        `;
-        pool.query(query, [userId], (err, results) => {
-            if (err) {
-                console.error(err);
-                return callback({ message: 'Internal Server Error' });
-            }
-            callback(null, results); // Return the missions with associated supervisor and viewer information
-        });
+        // Check if missionsResult is not null and contains rows
+        if (missionsResult && missionsResult.length > 0) {
+            // Map rows to missions array
+            const missions = missionsResult.map(row => {
+                return {
+                    config: row.config,
+                    supervisors: row.supervisors? row.supervisors.split(','): [], // Split supervisors by comma
+                    viewers: row.viewers ? row.viewers.split(','): [] // Split viewers by comma
+                };
+            });
+
+            res.status(200).json({ missions });
+        } else {
+            res.status(404).json({ message: 'No missions found for the given supervisor' });
+        }
+    });
+};
+
+exports.getMissionsByViewerId = async (req, res) => {
+    const authToken = req.query.authToken;
+
+    // Get user ID from token
+    const viewerId = await getUserIdFromName(getUserFromToken(authToken));
+
+    // Query to fetch missions for the given viewer
+    const selectMissionsQuery = `
+    SELECT 
+        m.mission_config AS config,
+        GROUP_CONCAT(DISTINCT u.username) AS supervisors,
+        GROUP_CONCAT(DISTINCT vu.username) AS viewers
+    FROM 
+        mission AS m
+    LEFT JOIN 
+        supervisor AS s ON m.mission_id = s.mission_id
+    LEFT JOIN 
+        viewer AS v ON m.mission_id = v.mission_id
+    LEFT JOIN 
+        user AS u ON s.user_id = u.user_id
+    LEFT JOIN 
+        user AS vu ON v.user_id = vu.user_id
+    WHERE 
+        vu.user_id = ?
+    GROUP BY 
+        m.mission_config;
+`;
+
+    pool.query(selectMissionsQuery, [viewerId], (err, missionsResult) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: 'Internal Server Error' });
+        }
+
+        // Check if missionsResult is not null and contains rows
+        if (missionsResult && missionsResult.length > 0) {
+            // Map rows to missions array
+            const missions = missionsResult.map(row => {
+                return {
+                    config: row.config,
+                    supervisors: row.supervisors? row.supervisors.split(','): [], // Split supervisors by comma
+                    viewers: row.viewers ? row.viewers.split(','): [] // Split viewers by comma
+                };
+            });
+
+            res.status(200).json({ missions });
+        } else {
+            res.status(404).json({ message: 'No missions found for the given viewer' });
+        }
     });
 };
 

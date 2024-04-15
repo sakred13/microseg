@@ -32,6 +32,7 @@ import { useState, useEffect } from 'react';
 import ZtModeDropdown from '../Components/dashboard/ZtModeDropdown';
 import { useLocation } from 'react-router-dom';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import AnnouncementIcon from '@mui/icons-material/Announcement';
 
 const drawerWidth = 260;
 
@@ -86,6 +87,7 @@ export function Layout(props) {
   const [userType, setUserType] = React.useState(null);
   const [pendingActions, setPendingActions] = useState({});
   const [pendingActionsCount, setPendingActionsCount] = useState(0);
+  const [announcementCount, setAnnouncementCount] = useState(1); // State for announcement count
   const location = useLocation();
 
   // Initialize ztMode from localStorage or default value
@@ -198,6 +200,11 @@ export function Layout(props) {
             <IconButton color="inherit">
               <Badge badgeContent={'' + pendingActionsCount} color="secondary">
                 <NotificationsIcon />
+              </Badge>
+            </IconButton>
+            <IconButton color="inherit">
+              <Badge badgeContent={announcementCount} color="error">
+                <AnnouncementIcon />
               </Badge>
             </IconButton>
           </Toolbar>

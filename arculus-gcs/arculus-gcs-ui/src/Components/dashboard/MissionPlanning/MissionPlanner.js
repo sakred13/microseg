@@ -7,6 +7,8 @@ import Button from '@mui/material/Button';
 import { API_URL } from '../../../config';
 import Cookies from 'js-cookie';
 import missionSettings from './missionSettings.json';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 
 function MissionPlanner() {
   const [activeTab, setActiveTab] = useState('Select Mission Type');
@@ -31,13 +33,55 @@ function MissionPlanner() {
   const [strategicImportance, setStrategicImportance] = useState('Low');
   const [missionCreated, setMissionCreated] = useState(false);
   const [missionImage, setMissionImage] = useState({ src: 'soldier.png', text: 'Supply Destination' });
+  const [supervisorsList, setSupervisorsList] = useState([]);
+  const [viewersList, setViewersList] = useState([]);
+  const [selectedSupervisors, setSelectedSupervisors] = useState([]);
+  const [selectedViewers, setSelectedViewers] = useState([]);
+
+  const handleToggleSupervisor = (supervisorId) => {
+    setSelectedSupervisors((prev) =>
+      prev.includes(supervisorId)
+        ? prev.filter((id) => id !== supervisorId)
+        : [...prev, supervisorId]
+    );
+    console.log(selectedSupervisors);
+  };
+
+  const handleToggleViewer = (viewerId) => {
+    setSelectedViewers((prev) =>
+      prev.includes(viewerId)
+        ? prev.filter((id) => id !== viewerId)
+        : [...prev, viewerId]
+    );
+    console.log(selectedViewers);
+  };
 
   useEffect(() => {
-    // Set default selections based on dropDownOptions
+    const authToken = encodeURIComponent(Cookies.get('jwtToken'));
+
+    fetch(`${API_URL}/user/getUsers?authToken=${authToken}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((users) => {
+        const supervisors = users.filter(user => user.role_name === 'Mission Supervisor');
+        const viewers = users.filter(user => user.role_name === 'Mission Viewer');
+        setSupervisorsList(supervisors);
+        setViewersList(viewers);
+      })
+      .catch((error) => {
+        console.error('Error fetching users:', error);
+      });
+  }, []);
+
+  useEffect(() => {
     const defaultSelections = {};
     Object.keys(dropDownOptions).forEach(deviceType => {
       if (dropDownOptions[deviceType].length > 0) {
-        defaultSelections[deviceType] = dropDownOptions[deviceType][0]; // Select the first option by default
+        defaultSelections[deviceType] = dropDownOptions[deviceType][0];
       }
     });
     setSelections(defaultSelections);
@@ -45,7 +89,6 @@ function MissionPlanner() {
 
   useEffect(() => {
     if (missionCreated) {
-      // Navigate to "/currentMissions" after 5 seconds
       const timer = setTimeout(() => {
         setMissionCreated(false); // Reset missionCreated state after navigation
         window.location.href = '/currentMissions';
@@ -85,14 +128,13 @@ function MissionPlanner() {
         })
         .then((devices) => {
           const dropdownOptions = {};
-          const allPrivileges = {}; // Initialize allPrivileges dictionary
+          const allPrivileges = {};
 
           for (const deviceType of Object.keys(requiredDeviceTypes)) {
             dropdownOptions[deviceType] = devices
               .filter((device) => device.device_type === requiredDeviceTypes[deviceType])
               .map((device) => device.device_name);
 
-            // Iterate through the fetched devices and populate allPrivileges
             devices.forEach(device => {
               if (requiredDeviceTypes[deviceType] === device.device_type) {
                 allPrivileges[device.device_name] = device.allowedTasks;
@@ -104,7 +146,6 @@ function MissionPlanner() {
           setAllPrivileges(allPrivileges); // Set allPrivileges state
         })
         .catch((error) => {
-          // Handle error if the API request fails
           console.error('Error fetching trusted devices:', error);
         });
     }
@@ -123,7 +164,10 @@ function MissionPlanner() {
         required: required,
         has: has
       };
-
+      console.log('req:', requiredPrivileges)
+      console.log('sel', selections);
+      console.log('priv, ', privileges);
+      console.log('devType, devName', deviceType, deviceName);
       if (required.some(privilege => !has.includes(privilege))) {
         anyRequiredPrivilegeAbsent = true;
       }
@@ -133,17 +177,10 @@ function MissionPlanner() {
     setInsufficientPrivileges(anyRequiredPrivilegeAbsent);
   }, [selections, requiredPrivileges, allPrivileges]);
 
-  const handleTabChange = (tabName) => {
-    setActiveTab(tabName);
-  };
-
   const handleMissionSelect = (missionType) => {
     setSelectedMission(missionType);
     setActiveTab('Plan Mission');
-    setRequiredDeviceTypes({});
-    setRequiredPrivileges({});
 
-    // Update the missionImage state based on the mission type
     let imageSrc = 'soldier.png';
     let imageText = 'Supply Destination';
 
@@ -195,13 +232,13 @@ function MissionPlanner() {
         break;
       case 'Battlefield 3: Liberty City':
         setSelectedLocation('/libertycity.png');
-        setGcX(0.1129); // Same as Grand Senora Desert
-        setGcY(0.4102); // Same as Grand Senora Desert
+        setGcX(0.1129);
+        setGcY(0.4102);
         break;
       case 'Battlefield 4: Murrieta Heights':
         setSelectedLocation('/murrietaHeights.png');
-        setGcX(0.3867); // Same as Paleto Forest
-        setGcY(0.7031); // Same as Paleto Forest
+        setGcX(0.3867);
+        setGcY(0.7031);
         break;
       default:
         setSelectedLocation('/forest.png'); // Default case
@@ -210,45 +247,9 @@ function MissionPlanner() {
     }
   };
 
-  // Use useEffect to listen for changes in missionLocation
   useEffect(() => {
     handleChangeLocation(missionLocation);
   }, [missionLocation]);
-
-  // Function to switch to the "Execute Mission" tab
-  const switchToExecuteTab = () => {
-    setActiveTab('Execute Mission');
-  };
-
-  useEffect(() => {
-    const privileges = {};
-    let anyRequiredPrivilegeAbsent = false;
-
-    // Iterate through selections
-    for (const [deviceType, deviceName] of Object.entries(selections)) {
-      const required = requiredPrivileges[deviceType];
-      const has = allPrivileges[deviceName] || [];
-
-      // Update availablePrivileges for the deviceType
-      privileges[deviceType] = {
-        device: deviceName,
-        required: required,
-        has: has
-      };
-
-      // Check if any required privilege is absent
-      if (required.some(privilege => !has.includes(privilege))) {
-        anyRequiredPrivilegeAbsent = true;
-      }
-    }
-
-    // Update the devicePrivileges state with the privileges object
-    setDevicePrivileges(privileges);
-
-    // Set insufficientPrivileges to true if any required privilege is absent
-    setInsufficientPrivileges(anyRequiredPrivilegeAbsent);
-  }, [selections, requiredPrivileges, allPrivileges]);
-
 
   const handleCreateMissionClick = () => {
     console.log(selections);
@@ -259,24 +260,21 @@ function MissionPlanner() {
       setInsufficientPrivilegesModalOpen(true);
     } else {
       const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
-      // Make API call to start mission
       const payload = {
         authToken: encodeURIComponent(Cookies.get('jwtToken')),
-        missionData: {
+        mission_config: JSON.stringify({
+          location: selectedLocation,
           mission_type: selectedMission,
-          mission_config: JSON.stringify({
-            gcX: gcX,
-            gcY: gcY,
-            destX: soldierPosition.x * 1792,
-            destY: soldierPosition.y * 1024,
-            selections: selections,
-          }),
+          gcX: gcX,
+          gcY: gcY,
+          destX: soldierPosition.x * 1792,
+          destY: soldierPosition.y * 1024,
+          selections: selections,
           create_time: timestamp,
           duration_sec: 120,
-          criticality: 1
-        },
-        supervisors: [5],
-        viewers: [11]
+        }),
+        supervisors: selectedSupervisors,
+        viewers: selectedViewers
       };
 
       fetch(`${API_URL}/mission/createMission`, {
@@ -298,7 +296,6 @@ function MissionPlanner() {
     }
   };
 
-  // Function to close the modal
   const closeModal = () => {
     setIsSelectionsIncompleteModalOpen(false);
   };
@@ -316,13 +313,12 @@ function MissionPlanner() {
       <div className="tabs">
         <button
           className={activeTab === 'Select Mission Type' ? 'tab-button active' : 'tab-button'}
-          onClick={() => handleTabChange('Select Mission Type')}
+          onClick={() => { window.location.reload(); }}
         >
           Select Mission Type
         </button>
         <button
           className={activeTab === 'Plan Mission' ? 'tab-button active' : 'tab-button'}
-        // onClick={() => handleTabChange('Plan Mission')}
         >
           Plan Mission
         </button>
@@ -447,6 +443,31 @@ function MissionPlanner() {
                   <option value="High">High</option>
                 </select>
               </div>
+              <Stack className="dropdown-wrapper" direction="row" spacing={1} wrap="wrap">
+                <h3>Supervisors:</h3>
+                {supervisorsList.map((supervisor) => (
+                  <Chip
+                    key={supervisor.user_id}
+                    label={supervisor.username}
+                    onClick={() => handleToggleSupervisor(supervisor.user_id)}
+                    color={selectedSupervisors.includes(supervisor.user_id) ? 'primary' : 'default'}
+                    variant="outlined"
+                  />
+                ))}
+              </Stack>
+
+              <Stack className="dropdown-wrapper" direction="row" spacing={1} wrap="wrap">
+                <h3>Viewers:</h3>
+                {viewersList.map((viewer) => (
+                  <Chip
+                    key={viewer.user_id}
+                    label={viewer.username}
+                    onClick={() => handleToggleViewer(viewer.user_id)}
+                    color={selectedViewers.includes(viewer.user_id) ? 'primary' : 'default'}
+                    variant="outlined"
+                  />
+                ))}
+              </Stack>
             </div>
             <label htmlFor="mapsvg">Point the supply delivery destination on map.</label>
             <div className='tabs mission-container' style={{ border: '2px solid black', padding: '10px' }}>

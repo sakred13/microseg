@@ -8,6 +8,7 @@ router.post('/createMission', missionService.createMission);
 router.get('/getMissionById/:missionId', missionService.getMissionById);
 router.get('/getMissionsByCreatorId', missionService.getMissionsByCreatorId);
 router.get('/getMissionsBySupervisorId', missionService.getMissionsBySupervisorId);
+router.get('/getMissionsByViewerId', missionService.getMissionsByViewerId);
 router.put('/updateMission', missionService.updateMission);
 router.delete('/deleteMission', missionService.deleteMission);
 

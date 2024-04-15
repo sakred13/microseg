@@ -24,17 +24,18 @@ function getUserFromToken(token) {
     }
 };
 exports.getUserFromToken = getUserFromToken;
+const isUserOfType = (username, userTypes) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT r.role_name FROM user u JOIN role r ON u.role_id = r.role_id WHERE u.username = ?", [username], (err, results) => {
+            if (err) {
+                console.error(err);
+                reject(err);
+                return;
+            }
 
-const isUserOfType = (username, userTypes, callback) => {
-    pool.query("SELECT r.role_name FROM user u JOIN role r ON u.role_id = r.role_id WHERE u.username = ?", [username], (err, results) => {
-        if (err) {
-            console.error(err);
-            return callback(err, null);
-        }
-
-        // Check if the user's role matches any of the types in the provided list.
-        const isOfRightType = results.some((row) => userTypes.includes(row.role_name));
-        callback(null, isOfRightType);
+            const isOfRightType = results.some((row) => userTypes.includes(row.role_name));
+            resolve(isOfRightType);
+        });
     });
 };
 exports.isUserOfType = isUserOfType;
@@ -58,19 +59,23 @@ const getUserRole = (username, callback) => {
 };
 exports.getUserRole = getUserRole;
 
-const getUserIdFromName = (username) => {
-    pool.query("SELECT user_id FROM user WHERE username = ?", [username], (err, results) => {
-        if (err) {
-            console.error(err);
-            return err;
-        }
+const getUserIdFromName = async (username) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT user_id FROM user WHERE username = ?", [username], (err, results) => {
+            if (err) {
+                console.error(err);
+                reject(err);
+                return;
+            }
 
-        if (results.length === 0) {
-            return { message: 'User not found' };
-        }
+            if (results.length === 0) {
+                reject({ message: 'User not found' });
+                return;
+            }
 
-        const userId = results[0].user_id;
-        return userId;
+            const userId = results[0].user_id;
+            resolve(userId);
+        });
     });
 };
 exports.getUserIdFromName = getUserIdFromName;

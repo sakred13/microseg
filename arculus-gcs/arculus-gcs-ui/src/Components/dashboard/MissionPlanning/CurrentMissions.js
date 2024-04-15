@@ -11,16 +11,17 @@ import Cookies from 'js-cookie';
 import DroneRemote from './DroneRemote';
 import LogConsole from './LogConsole';
 import AlertButton from './AlertButton';
+// import ListMissions from './ListMissions';
 
 function CurrentMissions(props) {
-  const [activeTab, setActiveTab] = useState('Select Mission Type');
+  const [activeTab, setActiveTab] = useState('Missions');
   const [selectedMission, setSelectedMission] = useState(null);
   const [soldierPosition, setSoldierPosition] = useState(null);
   const [missionLocation, setMissionLocation] = useState('');
   const [videoAnalytic, setVideoAnalytic] = useState('');
   const [videoCollectionDrone, setVideoCollectionDrone] = useState('');
   const [supplyDeliveryDrone, setSupplyDeliveryDrone] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState('/forest.png');
+  const [selectedLocation, setSelectedLocation] = useState('/desert.png');
   const [gcX, setGcX] = useState(693);
   const [gcY, setGcY] = useState(720);
   const [videoCollectionDrones, setVideoCollectionDrones] = useState([]);
@@ -32,8 +33,8 @@ function CurrentMissions(props) {
   const [insufficientPrivilegesModalOpen, setInsufficientPrivilegesModalOpen] = useState(false);
   const [devicePrivileges, setDevicePrivileges] = useState({});
   const userType = props.userType;
-  const userName = props.userName;
-  
+  const userName = Cookies.get('user');
+
   useEffect(() => {
     // Fetch trusted devices from your API using fetch
     fetch(`${API_URL}/device/getTrustedDevices?authToken=${encodeURIComponent(
@@ -124,7 +125,7 @@ function CurrentMissions(props) {
 
   const handleMissionSelect = (missionType) => {
     setSelectedMission(missionType);
-    setActiveTab('Plan Mission');
+    setActiveTab('Missions');
   };
 
   const handleSvgClick = (e) => {
@@ -156,9 +157,9 @@ function CurrentMissions(props) {
     handleChangeLocation(missionLocation);
   }, [missionLocation]);
 
-  // Function to switch to the "Execute Mission" tab
+  // Function to switch to the "Mission Execution" tab
   const switchToExecuteTab = () => {
-    setActiveTab('Execute Mission');
+    setActiveTab('Mission Execution');
   };
 
   const handleExecuteMissionClick = () => {
@@ -226,297 +227,40 @@ function CurrentMissions(props) {
       </Typography>
       <div className="tabs">
         <button
-          className={activeTab === 'Select Mission Type' ? 'tab-button active' : 'tab-button'}
-          onClick={() => handleTabChange('Select Mission Type')}
+          className={activeTab === 'Missions' ? 'tab-button active' : 'tab-button'}
+          onClick={() => handleTabChange('Missions')}
         >
-          Select Mission Type
+          {userType === "Mission Creator" && "Missions created by you"}
+          {userType === "Mission Supervisor" && "Missions you supervise"}
+          {userType === "Mission Viewer" && "Missions you monitor"}
         </button>
         <button
-          className={activeTab === 'Plan Mission' ? 'tab-button active' : 'tab-button'}
-        // onClick={() => handleTabChange('Plan Mission')}
+          className={activeTab === 'Mission Execution' ? 'tab-button active execute-button' : 'tab-button execute-button'}
+          onClick={switchToExecuteTab}
         >
-          Plan Mission
-        </button>
-        <button
-          className={activeTab === 'Execute Mission' ? 'tab-button active execute-button' : 'tab-button execute-button'}
-        // onClick={switchToExecuteTab}
-        >
-          Execute Mission
+          Mission Execution
         </button>
       </div>
 
       <div className="tab-content">
-        {activeTab === 'Select Mission Type' && (
-          <div className="mission-type-container">
-            <h2>Select Mission Type</h2>
-            <button className="mission-button" onClick={() => handleMissionSelect('Mine-Aware Search and Rescue')}>
-              Mine-Aware Search and Rescue
-            </button>
-            <button className="mission-button" onClick={() => handleMissionSelect('Stealthy Reconnaissance and Resupply')}>
-              Stealthy Reconnaissance and Resupply
-            </button>
-          </div>
-        )}
 
-        {activeTab === 'Plan Mission' && (
+        {activeTab === 'Missions' && (
           <div>
-            <h2>Plan Mission</h2>
-
             {selectedMission && <p>Selected Mission Type: {selectedMission}</p>}
-
-            <label htmlFor="missionLocation">Mission Location:</label>
-            <select
-              id="missionLocation"
-              value={missionLocation}
-              onChange={(e) => setMissionLocation(e.target.value)}
-            >
-              <option value="Battlefield 1: Paleto Forest">Battlefield 1: Paleto Forest</option>
-              <option value="Battlefield 2: Grand Senora Desert">Battlefield 2: Grand Senora Desert</option>
-            </select>
-
-            {/* Video-Analytic Route Planner dropdown */}
-            <label htmlFor="videoAnalytic">Video-Analytic Route Planner (Ground Control):</label>
-            <select
-              id="videoAnalytic"
-              value={videoAnalytic}
-              onChange={(e) => setVideoAnalytic(e.target.value)}
-            >
-              {videoAnalyticControllers.length === 0 ? ( // Check if there are no suitable devices
-                <option disabled>No suitable device available</option>
-              ) : (
-                videoAnalyticControllers.map((device) => (
-                  <option key={device.id} value={device.device_name}>
-                    {device.device_name}
-                  </option>
-                ))
-              )}
-            </select>
-
-            {/* Video Collection Surveillance Drone dropdown */}
-            <label htmlFor="videoCollectionDrone">Video Collection Surveillance Drone:</label>
-            <select
-              id="videoCollectionDrone"
-              value={videoCollectionDrone}
-              onChange={(e) => setVideoCollectionDrone(e.target.value)}
-            >
-              {videoCollectionDrones.length === 0 ? ( // Check if there are no suitable devices
-                <option disabled>No suitable device available</option>
-              ) : (
-                videoCollectionDrones.map((device) => (
-                  <option key={device.id} value={device.device_name}>
-                    {device.device_name}
-                  </option>
-                ))
-              )}
-            </select>
-
-            {/* Supply Delivery Drone dropdown */}
-            <label htmlFor="supplyDeliveryDrone">Supply Delivery Drone:</label>
-            <select
-              id="supplyDeliveryDrone"
-              value={supplyDeliveryDrone}
-              onChange={(e) => setSupplyDeliveryDrone(e.target.value)}
-            >
-              {supplyDeliveryDrones.length === 0 ? ( // Check if there are no suitable devices
-                <option disabled>No suitable device available</option>
-              ) : (
-                supplyDeliveryDrones.map((device) => (
-                  <option key={device.id} value={device.device_name}>
-                    {device.device_name}
-                  </option>
-                ))
-              )}
-            </select>
-
-            <label htmlFor="mapsvg">Point the supply delivery destination on map.</label>
-            <div className='tabs mission-container' style={{ border: '2px solid black', padding: '10px' }}>
-              <svg
-                id="mapsvg"
-                className="mission-svg"
-                viewBox="0 0 1792 1024"
-                preserveAspectRatio="xMidYMid meet"
-                onClick={handleSvgClick}
-              >
-                <image href={selectedLocation} x="0" y="0" width="1792" height="1024" />
-
-                {/* Ground Control */}
-                <image href="groundControl.png" x={gcX * 1792 - 35} y={gcY * 1024 - 35} width="70" height="70" />
-                <rect x={gcX * 1792 - 75} y={gcY * 1024 + 45} width="150" height="30" fill="black" stroke="white" strokeWidth="2" rx="15" ry="15" />
-                <text x={gcX * 1792} y={gcY * 1024 + 65} fill="white" fontSize="15" textAnchor="middle" fontWeight="bold">
-                  Ground Station
-                </text>
-
-                {/* Soldier */}
-                {soldierPosition && (
-                  <image
-                    href="soldier.png"
-                    x={soldierPosition.x * 1792 - 35}
-                    y={soldierPosition.y * 1024 - 35}
-                    width="70"
-                    height="70"
-                  />
-                )}
-                {soldierPosition && (
-                  <rect
-                    x={soldierPosition.x * 1792 - 75} // Adjust the x-coordinate for the rect element
-                    y={soldierPosition.y * 1024 + 50} // Adjust the y-coordinate for the rect element
-                    width="150"
-                    height="30"
-                    fill="black"
-                    stroke="white"
-                    strokeWidth="2"
-                    rx="15"
-                    ry="15"
-                  />
-                )}
-                {soldierPosition && (
-                  <text
-                    x={soldierPosition.x * 1792}
-                    y={soldierPosition.y * 1024 + 70} // Adjust the y-coordinate for the text element
-                    fill="white"
-                    fontSize="15"
-                    textAnchor="middle"
-                    fontWeight="bold"
-                  >
-                    Supply Destination
-                  </text>
-                )}
-              </svg>
-            </div>
-            <br />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleExecuteMissionClick}
-              // disabled={isExecuteMissionDisabled}
-              style={{
-                backgroundColor: 'green',
-                padding: '10px 20px',
-                color: 'white',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-              }}// Disable the button if any dropdown is empty
-            >
-              <SettingsSuggestIcon /> Execute Mission
-            </Button>
-
-            <Modal
-              open={isSelectionsIncompleteModalOpen}
-              onClose={closeModal}
-              aria-labelledby="modal-title"
-              aria-describedby="modal-description"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <div style={{
-                backgroundColor: 'white',
-                padding: '20px',
-                borderRadius: '5px',
-                outline: 'none',
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-              }}>
-                <h2 id="modal-title">Configure all devices first!</h2>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={closeModal}
-                  style={{
-                    display: 'block',
-                    margin: '0 auto', // Center the button horizontally
-                    marginTop: '20px', // Add some top margin for spacing
-                  }}
-                >
-                  OK
-                </Button>
-              </div>
-            </Modal>
-            <Modal
-              open={insufficientPrivilegesModalOpen}
-              onClose={closeInsufficientPrivilegesModal}
-              aria-labelledby="modal-title"
-              aria-describedby="modal-description"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <div style={{
-                backgroundColor: 'white',
-                padding: '20px',
-                borderRadius: '5px',
-                outline: 'none',
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                textAlign: 'center',
-              }}>
-                <h2 id="modal-title" style={{ fontWeight: 'bold' }}>Insufficient Privileges for Some Devices</h2>
-                <p>Mission Execution might fail! Please provide sufficient capabilities for necessary ingress and egress.</p>
-
-                <table style={{ margin: '0 auto', textAlign: 'left', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr>
-                      <th style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>Device</th>
-                      <th style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>Privileges</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Object.keys(devicePrivileges).map(deviceTypeKey => {
-                      const deviceType = devicePrivileges[deviceTypeKey];
-                      return (
-                        <tr key={deviceType.device}>
-                          <td style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>{deviceType.device}</td>
-                          <td style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>
-                            {deviceType.required.map(privilege => (
-                              <div key={privilege}>
-                                {deviceType.has.includes(privilege) ? (
-                                  <span style={{ color: 'green' }}>✅</span>
-                                ) : (
-                                  <span style={{ color: 'red' }}>❌</span>
-                                )}
-                                {privilege}
-                              </div>
-                            ))}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table><br />
-
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={closeInsufficientPrivilegesModal}
-                  style={{
-                    display: 'block',
-                    margin: '0 auto',
-                    marginTop: '20px',
-                  }}
-                >
-                  OK
-                </Button>
-              </div>
-            </Modal>
-
+            {/* <ListMissions authToken={encodeURIComponent(Cookies.get('jwtToken'))} userType={userType}/> */}
             <br />
           </div>
         )}
 
-        {activeTab === 'Execute Mission' && (
-          <>             <h2>Mission in Execution...</h2>
+        {activeTab === 'Mission Execution' && (
+          <><br></br>
             <div className='container'>
               <div className='tabs mission-container' style={{ border: '2px solid black', padding: '10px' }}>
-                {/* Add your content for executing the mission here */}
                 {selectedLocation === '/desert.png' ? <DesertMission handleTabChange={handleTabChange} jwtToken={encodeURIComponent(Cookies.get('jwtToken'))} /> : <ForestMission handleTabChange={handleTabChange} />}
                 <div className="log-container" style={{ width: '20%' }}>
                   <LogConsole />
                   <DroneRemote />
-                  <AlertButton userType={"Mission Creator"} />
+                  <AlertButton userType={userType} />
                 </div>
               </div>
             </div>
