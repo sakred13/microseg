@@ -14,7 +14,8 @@ const taskRoutes = require('./routes/taskRoutes');
 const honeyNetProxyRoutes = require('./routes/honeyNetProxyRoutes');
 const honeyPotRoutes = require('./routes/honeyPotRoutes');
 const blacklistRoutes = require('./routes/blacklistRoutes');
-const missionRoutes = require('./routes/missionRoutes')
+const missionRoutes = require('./routes/missionRoutes');
+const policyRoutes = require('./routes/policyRoutes');
 const utilizationService = require('./services/utilizationService');
 const { joinReqsWebSocket, joinStatusWebSocket } = require('./services/deviceService');
 const utilizationRoutes = require('./routes/utilizationRoutes');
@@ -57,6 +58,7 @@ app.use('/honeypot-proxy/', honeyNetProxyRoutes);
 app.use('/honeypot-api/', honeyPotRoutes);
 app.use('/utilization/', utilizationRoutes);
 app.use('/mission/', missionRoutes);
+app.use('/policy/', policyRoutes);
 
 app.get('/tools/downloadJoinWiz', (req, res) => {
   const filePath = path.join(__dirname, '/tools/joinClusterWizard.sh');
