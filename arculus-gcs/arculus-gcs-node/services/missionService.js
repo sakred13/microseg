@@ -1,5 +1,7 @@
 const { isUserOfType, getUserFromToken, getUserIdFromName } = require('./authService');
 const pool = require('../modules/arculusDbConnection');
+const fs = require('fs');
+const { execSync } = require('child_process');
 
 // Define global variables
 let gcX = null;
@@ -99,67 +101,59 @@ exports.getMissionState = (req, res) => {
 
 exports.createMission = async (req, res) => {
     try {
-        var { authToken, mission_config, supervisors, viewers } = req.body;
+        const { authToken, mission_config, supervisors, viewers } = req.body;
 
         const username = getUserFromToken(authToken);
-        const isMissionCreator = await isUserOfType(username, ['Mission Creator']);
-        if (!isMissionCreator) {
-            console.error('Unauthorized: Only mission creators can create missions');
-            return res.status(401).json({ message: 'Unauthorized: Only mission creators can create missions' });
-        }
+        isUserOfType(username, ['Mission Creator'], async (err, isMissionCreator) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ message: 'Internal Server Error' });
+            }
 
-        const creatorId = await getUserIdFromName(username);
-        const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
+            if (!isMissionCreator) {
+                console.error('Unauthorized: Only mission creators can create missions');
+                return res.status(401).json({ message: 'Unauthorized: Only mission creators can create missions' });
+            }
 
-        const insertMissionQuery = `INSERT INTO mission (creator_id, mission_config) VALUES (?, ?)`;
-        const missionResult = await new Promise((resolve, reject) => {
-            pool.query(insertMissionQuery, [creatorId, mission_config], (err, result) => {
-                if (err) {
-                    console.error(err);
-                    reject(err);
-                    return;
-                }
-                resolve(result);
-            });
+            const creatorId = await getUserIdFromName(username);
+            const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+            const insertMissionQuery = `INSERT INTO mission (creator_id, mission_config, state) VALUES (?, ?, 'CREATED')`;
+            const missionResult = await executeQuery(insertMissionQuery, [creatorId, mission_config]);
+
+            const missionId = missionResult.insertId;
+
+            if (supervisors && supervisors.length > 0) {
+                const supervisorValues = supervisors.map(supervisorId => [supervisorId, missionId]);
+                const insertSupervisorsQuery = 'INSERT INTO supervisor (user_id, mission_id) VALUES ?';
+                await executeQuery(insertSupervisorsQuery, [supervisorValues]);
+            }
+
+            if (viewers && viewers.length > 0) {
+                const viewerValues = viewers.map(viewerId => [viewerId, missionId]);
+                const insertViewersQuery = 'INSERT INTO viewer (user_id, mission_id) VALUES ?';
+                await executeQuery(insertViewersQuery, [viewerValues]);
+            }
+
+            res.status(200).json({ missionId });
         });
-
-        const missionId = missionResult.insertId;
-
-        if (supervisors && supervisors.length > 0) {
-            const supervisorValues = supervisors.map(supervisorId => [supervisorId, missionId]);
-            const insertSupervisorsQuery = 'INSERT INTO supervisor (user_id, mission_id) VALUES ?';
-            await new Promise((resolve, reject) => {
-                pool.query(insertSupervisorsQuery, [supervisorValues], (err) => {
-                    if (err) {
-                        console.error(err);
-                        reject(err);
-                        return;
-                    }
-                    resolve();
-                });
-            });
-        }
-
-        if (viewers && viewers.length > 0) {
-            const viewerValues = viewers.map(viewerId => [viewerId, missionId]);
-            const insertViewersQuery = 'INSERT INTO viewer (user_id, mission_id) VALUES ?';
-            await new Promise((resolve, reject) => {
-                pool.query(insertViewersQuery, [viewerValues], (err) => {
-                    if (err) {
-                        console.error(err);
-                        reject(err);
-                        return;
-                    }
-                    resolve();
-                });
-            });
-        }
-
-        res.status(200).json({ missionId });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
+};
+
+const executeQuery = (query, values) => {
+    return new Promise((resolve, reject) => {
+        pool.query(query, values, (err, result) => {
+            if (err) {
+                console.error(err);
+                reject(err);
+                return;
+            }
+            resolve(result);
+        });
+    });
 };
 
 
@@ -221,10 +215,12 @@ exports.getMissionsByCreatorId = async (req, res) => {
     // Get user ID from token
     const creatorId = await getUserIdFromName(getUserFromToken(authToken));
 
-    // Query to fetch missions, supervisors, and viewers
+    // Query to fetch missions, supervisors, viewers, and state
     const selectMissionsQuery = `
     SELECT 
-        m.mission_config AS config,
+        m.mission_config AS config, 
+        m.state,
+        m.mission_id,
         GROUP_CONCAT(DISTINCT u1.username) AS supervisors,
         GROUP_CONCAT(DISTINCT u2.username) AS viewers
     FROM 
@@ -240,7 +236,7 @@ exports.getMissionsByCreatorId = async (req, res) => {
     WHERE 
         m.creator_id = ?
     GROUP BY 
-        m.mission_config;`;
+        m.mission_config, m.state, m.mission_id;`;
 
     pool.query(selectMissionsQuery, [creatorId], (err, missionsResult) => {
         if (err) {
@@ -254,8 +250,10 @@ exports.getMissionsByCreatorId = async (req, res) => {
             const missions = missionsResult.map(row => {
                 return {
                     config: row.config,
-                    supervisors: row.supervisors? row.supervisors.split(','): [], // Split supervisors by comma
-                    viewers: row.viewers ? row.viewers.split(','): [] // Split viewers by comma
+                    state: row.state,
+                    supervisors: row.supervisors ? row.supervisors.split(',') : [], // Split supervisors by comma
+                    viewers: row.viewers ? row.viewers.split(',') : [], // Split viewers by comma
+                    mission_id: row.mission_id
                 };
             });
 
@@ -272,10 +270,12 @@ exports.getMissionsBySupervisorId = async (req, res) => {
     // Get user ID from token
     const supervisorId = await getUserIdFromName(getUserFromToken(authToken));
 
-    // Query to fetch missions for the given supervisor
+    // Query to fetch missions for the given supervisor, including state
     const selectMissionsQuery = `
     SELECT 
         m.mission_config AS config,
+        m.state,
+        m.mission_id,
         GROUP_CONCAT(DISTINCT u.username) AS supervisors,
         GROUP_CONCAT(DISTINCT vu.username) AS viewers
     FROM 
@@ -291,7 +291,7 @@ exports.getMissionsBySupervisorId = async (req, res) => {
     WHERE 
         s.user_id = ?
     GROUP BY 
-        m.mission_config;
+        m.mission_config, m.state, m.mission_id;
 `;
 
     pool.query(selectMissionsQuery, [supervisorId], (err, missionsResult) => {
@@ -306,8 +306,9 @@ exports.getMissionsBySupervisorId = async (req, res) => {
             const missions = missionsResult.map(row => {
                 return {
                     config: row.config,
-                    supervisors: row.supervisors? row.supervisors.split(','): [], // Split supervisors by comma
-                    viewers: row.viewers ? row.viewers.split(','): [] // Split viewers by comma
+                    state: row.state,
+                    supervisors: row.supervisors ? row.supervisors.split(',') : [], // Split supervisors by comma
+                    viewers: row.viewers ? row.viewers.split(',') : [] // Split viewers by comma
                 };
             });
 
@@ -324,10 +325,12 @@ exports.getMissionsByViewerId = async (req, res) => {
     // Get user ID from token
     const viewerId = await getUserIdFromName(getUserFromToken(authToken));
 
-    // Query to fetch missions for the given viewer
+    // Query to fetch missions for the given viewer, including state
     const selectMissionsQuery = `
     SELECT 
         m.mission_config AS config,
+        m.state,
+        m.mission_id,
         GROUP_CONCAT(DISTINCT u.username) AS supervisors,
         GROUP_CONCAT(DISTINCT vu.username) AS viewers
     FROM 
@@ -343,7 +346,7 @@ exports.getMissionsByViewerId = async (req, res) => {
     WHERE 
         vu.user_id = ?
     GROUP BY 
-        m.mission_config;
+        m.mission_config, m.state, m.mission_id;
 `;
 
     pool.query(selectMissionsQuery, [viewerId], (err, missionsResult) => {
@@ -358,8 +361,9 @@ exports.getMissionsByViewerId = async (req, res) => {
             const missions = missionsResult.map(row => {
                 return {
                     config: row.config,
-                    supervisors: row.supervisors? row.supervisors.split(','): [], // Split supervisors by comma
-                    viewers: row.viewers ? row.viewers.split(','): [] // Split viewers by comma
+                    state: row.state,
+                    supervisors: row.supervisors ? row.supervisors.split(',') : [], // Split supervisors by comma
+                    viewers: row.viewers ? row.viewers.split(',') : [] // Split viewers by comma
                 };
             });
 
@@ -369,6 +373,7 @@ exports.getMissionsByViewerId = async (req, res) => {
         }
     });
 };
+
 
 // Function to update a mission
 exports.updateMission = (authToken, missionId, newData, callback) => {
@@ -486,4 +491,100 @@ exports.deleteMission = (authToken, missionId, callback) => {
         });
     });
 };
+
+exports.getMissionState = (req, res) => {
+    const { deviceName } = req.query;
+
+    try {
+        // Execute kubectl exec command synchronously
+        const command = `kubectl exec ${deviceName} -n default -- cat mission_state.json`;
+        const missionStateJson = execSync(command, { encoding: 'utf-8' });
+
+        // Parse mission state JSON
+        const missionState = JSON.parse(missionStateJson);
+
+        res.status(200).json(missionState);
+    } catch (error) {
+        if (error.stderr) {
+            console.error('Error:', error.stderr);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        } else {
+            console.error('Error:', error);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+    }
+};
+
+const { exec } = require('child_process');
+
+exports.executeStealthyReconAndResupply = (req, res) => {
+    const { gcX, gcY, destX, destY, controller, supplyDrone, surveillanceDrone, missionId } = req.body;
+
+    const executeKubectlExecAndGetIP = (podName, callback) => {
+        exec(`kubectl get pod ${podName} -n default -o json`, (error, stdout, stderr) => {
+            if (error) {
+                console.error('Error:', stderr || error);
+                callback(error);
+                return;
+            }
+            const podInfo = JSON.parse(stdout);
+            const podIP = podInfo.status.podIP;
+            callback(null, podIP);
+        });
+    };
+
+    res.status(200).json({ message: 'IP retrieval initiated' });
+
+    executeKubectlExecAndGetIP(supplyDrone, (error, supplyDroneIP) => {
+        if (error) {
+            console.error('Error fetching supplyDrone IP:', error);
+            return;
+        }
+
+        executeKubectlExecAndGetIP(surveillanceDrone, (error, surveillanceDroneIP) => {
+            if (error) {
+                console.error('Error fetching surveillanceDrone IP:', error);
+                return;
+            }
+
+            const updateQueryInProgress = 'UPDATE mission SET state = ? WHERE mission_id = ?';
+            pool.query(updateQueryInProgress, ['IN EXECUTION', missionId], (error, results) => {
+                if (error) {
+                    console.error('Database Error:', error);
+                    return;
+                }
+                console.log('Mission status updated to IN EXECUTION.');
+
+                const command = `kubectl exec ${controller} -n default -- python3 controller.py ${gcX} ${gcY} ${destX} ${destY} ${surveillanceDroneIP} ${supplyDroneIP}`;
+                console.log('Executing command:', command);
+
+                exec(command, (error, stdout, stderr) => {
+                    if (error) {
+                        console.error('Error:', stderr || error);
+                        const updateQueryFailed = 'UPDATE mission SET state = ? WHERE mission_id = ?';
+                        pool.query(updateQueryFailed, ['FAILED', missionId], (err, results) => {
+                            if (err) {
+                                console.error('Database Error:', err);
+                            } else {
+                                console.log('Mission status updated to FAILED.');
+                            }
+                        });
+                        return;
+                    }
+                    console.log('Script executed successfully:', stdout);
+                    
+                    const updateQuerySuccessful = 'UPDATE mission SET state = ? WHERE mission_id = ?';
+                    pool.query(updateQuerySuccessful, ['SUCCESSFUL', missionId], (err, results) => {
+                        if (err) {
+                            console.error('Database Error:', err);
+                        } else {
+                            console.log('Mission status updated to SUCCESSFUL.');
+                        }
+                    });
+                });
+            });
+        });
+    });
+};
+
 

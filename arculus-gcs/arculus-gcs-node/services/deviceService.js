@@ -420,17 +420,40 @@ exports.addTrustedDevice = (req, res) => {
         if (isAdmin) {
             // Define Docker images based on deviceType
             const imageMap = {
-                "Video Capture Drone": "39dj29dl2d9l2/vcc:latest",
-                "Video Analytic Controller": "nginx:latest",
+                "Video Capture Drone": "sakred22/surv-drone:v1",
+                "Video Analytic Controller": "sakred22/controller:v1",
                 "Video Capture Rover": "39dj29dl2d9l2/vcc:latest",
-                "Freight Drone": "39dj29dl2d9l2/vcc:latest",
-                "Freight UGV": "39dj29dl2d9l2/vcc:latest",
+                "Freight Drone": "sakred22/sup-drone:v1",
+                "Freight UGV": "sakred22/sup-drone:v1",
                 "Sensor-Integrated Drone": "39dj29dl2d9l2/vcc:latest",
                 "Communication Relay Drone": "39dj29dl2d9l2/vcc:latest",
                 "Communication Relay Rover": "39dj29dl2d9l2/vcc:latest",
             };
 
+            const commandMap = {
+                "Video Capture Drone": ["python3", "surveillanceDrone.py"],
+                "Video Analytic Controller": ["sleep", '"3600000"'],
+                "Video Capture Rover": ["sleep", "3600000"],
+                "Freight Drone": ["python3", "supplyDrone.py"],
+                "Freight UGV": ["sleep", "3600000"],
+                "Sensor-Integrated Drone": ["sleep", "3600000"],
+                "Communication Relay Drone": ["sleep", "3600000"],
+                "Communication Relay Rover": ["sleep", "3600000"],
+            };
+
+            const portMap = {
+                "Video Capture Drone": 3050,
+                "Video Analytic Controller": 5050,
+                "Video Capture Rover": 8080,
+                "Freight Drone": 4050,
+                "Freight UGV": 8080,
+                "Sensor-Integrated Drone": 8080,
+                "Communication Relay Drone": 8080,
+                "Communication Relay Rover": 8080,
+            };
+
             const selectedImage = imageMap[deviceType];
+            const selectedCommand = commandMap[deviceType];
 
             if (!selectedImage) {
                 return res.status(400).json({ message: 'Invalid deviceType' });
@@ -438,7 +461,7 @@ exports.addTrustedDevice = (req, res) => {
 
             try {
                 // Create a temporary YAML file
-                const policyYAML = `
+                const podYAML = `
 apiVersion: v1
 kind: Pod
 metadata:
@@ -450,14 +473,14 @@ spec:
   containers:
   - name: busybox
     image: ${selectedImage}
+    imagePullPolicy: Always 
     ports:
-      - containerPort: 8080
+      - containerPort: ${portMap[deviceType]}
     command:
-      - sleep
-      - "3600000"`;
+      - ${selectedCommand.join("\n      - ")}`;
 
                 const yamlFilePath = temp.openSync({ suffix: '.yaml' });
-                fs.writeSync(yamlFilePath.fd, policyYAML);
+                fs.writeSync(yamlFilePath.fd, podYAML);
                 fs.closeSync(yamlFilePath.fd);
 
                 // Apply the YAML file to create the Pod using exec

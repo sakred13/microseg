@@ -4,8 +4,8 @@ RUN apk update && apk add --no-cache python3 py3-pip && pip install Flask && pip
 
 WORKDIR /app/supply-drone
 
-COPY supply.py .
+COPY supplyDrone.py .
 
-EXPOSE 6000
+EXPOSE 4050
 
-CMD ["python3", "supply.py"]
+CMD ["python3", "supplyDrone.py"]

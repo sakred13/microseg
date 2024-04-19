@@ -33,7 +33,6 @@ CREATE TABLE `device_task` (
   CONSTRAINT `device_task_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `trusted_device` (`device_id`),
   CONSTRAINT `device_task_ibfk_2` FOREIGN KEY (`task_id`) REFERENCES `task` (`task_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `device_task`
@@ -60,7 +59,6 @@ CREATE TABLE `policy` (
   `dest_ip` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`policy_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `policy`
@@ -86,7 +84,6 @@ CREATE TABLE `privilege` (
   KEY `role_id` (`role_id`),
   CONSTRAINT `privilege_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `privilege`
@@ -109,7 +106,6 @@ CREATE TABLE `role` (
   `role_name` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`role_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `role`
@@ -136,7 +132,6 @@ CREATE TABLE `task` (
   `traffic_port` int DEFAULT NULL,
   PRIMARY KEY (`task_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `task`
@@ -163,7 +158,6 @@ CREATE TABLE `trusted_device` (
   `device_type` varchar(40) DEFAULT NULL, 
   PRIMARY KEY (`device_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `trusted_device`
@@ -192,7 +186,6 @@ CREATE TABLE `user` (
   KEY `role_id` (`role_id`),
   CONSTRAINT `user_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `user`
@@ -216,7 +209,6 @@ CREATE TABLE `blacklist` (
   `blacklist_ip` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `blacklist`
@@ -226,6 +218,10 @@ LOCK TABLES `blacklist` WRITE;
 /*!40000 ALTER TABLE `blacklist` DISABLE KEYS */;
 /*!40000 ALTER TABLE `blacklist` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `mission`
+--
 
 DROP TABLE IF EXISTS `mission`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -238,13 +234,14 @@ CREATE TABLE `mission` (
   `create_time` TIMESTAMP,
   `duration_sec` INT,
   `criticality` FLOAT,
+  `state` VARCHAR(15),
   PRIMARY KEY (`mission_id`),
   CONSTRAINT `fk_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 LOCK TABLES `mission` WRITE;
-/*!40000 ALTER TABLE `blacklist` DISABLE KEYS */;
-/*!40000 ALTER TABLE `blacklist` ENABLE KEYS */;
+/*!40000 ALTER TABLE `mission` DISABLE KEYS */;
+/*!40000 ALTER TABLE `mission` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

@@ -13,6 +13,9 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { MenuItem } from '@mui/material';
 import Cookies from 'js-cookie';
 import { API_URL } from '../../../config';
+import Autocomplete from '@mui/material/Autocomplete';
+import Chip from '@mui/material/Chip';
+
 
 const customStyles = {
     position: 'absolute',
@@ -43,6 +46,7 @@ const defaultTheme = createTheme();
 const AddUserModal = ({ isOpen, setIsOpen }) => {
     const [isSuccess, setIsSuccess] = useState(false);
     const [selectedRole, setSelectedRole] = useState('');
+    const [selectedDomains, setSelectedDomains] = useState([]);
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -213,6 +217,30 @@ const AddUserModal = ({ isOpen, setIsOpen }) => {
                                                 <MenuItem value="Mission Supervisor">Mission Supervisor</MenuItem>
                                                 <MenuItem value="Mission Viewer">Mission Viewer</MenuItem>
                                             </TextField>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Autocomplete
+                                                multiple
+                                                id="domains"
+                                                options={["Explosive Ordnance Reconnaissance", "Covert Operations Support", "Structural Integrity Assessment", "Crisis Response and Restoration"]}
+                                                value={selectedDomains}
+                                                onChange={(event, newValue) => {
+                                                    setSelectedDomains(newValue);
+                                                }}
+                                                isOptionEqualToValue={(option, value) => option === value}
+                                                renderTags={(value, getTagProps) =>
+                                                    value.map((option, index) => (
+                                                        <Chip key={index} label={option} {...getTagProps({ index })} />
+                                                    ))
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        label="Domains"
+                                                        placeholder="Select Domains"
+                                                    />
+                                                )}
+                                            />
                                         </Grid>
                                         <Grid item xs={12}>
                                             <TextField

@@ -24,21 +24,21 @@ function getUserFromToken(token) {
     }
 };
 exports.getUserFromToken = getUserFromToken;
-const isUserOfType = (username, userTypes) => {
-    return new Promise((resolve, reject) => {
-        pool.query("SELECT r.role_name FROM user u JOIN role r ON u.role_id = r.role_id WHERE u.username = ?", [username], (err, results) => {
-            if (err) {
-                console.error(err);
-                reject(err);
-                return;
-            }
 
-            const isOfRightType = results.some((row) => userTypes.includes(row.role_name));
-            resolve(isOfRightType);
-        });
+const isUserOfType = (username, userTypes, callback) => {
+    pool.query("SELECT r.role_name FROM user u JOIN role r ON u.role_id = r.role_id WHERE u.username = ?", [username], (err, results) => {
+        if (err) {
+            console.error(err);
+            callback(err, null);
+            return;
+        }
+
+        const isOfRightType = results.some((row) => userTypes.includes(row.role_name));
+        callback(null, isOfRightType);
     });
 };
 exports.isUserOfType = isUserOfType;
+
 
 const getUserRole = (username, callback) => {
     pool.query("SELECT r.role_name FROM user u JOIN role r ON u.role_id = r.role_id WHERE u.username = ?", [username], (err, results) => {

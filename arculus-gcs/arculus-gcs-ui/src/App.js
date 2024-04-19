@@ -19,6 +19,7 @@ import { DashboardProvider } from './Components/dashboard/HoneyNet/DashboardCont
 import DownloadTools from './Components/DownloadTools';
 import UtilizationGraphs from './Components/dashboard/UtilizationGraphs';
 import CurrentMissions from './Components/dashboard/MissionPlanning/CurrentMissions';
+import ManagePolicies from './Components/dashboard/PolicyManagement/ManagePolicies';
 
 function App() {
 
@@ -33,7 +34,7 @@ function App() {
           <Route path='/about' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor', 'Mission Viewer']} component={<IntroDashboard />} />} />} />
           <Route path='/manageUsers' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator']} component={<ManageUsers />} />} />} />
           <Route path='/manageDevices' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator']} component={<DeviceManagement />} />} />} />
-          <Route path='/managePolicies' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor']} component={<DeviceManagement />} />} />} />
+          <Route path='/managePolicies' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor']} component={<ManagePolicies />} />} />} />
           <Route path='/planMissions' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator']} component={<MissionPlanner />} />} />} />
           <Route path='/currentMissions' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor', 'Mission Viewer']} component={<CurrentMissions />} />} />} />
           <Route path='/honeypots' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator']} component={<HoneypotDashboard />} />} />} />

@@ -15,7 +15,7 @@ function MissionPlanner() {
   const [selectedMission, setSelectedMission] = useState(null);
   const [soldierPosition, setSoldierPosition] = useState(null);
   const [missionLocation, setMissionLocation] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState('/forest.png');
+  const [selectedLocation, setSelectedLocation] = useState('/desert.png');
   const [gcX, setGcX] = useState(693);
   const [gcY, setGcY] = useState(720);
   const [isSelectionsIncompleteModalOpen, setIsSelectionsIncompleteModalOpen] = useState(false);
@@ -241,9 +241,9 @@ function MissionPlanner() {
         setGcY(0.7031);
         break;
       default:
-        setSelectedLocation('/forest.png'); // Default case
-        setGcX(0.3867);
-        setGcY(0.7031);
+        setSelectedLocation('/desert.png'); // Default case
+        setGcX(0.1129);
+        setGcY(0.4102);
     }
   };
 
@@ -265,8 +265,8 @@ function MissionPlanner() {
         mission_config: JSON.stringify({
           location: selectedLocation,
           mission_type: selectedMission,
-          gcX: gcX,
-          gcY: gcY,
+          gcX: gcX * 1792,
+          gcY: gcY * 1024,
           destX: soldierPosition.x * 1792,
           destY: soldierPosition.y * 1024,
           selections: selections,

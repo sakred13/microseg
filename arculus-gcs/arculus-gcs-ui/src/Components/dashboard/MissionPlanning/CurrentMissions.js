@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './MissionPlanner.css';
 import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
-import DesertMission from './DesertMission';
+import MissionExecution from './MissionExecution';
 import ForestMission from './ForestMission';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
@@ -11,6 +11,7 @@ import Cookies from 'js-cookie';
 import DroneRemote from './DroneRemote';
 import LogConsole from './LogConsole';
 import AlertButton from './AlertButton';
+import ListMissions from './ListMissions';
 // import ListMissions from './ListMissions';
 
 function CurrentMissions(props) {
@@ -32,6 +33,7 @@ function CurrentMissions(props) {
   const [insufficientPrivileges, setInsufficientPrivileges] = useState(false);
   const [insufficientPrivilegesModalOpen, setInsufficientPrivilegesModalOpen] = useState(false);
   const [devicePrivileges, setDevicePrivileges] = useState({});
+  const [deviceName, setDeviceName] = useState('');
   const userType = props.userType;
   const userName = Cookies.get('user');
 
@@ -236,7 +238,7 @@ function CurrentMissions(props) {
         </button>
         <button
           className={activeTab === 'Mission Execution' ? 'tab-button active execute-button' : 'tab-button execute-button'}
-          onClick={switchToExecuteTab}
+          // onClick={switchToExecuteTab}
         >
           Mission Execution
         </button>
@@ -247,7 +249,7 @@ function CurrentMissions(props) {
         {activeTab === 'Missions' && (
           <div>
             {selectedMission && <p>Selected Mission Type: {selectedMission}</p>}
-            {/* <ListMissions authToken={encodeURIComponent(Cookies.get('jwtToken'))} userType={userType}/> */}
+            <ListMissions authToken={encodeURIComponent(Cookies.get('jwtToken'))} setDeviceName={setDeviceName} setSelectedLocation={setSelectedLocation} setActiveTab={setActiveTab} userType={userType} />
             <br />
           </div>
         )}
@@ -256,7 +258,7 @@ function CurrentMissions(props) {
           <><br></br>
             <div className='container'>
               <div className='tabs mission-container' style={{ border: '2px solid black', padding: '10px' }}>
-                {selectedLocation === '/desert.png' ? <DesertMission handleTabChange={handleTabChange} jwtToken={encodeURIComponent(Cookies.get('jwtToken'))} /> : <ForestMission handleTabChange={handleTabChange} />}
+                <MissionExecution handleTabChange={handleTabChange} deviceName={deviceName} selectedLocation={selectedLocation} jwtToken={encodeURIComponent(Cookies.get('jwtToken'))} />
                 <div className="log-container" style={{ width: '20%' }}>
                   <LogConsole />
                   <DroneRemote />
