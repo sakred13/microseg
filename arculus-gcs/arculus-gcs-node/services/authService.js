@@ -4,6 +4,12 @@ const jwt = require('jsonwebtoken');
 const { exec } = require('child_process');
 var ztMode = 'no_zt';
 var pids = {};
+var otps = {};
+const sgMail = require('@sendgrid/mail')
+const fs = require('fs');
+
+const apiKey = fs.readFileSync('configs/EMAIL_API_KEY.txt', 'utf8').trim();
+sgMail.setApiKey(apiKey);
 
 function getUserFromToken(token) {
     if (typeof token !== 'string') {
@@ -81,7 +87,7 @@ const getUserIdFromName = async (username) => {
 exports.getUserIdFromName = getUserIdFromName;
 
 exports.signup = (req, res) => {
-    const { jwtToken, username, email, password, role } = req.body;
+    const { jwtToken, username, email, password, role, domains } = req.body;
 
     // Check if the user has an admin role
     isUserOfType(getUserFromToken(jwtToken), ['Mission Creator'], (roleErr, isAdmin) => {
@@ -113,7 +119,7 @@ exports.signup = (req, res) => {
                     }
 
                     // Insert the user into the database
-                    pool.query('INSERT INTO user (username, email, role_id, password_hash) VALUES (?, ?, ?, ?)', [username, email, role_id, hash], (insertErr) => {
+                    pool.query('INSERT INTO user (username, email, role_id, password_hash, domains) VALUES (?, ?, ?, ?, ?)', [username, email, role_id, hash, domains], (insertErr) => {
                         if (insertErr) {
                             console.error(insertErr);
                             return res.status(500).json({ message: 'An Account is already present with the given email or username. Please try to login or create a new account using a different email.' });
@@ -128,6 +134,115 @@ exports.signup = (req, res) => {
         }
     });
 };
+
+exports.sendEmailForAuth = (req, res) => {
+    const { authToken } = req.body;
+    const username = getUserFromToken(authToken);
+    console.log('API KEY: ', process.env.SENDGRID_API_KEY);
+
+    isUserOfType(username, ['Mission Creator', 'Mission Supervisor', 'Mission Viewer'], (roleErr, isAuthorized) => {
+        if (roleErr) {
+            console.error(roleErr);
+            return res.status(500).json({ message: 'Internal Server Error' });
+        }
+
+        if (!isAuthorized) {
+            return res.status(403).json({ message: 'Unauthorized to perform this action' });
+        }
+
+        // Fetch role_id based on role_name
+        pool.query('SELECT email FROM user WHERE username = ?', [username], (selectErr, results) => {
+            if (selectErr) {
+                console.error(selectErr);
+                return res.status(500).json({ message: 'Internal Server Error' });
+            }
+
+            if (results.length === 0) {
+                // No email found
+                return res.status(400).json({ message: 'Error fetching email ID' });
+            }
+
+            const email = results[0].email;
+            const otp = Math.floor(100000 + Math.random() * 900000);
+            otps[username] = otp.toString();
+            const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
+    .email-container { background-color: #ffffff; max-width: 600px; margin: 0 auto; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 10px; }
+    .email-header { background: #007bff; color: #ffffff; padding: 10px; border-radius: 10px 10px 0 0; text-align: center; }
+    .email-body { padding: 20px; text-align: center; }
+    .otp-code { font-size: 24px; color: #333333; margin: 20px 0; padding: 10px; border: 1px dashed #007bff; display: inline-block; }
+    .footer { font-size: 12px; text-align: center; margin-top: 20px; color: #666; }
+</style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>Verify Your Identity</h1>
+        </div>
+        <div class="email-body">
+            <p>Hello ${username},</p>
+            <p>Your One-Time Password (OTP) for your password change request is:</p>
+            <div class="otp-code">${otp}</div>
+            <p>Please enter this code on the provided screen to proceed.</p>
+        </div>
+        <div class="footer">
+            <p>If you did not request this, please ignore this email or contact support if you have any concerns.</p>
+        </div>
+    </div>
+</body>
+</html>
+`;
+            const msg = {
+                to: email,
+                from: 'saketh.reddy1102@gmail.com', // Make sure this is a verified sender
+                subject: 'Arculus: Authentication for Password Change Request',
+                text: `Hello ${username}, your OTP is: ${otp}`, // Fallback plain text email
+                html: htmlContent
+            };
+
+            sgMail
+                .send(msg)
+                .then(() => {
+                    console.log('Email sent');
+                    res.status(200).json({ message: 'Email successfully sent' });
+                })
+                .catch((error) => {
+                    console.error(error);
+                    res.status(500).json({ message: 'Failed to send email' });
+                });
+        });
+    });
+};
+
+exports.verifyOtp = (req, res) => {
+    const { authToken, otp } = req.body;
+    const username = getUserFromToken(authToken);
+
+    isUserOfType(username, ['Mission Creator', 'Mission Supervisor', 'Mission Viewer'], (roleErr, isAuthorized) => {
+        if (roleErr) {
+            console.error(roleErr);
+            return res.status(500).json({ message: 'Internal Server Error' });
+        }
+
+        if (!isAuthorized) {
+            return res.status(403).json({ message: 'Unauthorized to perform this action' });
+        }
+
+        if(otps[username] === otp) {
+            return res.status(200).json({message: "Identity Verified"});
+        }
+
+        return res.status(403).json({message: "Incorrect OTP"});
+
+    });
+};
+
 
 exports.login = (req, res) => {
     const { username, password } = req.body;

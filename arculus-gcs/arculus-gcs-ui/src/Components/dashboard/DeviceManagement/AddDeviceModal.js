@@ -247,7 +247,7 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks: all
                                                 ))
                                             }
                                             renderInput={(params) => (
-                                                <TextField {...params} variant="outlined" label="Allowed Functions" fullWidth />
+                                                <TextField {...params} variant="outlined" label="Allowed Operations" fullWidth />
                                             )}
                                         />
                                     </Grid>

@@ -3,7 +3,6 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { API_URL } from '../../../config';
-
 const ListPolicies = ({ authToken }) => {
     const [policies, setPolicies] = useState([]);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -14,7 +13,8 @@ const ListPolicies = ({ authToken }) => {
         try {
             const response = await fetch(`${API_URL}/policy/getNetworkPolicies?authToken=${authToken}`);
             const data = await response.json();
-            setPolicies(data);
+            const filteredPolicies = data.filter(policy => policy.name !== 'default-deny');
+            setPolicies(filteredPolicies);
             setIsLoading(false);
         } catch (error) {
             console.error('Error fetching policies:', error);
@@ -90,10 +90,9 @@ const ListPolicies = ({ authToken }) => {
                                     <TableHead>
                                         <TableRow>
                                             <TableCell><b>Policy ID</b></TableCell>
-                                            <TableCell><b>Source Device</b></TableCell>
-                                            <TableCell><b>Dest Device</b></TableCell>
-                                            <TableCell><b>Ingress Port/Protocol</b></TableCell>
-                                            <TableCell><b>Egress Port/Protocol</b></TableCell>
+                                            <TableCell><b>Device</b></TableCell>
+                                            <TableCell><b>Ingress Rules</b></TableCell>
+                                            <TableCell><b>Egress Rules</b></TableCell>
                                             <TableCell><b>Edit</b></TableCell>
                                             <TableCell><b>Delete</b></TableCell>
                                         </TableRow>
@@ -102,10 +101,25 @@ const ListPolicies = ({ authToken }) => {
                                         {policies.map((policy, index) => (
                                             <TableRow key={index}>
                                                 <TableCell>{policy.name}</TableCell>
-                                                <TableCell>{policy.ingress && policy.ingress[0] && policy.ingress[0].from && policy.ingress[0].from[0] && policy.ingress[0].from[0].podSelector && policy.ingress[0].from[0].podSelector.matchLabels && policy.ingress[0].from[0].podSelector.matchLabels.app}</TableCell>
-                                                <TableCell>{policy.egress && policy.egress[0] && policy.egress[0].to && policy.egress[0].to[0] && policy.egress[0].to[0].podSelector && policy.egress[0].to[0].podSelector.matchLabels && policy.egress[0].to[0].podSelector.matchLabels.app}</TableCell>
-                                                <TableCell>{policy.ingress && policy.ingress[0] && policy.ingress[0].ports && policy.ingress[0].ports.map(port => `${port.port}/${port.protocol}`).join(', ')}</TableCell>
-                                                <TableCell>{policy.egress && policy.egress[0] && policy.egress[0].ports && policy.egress[0].ports.map(port => `${port.port}/${port.protocol}`).join(', ')}</TableCell>
+                                                <TableCell>{policy.podSelector.matchLabels.app}</TableCell>
+                                                <TableCell>
+                                                    {policy.ingress && policy.ingress.map((rule, idx) => (
+                                                        <div key={idx}>
+                                                            {rule.from && rule.from.map(from => (
+                                                                `${from.podSelector.matchLabels.app}: ${rule.ports.map(port => `${port.port}/${port.protocol}`).join(', ')}`
+                                                            ))}
+                                                        </div>
+                                                    ))}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {policy.egress && policy.egress.map((rule, idx) => (
+                                                        <div key={idx}>
+                                                            {rule.to && rule.to.map(to => (
+                                                                `${to.podSelector.matchLabels.app}: ${rule.ports.map(port => `${port.port}/${port.protocol}`).join(', ')}`
+                                                            ))}
+                                                        </div>
+                                                    ))}
+                                                </TableCell>
                                                 <TableCell>
                                                     <IconButton aria-label="edit">
                                                         <EditIcon />
@@ -118,7 +132,6 @@ const ListPolicies = ({ authToken }) => {
                                                 </TableCell>
                                             </TableRow>
                                         ))}
-
                                     </TableBody>
                                 </Table>
                             </TableContainer>

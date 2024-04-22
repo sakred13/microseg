@@ -6,25 +6,31 @@ import sys
 # File path for saving mission state
 MISSION_STATE_FILE = "mission_state.json"
 
-if len(sys.argv) != 7:
-    print("Usage: python script.py initX initY destX destY survIp supIp")
+if len(sys.argv) != 8:
+    print("Usage: python script.py initX initY destX destY survIp supIp relayIp")
     sys.exit(1)
 
 # Parse command-line arguments
 initX, initY, destX, destY = map(float, sys.argv[1:5])
-survIp, supIp = map(str, sys.argv[5:7])
+survIp, supIp, relayIp = map(str, sys.argv[5:8])
 
-survX, survY, supX, supY = initX, initY, initX, initY
+survX, survY, supX, supY, relayX, relayY = initX, initY, initX, initY, initX, initY
+relayDestX, relayDestY = 0, 0
 returnFlag = 1
 turnPointX, turnPointY = None, None
 enemyFound = False
 enemyX, enemyY = None, None
 survHome = False
-turnpointReached = False
+turnpointReached = False  
 survPath = []
 supPath = []
+relayPath = []
 enemyRadius = 0
 missionSuccess = False
+survCommLost = False
+supCommLost = False
+survCommEst = False
+supCommEst = False
 
 # Function to update mission state and store in JSON file
 def update_mission_state():
@@ -39,10 +45,17 @@ def update_mission_state():
         "enemyY": enemyY,
         "supPath": supPath,
         "survPath": survPath,
+        "relayPath": relayPath,
         "enemyRadius": enemyRadius,
         "destX": destX,
         "destY": destY,
-        "missionSuccess": missionSuccess
+        "missionSuccess": missionSuccess,
+        "survCommLost": survCommLost,
+        "supCommLost": supCommLost,
+        "relayX": relayX,
+        "relayY": relayY,
+        "survCommEst": survCommEst,
+        "supCommEst": supCommEst
         # Add other variables as needed
     }
     with open(MISSION_STATE_FILE, "w") as f:
@@ -50,6 +63,10 @@ def update_mission_state():
 
 def is_home(x, y, move_distance):
     distance = math.sqrt((x - initX)**2 + (y - initY)**2)
+    return returnFlag == -1 and distance <= move_distance
+
+def comm_established(x, y, move_distance):
+    distance = math.sqrt((x - relayDestX)**2 + (y - relayDestY)**2)
     return returnFlag == -1 and distance <= move_distance
 
 def turnpoint_reached(x, y, move_distance):
@@ -69,7 +86,8 @@ if response.ok:
     
     # Calculate the destination direction
     destinationDirection = (destY - initY) / (destX - initX) if (destX - initX) != 0 else float('inf')
-    
+    survMoveCommand = f'http://{survIp}:3050/commandToMove'
+    supMoveCommand = f'http://{supIp}:4050/commandToMove'
     # Start the movement loop
     while True:
 
@@ -78,26 +96,54 @@ if response.ok:
         print("survX: ", survX, ", survY: ", survY)  # Print surveillance drone coordinates
         
         # Make a POST API call every one second
-        response = requests.post(f'http://{survIp}:3050/commandToMove', json={'slope': destinationDirection, 'distance': 40 * returnFlag})
-        response_data = response.json()
-        
-        if response_data.get('message') == "Moved":
-            # Update coordinates if moved
-            survX, survY = response_data.get('X_COORD'), response_data.get('Y_COORD')
-            destinationDirection = (destY - survY) / (destX - survX) if (destX - survX) != 0 else float('inf')
-            
-        elif response_data.get('message') == "Found air defense":
-            # Update turn point and enemy coordinates if air defense is found
-            print("Found Air Defense")
-            returnFlag = -1
-            turnPointX, turnPointY = response_data.get('TURN_POINT_X'), response_data.get('TURN_POINT_Y')
-            enemyX, enemyY, enemyRadius = response_data.get('ENEMY_X'), response_data.get('ENEMY_Y'), response_data.get('ENEMY_RADIUS')
-            enemyFound = True
-            
-        elif response_data.get('message') == "Reached Destination":
-            # Update flag if destination is reached
-            print("Reached Destination")
-            returnFlag = -1
+        try:
+            response = requests.post(survMoveCommand, json={'slope': destinationDirection, 'distance': 40 * returnFlag})
+            response_data = response.json()
+            if response.ok:
+                if response_data.get('message') == "Moved":
+                    # Update coordinates if moved
+                    survX, survY = response_data.get('X_COORD'), response_data.get('Y_COORD')
+                    destinationDirection = (destY - survY) / (destX - survX) if (destX - survX) != 0 else float('inf')
+                    
+                elif response_data.get('message') == "Found air defense":
+                    # Update turn point and enemy coordinates if air defense is found
+                    print("Found Air Defense")
+                    returnFlag = -1
+                    turnPointX, turnPointY = response_data.get('TURN_POINT_X'), response_data.get('TURN_POINT_Y')
+                    enemyX, enemyY, enemyRadius = response_data.get('ENEMY_X'), response_data.get('ENEMY_Y'), response_data.get('ENEMY_RADIUS')
+                    enemyFound = True
+                    
+                elif response_data.get('message') == "Reached Destination":
+                    # Update flag if destination is reached
+                    print("Reached Destination")
+                    returnFlag = -1
+
+        except requests.exceptions.ConnectionError as e:
+            print("Connection error occurred:", e)
+        # else:
+            survCommLost = True
+            relayDestX, relayDestY = (initX + survX)/2, (initY + survY)/2
+            lastFoundDirection = (relayDestY - initY) / (relayDestX - initX) if (relayDestX - initX) != 0 else float('inf')
+            while True:
+                relayPath.append({'x': relayX, 'y': relayY})
+
+                print("relayX: ", relayX, ", relayY: ", relayY)  # Print surveillance drone coordinates
+                
+                # Make a POST API call every one second
+                response = requests.post(f'http://{relayIp}:5050/commandToMove', json={'slope': lastFoundDirection, 'distance': 40})
+                response_data = response.json()
+                print('Response from Surveillance Drone Received')
+
+                if response_data.get('message') == "Moved":
+                    # Update coordinates if moved
+                    relayX, relayY = response_data.get('X_COORD'), response_data.get('Y_COORD')
+                
+                if comm_established(relayX, relayY, 40):
+                    survCommEst = True
+                    print("Relay Communication Established")
+                    survMoveCommand = f'http://{relayIp}:5050/relayBridge?dest={survIp}:3050'
+                    break
+                update_mission_state()
         
         if is_home(survX, survY, 40):
             print("Surveillance Drone reached home")
@@ -127,15 +173,40 @@ if response.ok:
             update_mission_state()
             break
         
-        response = requests.post(f'http://{supIp}:4050/commandToMove', json={'slope': turnPointDirection, 'distance': 40})
-        response_data = response.json()
-        if response_data.get('message') == "Moved":
-            # Update coordinates if moved
-            supX, supY = response_data.get('X_COORD'), response_data.get('Y_COORD')
-            if turnpointReached or enemyFound == False:
-                turnPointDirection = (destY - supY) / (destX - supX) if (destX - supX) != 0 else float('inf')
-            else:
-                turnPointDirection = (turnPointY - supY) / (turnPointX - supX) if (turnPointX - supX) != 0 else float('inf')
+        response = requests.post(supMoveCommand, json={'slope': turnPointDirection, 'distance': 40})
+        if response.ok:
+            print('Response from Supply Drone Received')
+            response_data = response.json()
+            if response_data.get('message') == "Moved":
+                # Update coordinates if moved
+                supX, supY = response_data.get('X_COORD'), response_data.get('Y_COORD')
+                if turnpointReached or enemyFound == False:
+                    turnPointDirection = (destY - supY) / (destX - supX) if (destX - supX) != 0 else float('inf')
+                else:
+                    turnPointDirection = (turnPointY - supY) / (turnPointX - supX) if (turnPointX - supX) != 0 else float('inf')
+
+        else:
+            supCommLost = True
+            relayDestX, relayDestY = (initX + supX)/2, (initY + supY)/2
+            lastFoundDirection = (relayDestY - initY) / (relayDestX - initX) if (relayDestX - initX) != 0 else float('inf')
+            while True:
+                relayPath.append({'x': relayX, 'y': relayY})
+
+                print("relayX: ", relayX, ", relayY: ", relayY)  # Print surveillance drone coordinates
+                
+                # Make a POST API call every one second
+                response = requests.post(f'http://{relayIp}:5050/commandToMove', json={'slope': lastFoundDirection, 'distance': 40})
+                response_data = response.json()
+                
+                if response_data.get('message') == "Moved":
+                    # Update coordinates if moved
+                    relayX, relayY = response_data.get('X_COORD'), response_data.get('Y_COORD')
+                
+                if comm_established(relayX, relayY, 40):
+                    supCommEst = True
+                    print("Relay Communication Established")
+                    supMoveCommand = f'http://{relayIp}:5050/relayBridge?dest={supIp}:4050'
+                    break
         
 
         # Sleep for some time to avoid too frequent API calls

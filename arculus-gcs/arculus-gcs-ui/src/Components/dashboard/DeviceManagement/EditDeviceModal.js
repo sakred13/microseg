@@ -214,7 +214,7 @@ const EditDeviceModal = ({ isOpen, setIsOpen, deviceDetails, allowedTasks: allow
                                                 <TextField
                                                     {...params}
                                                     variant="outlined"
-                                                    label="Allowed Functions"
+                                                    label="Allowed Operations"
                                                     fullWidth
                                                     error={selectedFunctions.length === 0}
                                                     helperText={selectedFunctions.length === 0 ? 'Allowed Functions are required' : ''}

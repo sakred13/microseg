@@ -1,9 +1,8 @@
 const { isUserOfType, getUserFromToken } = require('./authService');
 const pool = require('../modules/arculusDbConnection');
 
-// Route to handle user update without changing password
 exports.updateUser = (req, res) => {
-    const { authToken, user, updated_username, email_id, role } = req.body;
+    const { authToken, user, updated_username, email_id, role, domains } = req.body;
 
     const username = getUserFromToken(authToken);
 
@@ -44,10 +43,10 @@ exports.updateUser = (req, res) => {
                     return res.status(404).json({ message: 'User not found' });
                 }
 
-                // Update the user record with the new information, including the role_id
+                // Update the user record with the new information, including the role_id and domains
                 pool.query(
-                    'UPDATE user SET username = ?, email = ?, role_id = ? WHERE username = ?',
-                    [updated_username, email_id, role_id, user],
+                    'UPDATE user SET username = ?, email = ?, role_id = ?, domains = ? WHERE username = ?',
+                    [updated_username, email_id, role_id, domains, user],
                     (updateErr) => {
                         if (updateErr) {
                             console.error(updateErr);
@@ -117,7 +116,7 @@ exports.getUsers = (req, res) => {
                 const userId = userRows[0].user_id;
 
                 connection.query(`
-                    SELECT u.username, u.email, u.user_id, r.role_name 
+                    SELECT u.username, u.email, u.user_id, r.role_name, u.domains
                     FROM user u
                     JOIN role r ON u.role_id = r.role_id
                 `, function (err, rows) {
@@ -130,6 +129,37 @@ exports.getUsers = (req, res) => {
                         res.json(rows);
                     }
                 });
+            });
+        });
+    });
+};
+
+exports.getCurrentUser = (req, res) => {
+    const { authToken } = req.query;
+    const username = getUserFromToken(authToken);
+
+    pool.getConnection(function (err, connection) {
+        if (err) throw err;
+
+        connection.beginTransaction(function (err) {
+            if (err) throw err;
+
+            connection.query('SELECT u.user_id, u.username, u.email, u.domains, r.role_name FROM user u join role r on u.role_id=r.role_id WHERE username = ? LIMIT 1', [username], function (err, userRows) {
+                if (err) {
+                    connection.rollback(function () {
+                        throw err;
+                    });
+                }
+
+                if (userRows.length == 0 || userRows == undefined || !userRows[0].user_id) {
+                    res.status(400).send('User not found');
+                    connection.rollback(function () {
+                        connection.release();
+                    });
+                    return;
+                }
+                res.json(userRows[0]);
+                return;
             });
         });
     });

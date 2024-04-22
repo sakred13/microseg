@@ -17,6 +17,14 @@
                     "Supply Delivery Drone::Freight Drone": [
                         "receive_command",
                         "send_posdata"
+                    ],
+                    "Communication Relay Drone::Communication Relay Drone": [
+                        "receive_command",
+                        "send_command",
+                        "send_video",
+                        "send_posdata",
+                        "receive_posdata",
+                        "receive_video"
                     ]
                 }
             ]

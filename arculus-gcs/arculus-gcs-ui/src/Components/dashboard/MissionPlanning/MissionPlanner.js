@@ -10,6 +10,13 @@ import missionSettings from './missionSettings.json';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 
+const missionDomainMapping = {
+  'Stealthy Reconnaissance and Resupply': 'Covert Operations Support',
+  'Mine-Aware Search and Rescue': 'Explosive Ordnance Reconnaissance',
+  'Infrastructure Inspection': 'Structural Integrity Assessment',
+  'Disaster Assessment and Recovery': 'Crisis Response and Restoration',
+};
+
 function MissionPlanner() {
   const [activeTab, setActiveTab] = useState('Select Mission Type');
   const [selectedMission, setSelectedMission] = useState(null);
@@ -67,15 +74,22 @@ function MissionPlanner() {
         return response.json();
       })
       .then((users) => {
-        const supervisors = users.filter(user => user.role_name === 'Mission Supervisor');
-        const viewers = users.filter(user => user.role_name === 'Mission Viewer');
+        const requiredDomain = missionDomainMapping[selectedMission];
+        const supervisors = users.filter(user =>
+          user.role_name === 'Mission Supervisor' &&
+          (user.domains && user.domains.split(',').includes(requiredDomain))
+        );
+        const viewers = users.filter(user =>
+          user.role_name === 'Mission Viewer' &&
+          (user.domains && user.domains.split(',').includes(requiredDomain))
+        );
         setSupervisorsList(supervisors);
         setViewersList(viewers);
       })
       .catch((error) => {
         console.error('Error fetching users:', error);
       });
-  }, []);
+  }, [selectedMission]); // Ensure this effect runs whenever selectedMission changes
 
   useEffect(() => {
     const defaultSelections = {};

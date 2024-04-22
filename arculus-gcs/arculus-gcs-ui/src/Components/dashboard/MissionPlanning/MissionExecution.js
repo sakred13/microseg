@@ -14,6 +14,13 @@ const MissionExecution = (props) => {
     const [supplyPath, setSupplyPath] = useState([]);
     const [showSupplyDrone, setShowSupplyDrone] = useState(false);
 
+    const [relayPosition, setRelayPosition] = useState({ x: 202, y: 420 });
+    const [relayPath, setRelayPath] = useState([]);
+    const [showRelayDrone, setShowRelayDrone] = useState(false);
+    const [survCommEstablished, setSurvCommEstablished] = useState(false);
+    const [supCommEstablished, setSupCommEstablished] = useState(false);
+    const [survCommLost, setSurvCommLost] = useState(false);
+    const [supCommLost, setSupCommLost] = useState(false);
     // State for air defense
     const [showAirDefense, setShowAirDefense] = useState(false);
     const [showThreatText, setShowThreatText] = useState(true);
@@ -54,6 +61,13 @@ const MissionExecution = (props) => {
                     setEndPosition({ x: data.destX, y: data.destY });
                     setShowSupplyDrone(data.survHome);
                     setShowMissionAccomplished(data.missionSuccess);
+                    setRelayPosition({ x: data.relayX, y: data.relayY });
+                    setRelayPath(data.relayPath);
+                    setShowRelayDrone(data.survCommLost || data.supCommLost);
+                    setSurvCommLost(data.survCommLost);
+                    setSupCommLost(data.supCommLost);
+                    setSurvCommEstablished(data.survCommEst);
+                    setSupCommEstablished(data.supCommEst);
                 })
                 .catch(error => {
                     console.error('Error fetching mission state:', error);
@@ -86,6 +100,7 @@ const MissionExecution = (props) => {
 
     const pathString = path.map(p => `${p.x},${p.y}`).join(' ');
     const supplyPathString = supplyPath.map(p => `${p.x},${p.y}`).join(' ');
+    const relayPathString = relayPath.map(p => `${p.x},${p.y}`).join(' ');
     const searchlightPosition = {
         x: position.x + 30,
         y: position.y - 20
@@ -113,6 +128,15 @@ const MissionExecution = (props) => {
                 </>
             )}
 
+            {showRelayDrone && (
+                <>
+                    <polyline points={relayPathString} fill="none" stroke="cyan" strokeWidth="2" strokeDasharray="5,5" />
+                    <image href="drone.png" x={relayPosition.x} y={relayPosition.y} width="70" height="70" />
+                    <rect x={relayPosition.x - 25} y={relayPosition.y + 60} width="150" height="30" fill="black" stroke="white" strokeWidth="2" rx="15" ry="15" />
+                    <text x={relayPosition.x + 50} y={relayPosition.y + 80} fill="white" fontSize="15" textAnchor="middle" fontWeight="bold">Comm Relay Drone</text>
+                </>
+            )}
+
             {showSupplyDrone && (
                 <>
                     <polyline points={supplyPathString} fill="none" stroke="blue" strokeWidth="2" strokeDasharray="5,5" />
@@ -136,6 +160,25 @@ const MissionExecution = (props) => {
 
                 </>
             )}
+            <foreignObject x="80%" y="0%" width="20%" height="20%">
+                <div style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '10px' }}>
+                    <div style={{ color: 'yellow' }}>
+                        Ground Control Station: {groundStation.x ? `${groundStation.x.toFixed(2)}, ${groundStation.y.toFixed(2)}` : "Unknown"}
+                    </div>
+                    <div style={{ color: 'lightgreen' }}>
+                        Surveillance Drone: {position.x ? `${position.x.toFixed(2)}, ${position.y.toFixed(2)}` : "Unknown"}
+                    </div>
+                    <div style={{ color: 'lightblue' }}>
+                        Supply Drone: {supplyDronePosition.x ? `${supplyDronePosition.x.toFixed(2)}, ${supplyDronePosition.y.toFixed(2)}` : "Unknown"}
+                    </div>
+                    <div style={{ color: 'pink' }}>
+                        Destination: {endPosition.x ? `${endPosition.x.toFixed(2)}, ${endPosition.y.toFixed(2)}` : "Unknown"}
+                    </div>
+                    <div style={{ color: 'red' }}>
+                        Enemy Air Defense: {showAirDefense ? `${airDefensePosition.x.toFixed(2)}, ${airDefensePosition.y.toFixed(2)}` : "Unknown"}
+                    </div>
+                </div>
+            </foreignObject>
         </svg>
             {showMissionAccomplished && (
                 <div style={missionAccomplishedStyle}>

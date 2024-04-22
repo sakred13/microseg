@@ -13,6 +13,7 @@ X_COORD = 5.1
 Y_COORD = 6
 TURN_POINT_X = None
 TURN_POINT_Y = None
+blocklist = []  # Initialize an empty list for blocked IP addresses
 
 def find_circle_line_intersections(circle_center, radius, point1, point2):
     (h, k), r = circle_center, radius
@@ -165,5 +166,20 @@ def command_to_move():
 def get_coordinates():
     return jsonify({"X_COORD": X_COORD, "Y_COORD": Y_COORD})
     
+@app.route('/addToBlocklist', methods=['POST'])
+def add_to_blocklist():
+    ip = request.json.get('ip')
+    if ip and ip not in blocklist:
+        blocklist.append(ip)
+        return jsonify({"message": f"{ip} added to blocklist"}), 200
+    else:
+        return jsonify({"message": "Invalid IP or already in blocklist"}), 400
+
+@app.before_request
+def check_ip_blocklist():
+    requester_ip = request.remote_addr
+    if requester_ip in blocklist:
+        return jsonify({"message": "Forbidden access"}), 403
+        
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=3050)

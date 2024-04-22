@@ -1,7 +1,8 @@
 const { isUserOfType, getUserFromToken, getUserIdFromName } = require('./authService');
 const pool = require('../modules/arculusDbConnection');
 const fs = require('fs');
-const { execSync } = require('child_process');
+const { execSync, exec } = require('child_process');
+const { addNetworkPolicyDuringMission } = require('./policyService');
 
 // Define global variables
 let gcX = null;
@@ -17,6 +18,7 @@ let survY = null;
 let supplyX = null;
 let supplyY = null;
 let missionRunning = false;
+var ipCache = [];
 
 exports.startMission = (req, res) => {
     const { authToken, gcX: newGcX, gcY: newGcY, destX: newDestX, destY: newDestY, survDroneName: newSurvDroneName, survDroneIp: newSurvDroneIp, supplyDroneName: newSupplyDroneName, supplyDroneIp: newSupplyDroneIp } = req.body;
@@ -58,7 +60,7 @@ exports.startMission = (req, res) => {
                 survY += 1;
 
                 // Call the function recursively after 2 seconds
-                setTimeout(incrementCoordinates, 2000);
+                setTimeout(incrementCoordinates, 3000);
             }
         };
 
@@ -515,10 +517,8 @@ exports.getMissionState = (req, res) => {
     }
 };
 
-const { exec } = require('child_process');
-
 exports.executeStealthyReconAndResupply = (req, res) => {
-    const { gcX, gcY, destX, destY, controller, supplyDrone, surveillanceDrone, missionId } = req.body;
+    const { gcX, gcY, destX, destY, controller, supplyDrone, surveillanceDrone, relayDrone, missionId } = req.body;
 
     const executeKubectlExecAndGetIP = (podName, callback) => {
         exec(`kubectl get pod ${podName} -n default -o json`, (error, stdout, stderr) => {
@@ -538,48 +538,75 @@ exports.executeStealthyReconAndResupply = (req, res) => {
     executeKubectlExecAndGetIP(supplyDrone, (error, supplyDroneIP) => {
         if (error) {
             console.error('Error fetching supplyDrone IP:', error);
+            res.status(500).json({ message: 'Failed to fetch IP for supply drone.' });
             return;
         }
 
         executeKubectlExecAndGetIP(surveillanceDrone, (error, surveillanceDroneIP) => {
             if (error) {
                 console.error('Error fetching surveillanceDrone IP:', error);
+                res.status(500).json({ message: 'Failed to fetch IP for surveillance drone.' });
                 return;
             }
-
-            const updateQueryInProgress = 'UPDATE mission SET state = ? WHERE mission_id = ?';
-            pool.query(updateQueryInProgress, ['IN EXECUTION', missionId], (error, results) => {
+            executeKubectlExecAndGetIP(relayDrone, (error, relayDroneIP) => {
                 if (error) {
-                    console.error('Database Error:', error);
+                    console.error('Error fetching relayDrone IP:', error);
+                    res.status(500).json({ message: 'Failed to fetch IP for relayDrone.' });
                     return;
                 }
-                console.log('Mission status updated to IN EXECUTION.');
 
-                const command = `kubectl exec ${controller} -n default -- python3 controller.py ${gcX} ${gcY} ${destX} ${destY} ${surveillanceDroneIP} ${supplyDroneIP}`;
-                console.log('Executing command:', command);
-
-                exec(command, (error, stdout, stderr) => {
+                const updateQueryInProgress = 'UPDATE mission SET state = ? WHERE mission_id = ?';
+                pool.query(updateQueryInProgress, ['IN EXECUTION', missionId], (error, results) => {
                     if (error) {
-                        console.error('Error:', stderr || error);
-                        const updateQueryFailed = 'UPDATE mission SET state = ? WHERE mission_id = ?';
-                        pool.query(updateQueryFailed, ['FAILED', missionId], (err, results) => {
-                            if (err) {
-                                console.error('Database Error:', err);
-                            } else {
-                                console.log('Mission status updated to FAILED.');
-                            }
-                        });
+                        console.error('Database Error:', error);
+                        res.status(500).json({ message: 'Database error while updating mission status.' });
                         return;
                     }
-                    console.log('Script executed successfully:', stdout);
-                    
-                    const updateQuerySuccessful = 'UPDATE mission SET state = ? WHERE mission_id = ?';
-                    pool.query(updateQuerySuccessful, ['SUCCESSFUL', missionId], (err, results) => {
-                        if (err) {
-                            console.error('Database Error:', err);
-                        } else {
-                            console.log('Mission status updated to SUCCESSFUL.');
-                        }
+                    console.log('Mission status updated to IN EXECUTION.');
+
+                    Promise.all([
+                        addNetworkPolicyDuringMission(surveillanceDrone, [{"device": controller, "port": "3050", "protocol": 'TCP'}, {"device": relayDrone, "port": "3050", "protocol": 'TCP'}], []),
+                        addNetworkPolicyDuringMission(supplyDrone, [{"device": controller, "port": "4050", "protocol": 'TCP'}, {"device": relayDrone, "port": "4050", "protocol": 'TCP'}], []),
+                        addNetworkPolicyDuringMission(relayDrone, [{"device": controller, "port": "5050", "protocol": 'TCP'}], []),
+                        addNetworkPolicyDuringMission(controller, [], [{"device": relayDrone, "port": "5050", "protocol": 'TCP'}, {"device": surveillanceDrone, "port": "3050", "protocol": 'TCP'}, {"device": supplyDrone, "port": "4050", "protocol": 'TCP'}])
+                    ]).then(() => {
+                        // Introduce a 2-second delay before executing the next steps
+                        ipCache[relayDrone] = relayDroneIP;
+                        ipCache[surveillanceDrone] = surveillanceDroneIP;
+                        ipCache[supplyDrone] = supplyDroneIP;
+                        const command = `kubectl exec ${controller} -n default -- python3 controller.py ${gcX} ${gcY} ${destX} ${destY} ${surveillanceDroneIP} ${supplyDroneIP} ${relayDroneIP}`;
+                        console.log('Executing command:', command);
+
+                        exec(command, (error, stdout, stderr) => {
+                            if (error) {
+                                console.error('Error executing command:', stderr || error);
+                                const updateQueryFailed = 'UPDATE mission SET state = ? WHERE mission_id = ?';
+                                pool.query(updateQueryFailed, ['FAILED', missionId], (err, results) => {
+                                    if (err) {
+                                        console.error('Database Error:', err);
+                                        res.status(500).json({ message: 'Database error while updating mission to FAILED.' });
+                                    } else {
+                                        console.log('Mission status updated to FAILED.');
+                                        res.status(200).json({ message: 'Mission failed during execution.' });
+                                    }
+                                });
+                                return;
+                            }
+                            console.log('Script executed successfully:', stdout);
+                            const updateQuerySuccessful = 'UPDATE mission SET state = ? WHERE mission_id = ?';
+                            pool.query(updateQuerySuccessful, ['SUCCESSFUL', missionId], (err, results) => {
+                                if (err) {
+                                    console.error('Database Error:', err);
+                                    res.status(500).json({ message: 'Database error while updating mission to SUCCESSFUL.' });
+                                } else {
+                                    console.log('Mission status updated to SUCCESSFUL.');
+                                    // res.status(200).json({ message: 'Mission executed successfully.' });
+                                }
+                            });
+                        });
+                    }).catch((error) => {
+                        console.error('Failed to apply network policies:', error);
+                        // res.status(500).json({ message: 'Failed to apply network policies.' });
                     });
                 });
             });
@@ -587,4 +614,48 @@ exports.executeStealthyReconAndResupply = (req, res) => {
     });
 };
 
+
+exports.simulateBadNetwork = (req, res) => {
+    const { blockDevice, hostDevice, hostPort } = req.body;
+
+    const executeKubectlExecAndGetIP = (device, callback) => {
+        const command = `kubectl get pod ${device} -n default -o json`;
+        exec(command, (error, stdout, stderr) => {
+            if (error) {
+                console.error('Error:', stderr || error);
+                callback(error);
+                return;
+            }
+            try {
+                const podInfo = JSON.parse(stdout);
+                const podIP = podInfo.status.podIP;
+                callback(null, podIP);
+            } catch (parseError) {
+                callback(parseError);
+            }
+        });
+    };
+
+    // Start the process and send an initial response
+    res.status(200).json({ message: 'Network simulation initiated' });
+
+    executeKubectlExecAndGetIP(blockDevice, (error, blockDeviceIP) => {
+        if (error) {
+            console.error('Error fetching blockDevice IP:', error);
+            return res.status(500).json({ message: 'Failed to fetch IP for block device.' });
+        }
+
+        console.log('Block device IP:', blockDeviceIP);
+        const curlCommand = `kubectl exec ${hostDevice} -n default -- wget --header="Content-Type: application/json" --post-data='{"ip": "${blockDeviceIP}"}' http://localhost:${hostPort}/addToBlocklist -O -`;
+
+        exec(curlCommand, (error, stdout, stderr) => {
+            if (error) {
+                console.error('Error executing curl command:', stderr || error);
+                return res.status(500).json({ message: 'Failed to add IP to blocklist.', error: stderr || error });
+            }
+            console.log('Curl response:', stdout);
+            res.status(200).json({ message: 'Block device IP successfully added to blocklist', response: stdout });
+        });
+    });
+};
 

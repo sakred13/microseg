@@ -1,7 +1,7 @@
 {
-    "host": "viman-gcs_mysql",
-    "user": "root",
-    "password": "vimanlab",
-    "database": "policymanager",
+    "host": "viman-",
+    "user": "",
+    "password": "",
+    "database": "",
     "connectionLimit": 10
   }

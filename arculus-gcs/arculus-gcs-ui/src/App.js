@@ -20,6 +20,7 @@ import DownloadTools from './Components/DownloadTools';
 import UtilizationGraphs from './Components/dashboard/UtilizationGraphs';
 import CurrentMissions from './Components/dashboard/MissionPlanning/CurrentMissions';
 import ManagePolicies from './Components/dashboard/PolicyManagement/ManagePolicies';
+import AccountDashboard from './Components/dashboard/UserManagement/AccountDashboard';
 
 function App() {
 
@@ -41,6 +42,7 @@ function App() {
           <Route path='/attackMetrics' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor', 'Mission Viewer']} component={<MetricsDashboard />} />} />} />
           <Route path='/blacklist' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor']} component={<Blacklist />} />} />} />
           <Route path='/dashboard' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor', 'Mission Viewer']} component={<UtilizationGraphs />} />} />} />
+          <Route path='/account' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor', 'Mission Viewer']} component={<AccountDashboard />} />} />} />
 
         </Routes>
       </DashboardProvider>

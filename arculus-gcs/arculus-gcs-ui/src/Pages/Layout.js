@@ -240,7 +240,12 @@ export function Layout(props) {
                 </ListItemButton>
               )}
               {userType && ['Mission Creator', 'Mission Supervisor', 'Mission Viewer'].includes(userType) && (
-                <ListItemButton>
+                <ListItemButton onClick={() => handleManageClick('/account')} selected={location.pathname === '/account'} sx={{
+                  backgroundColor: location.pathname === '/account' ? '#f0f0f0' : 'transparent',
+                  '&:hover': {
+                    backgroundColor: '#f0f0f0',
+                  },
+                }}>
                   <ListItemIcon>
                     <AccountCircleIcon />
                   </ListItemIcon>

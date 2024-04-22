@@ -13,6 +13,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { MenuItem } from '@mui/material';
 import Cookies from 'js-cookie';
 import { API_URL } from '../../../config';
+import Chip from '@mui/material/Chip';
+import Autocomplete from '@mui/material/Autocomplete';
 
 const customStyles = {
     position: 'absolute',
@@ -40,8 +42,9 @@ const successStyles = {
 
 const defaultTheme = createTheme();
 
-const EditUserModal = ({ isOpen, setIsOpen, username, email, role }) => {
+const EditUserModal = ({ isOpen, setIsOpen, username, email, role, domains }) => {
     const [isSuccess, setIsSuccess] = useState(false);
+    const [selectedDomains, setSelectedDomains] = useState(domains ? domains.split(',') : []);
     const [formData, setFormData] = useState({
         username: username || '',
         email: email || '',
@@ -52,20 +55,21 @@ const EditUserModal = ({ isOpen, setIsOpen, username, email, role }) => {
     const validateForm = () => {
         const newErrors = {};
 
-        // Validate username
         if (!formData.username.trim() || /\s/.test(formData.username) || /[^a-zA-Z0-9]/.test(formData.username)) {
             newErrors.username = 'Invalid username';
         }
 
-        // Validate email
         if (!formData.email.trim()) {
             newErrors.email = 'Email is required';
         }
 
-        // Validate role
         if (!formData.role) {
             newErrors.role = 'Role is required';
         }
+
+        if (selectedDomains.length === 0) {
+            newErrors.domains = 'At least one domain must be selected';
+        }        
 
         setErrors(newErrors);
 
@@ -76,8 +80,9 @@ const EditUserModal = ({ isOpen, setIsOpen, username, email, role }) => {
         event.preventDefault();
 
         if (validateForm()) {
+            const domainsString = selectedDomains.join(',');
+
             try {
-                // Actual API call using fetch
                 const response = await fetch(`${API_URL}/user/updateUser`, {
                     method: 'POST',
                     headers: {
@@ -89,6 +94,7 @@ const EditUserModal = ({ isOpen, setIsOpen, username, email, role }) => {
                         updated_username: formData.username,
                         email_id: formData.email,
                         role: formData.role,
+                        domains: domainsString,
                     }),
                 });
 
@@ -102,11 +108,9 @@ const EditUserModal = ({ isOpen, setIsOpen, username, email, role }) => {
                     }, 3000);
                 } else {
                     console.error('Error updating user:', data.message);
-                    // Handle error scenarios here
                 }
             } catch (error) {
                 console.error('Error submitting form:', error);
-                // Handle error scenarios here
             }
         }
     };
@@ -199,6 +203,33 @@ const EditUserModal = ({ isOpen, setIsOpen, username, email, role }) => {
                                                 <MenuItem value="Mission Supervisor">Mission Supervisor</MenuItem>
                                                 <MenuItem value="Mission Viewer">Mission Viewer</MenuItem>
                                             </TextField>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Autocomplete
+                                                multiple
+                                                id="domains"
+                                                options={["Explosive Ordnance Reconnaissance", "Covert Operations Support", "Structural Integrity Assessment", "Crisis Response and Restoration"]}
+                                                getOptionLabel={(option) => option}
+                                                value={selectedDomains}
+                                                onChange={(event, newValue) => {
+                                                    setSelectedDomains(newValue);
+                                                }}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        variant="outlined"
+                                                        label="Domains"
+                                                        placeholder="Select Domains"
+                                                        error={Boolean(errors.domains)}
+                                                        helperText={errors.domains}
+                                                    />
+                                                )}
+                                                renderTags={(value, getTagProps) =>
+                                                    value.map((option, index) => (
+                                                        <Chip key={index} label={option} {...getTagProps({ index })} />
+                                                    ))
+                                                }
+                                            />
                                         </Grid>
                                     </Grid>
                                     <Button

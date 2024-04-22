@@ -122,7 +122,7 @@ const ManageUsers = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                minHeight: '90vh', // Ensure a minimum height for the content
+                minHeight: '90vh',
             }}
         >
             <Typography variant="h4" gutterBottom>
@@ -132,28 +132,30 @@ const ManageUsers = () => {
                 <AddUserModal isOpen={isModalOpen} setIsOpen={handleModalClose} />
             )}
             {isEditModalOpen && (
-                <EditUserModal isOpen={isEditModalOpen} setIsOpen={handleEditModalClose} username={editUser[0]} email={editUser[1]} role={editUser[2]} />
+                <EditUserModal isOpen={isEditModalOpen} setIsOpen={handleEditModalClose} username={editUser[0]} email={editUser[1]} role={editUser[2]} domains={editUser[3]} />
             )}
-            <TableContainer component={Paper} style={{ maxWidth: '70%' }}>
+            <TableContainer component={Paper} style={{ maxWidth: '90%' }}>
                 <Table>
                     <TableHead>
                         <TableRow>
                             <TableCell><b>User Name</b></TableCell>
                             <TableCell><b>E-mail ID</b></TableCell>
                             <TableCell><b>Role</b></TableCell>
+                            <TableCell><b>Domains</b></TableCell>
                             <TableCell><b>Action</b></TableCell>
                             <TableCell><b>Action</b></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {users.map((user) => (
-                            <TableRow key={user.id}>
+                            <TableRow key={user.user_id}>
                                 <TableCell>{user.username}</TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell>{user.role_name}</TableCell>
+                                <TableCell>{user.domains ? user.domains.split(',').map((domain, index) => ( <div key={index}>{domain}</div>)) : 'None'}</TableCell>
                                 <TableCell>
                                     {user.username !== Cookies.get('user') && (
-                                        <Button startIcon={<EditIcon />} onClick={() => { setEditUser([user.username, user.email, user.role_name]); setIsEditModalOpen(true) }} style={{ cursor: 'pointer' }}>
+                                        <Button startIcon={<EditIcon />} onClick={() => { setEditUser([user.username, user.email, user.role_name, user.domains]); setIsEditModalOpen(true); }} style={{ cursor: 'pointer' }}>
                                             <font color="black">Edit</font>
                                         </Button>
                                     )}

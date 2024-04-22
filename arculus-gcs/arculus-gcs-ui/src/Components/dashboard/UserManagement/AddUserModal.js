@@ -59,29 +59,28 @@ const AddUserModal = ({ isOpen, setIsOpen }) => {
     const validateForm = () => {
         const newErrors = {};
 
-        // Validate username
         if (!formData.username.trim() || /\s/.test(formData.username) || /[^a-zA-Z0-9]/.test(formData.username)) {
             newErrors.username = 'Invalid username';
         }
 
-        // Validate email
         if (!formData.email.trim()) {
             newErrors.email = 'Email is required';
         }
 
-        // Validate role
         if (!formData.role) {
             newErrors.role = 'Role is required';
         }
 
-        // Validate password
         if (formData.password.length < 8) {
             newErrors.password = 'Password must be at least 8 characters long';
         }
 
-        // Validate re-entered password
         if (formData.password !== formData.retype_password) {
             newErrors.retype_password = 'Passwords do not match';
+        }
+
+        if (selectedDomains.length === 0) {
+            newErrors.domains = 'At least one domain must be selected';
         }
 
         setErrors(newErrors);
@@ -93,6 +92,9 @@ const AddUserModal = ({ isOpen, setIsOpen }) => {
         event.preventDefault();
 
         if (validateForm()) {
+
+            const domainsString = selectedDomains.join(',');
+
             // Create an object with the data to be sent to the API
             const userData = {
                 jwtToken: Cookies.get("jwtToken"),
@@ -100,6 +102,7 @@ const AddUserModal = ({ isOpen, setIsOpen }) => {
                 email: formData.email,
                 role: formData.role, // Assuming role_id is the correct field name for the role in your API
                 password: formData.password,
+                domains: domainsString,
             };
 
             try {
@@ -238,6 +241,8 @@ const AddUserModal = ({ isOpen, setIsOpen }) => {
                                                         {...params}
                                                         label="Domains"
                                                         placeholder="Select Domains"
+                                                        error={Boolean(errors.domains)}
+                                                        helperText={errors.domains}
                                                     />
                                                 )}
                                             />

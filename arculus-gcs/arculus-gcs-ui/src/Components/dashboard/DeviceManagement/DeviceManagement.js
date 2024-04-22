@@ -450,7 +450,7 @@ function DeviceManagement(props) {
                             <b>Device Type</b>
                           </TableCell>
                           <TableCell>
-                            <b>Allowed Functions</b>
+                            <b>Allowed Operations</b>
                           </TableCell>
                         </TableRow>
                       </TableHead>

@@ -8,5 +8,7 @@ router.get('/authorize', authService.authorize);
 router.put('/setZtMode', authService.setZtMode);
 router.get('/authenticate', authService.authenticate)
 router.get('/runExperimentInPod', authService.runExperimentInPod);
+router.post('/sendEmailForAuth', authService.sendEmailForAuth);
+router.post('/verifyOtp', authService.verifyOtp);
 
 module.exports = router;

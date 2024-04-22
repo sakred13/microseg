@@ -426,7 +426,7 @@ exports.addTrustedDevice = (req, res) => {
                 "Freight Drone": "sakred22/sup-drone:v1",
                 "Freight UGV": "sakred22/sup-drone:v1",
                 "Sensor-Integrated Drone": "39dj29dl2d9l2/vcc:latest",
-                "Communication Relay Drone": "39dj29dl2d9l2/vcc:latest",
+                "Communication Relay Drone": "sakred22/relay-drone:v1",
                 "Communication Relay Rover": "39dj29dl2d9l2/vcc:latest",
             };
 
@@ -437,7 +437,7 @@ exports.addTrustedDevice = (req, res) => {
                 "Freight Drone": ["python3", "supplyDrone.py"],
                 "Freight UGV": ["sleep", "3600000"],
                 "Sensor-Integrated Drone": ["sleep", "3600000"],
-                "Communication Relay Drone": ["sleep", "3600000"],
+                "Communication Relay Drone": ["python3", "relayDrone.py"],
                 "Communication Relay Rover": ["sleep", "3600000"],
             };
 
@@ -448,7 +448,7 @@ exports.addTrustedDevice = (req, res) => {
                 "Freight Drone": 4050,
                 "Freight UGV": 8080,
                 "Sensor-Integrated Drone": 8080,
-                "Communication Relay Drone": 8080,
+                "Communication Relay Drone": 5050,
                 "Communication Relay Rover": 8080,
             };
 
@@ -467,7 +467,7 @@ kind: Pod
 metadata:
   name: ${deviceName}
   labels:
-    app: ground
+    app: ${deviceName}
 spec:
   nodeName: ${deviceName}
   containers:

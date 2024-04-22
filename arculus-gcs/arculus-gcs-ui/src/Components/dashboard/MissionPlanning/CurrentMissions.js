@@ -13,11 +13,11 @@ import LogConsole from './LogConsole';
 import AlertButton from './AlertButton';
 import ListMissions from './ListMissions';
 // import ListMissions from './ListMissions';
+import SignalWifiBadIcon from '@mui/icons-material/SignalWifiBad';
 
 function CurrentMissions(props) {
   const [activeTab, setActiveTab] = useState('Missions');
   const [selectedMission, setSelectedMission] = useState(null);
-  const [soldierPosition, setSoldierPosition] = useState(null);
   const [missionLocation, setMissionLocation] = useState('');
   const [videoAnalytic, setVideoAnalytic] = useState('');
   const [videoCollectionDrone, setVideoCollectionDrone] = useState('');
@@ -29,11 +29,10 @@ function CurrentMissions(props) {
   const [supplyDeliveryDrones, setSupplyDeliveryDrones] = useState([]);
   const [videoAnalyticControllers, setVideoAnalyticControllers] = useState([]);
   const isExecuteMissionDisabled = !videoAnalytic || !videoCollectionDrone || !supplyDeliveryDrone;
-  const [isSelectionsIncompleteModalOpen, setIsSelectionsIncompleteModalOpen] = useState(false);
   const [insufficientPrivileges, setInsufficientPrivileges] = useState(false);
-  const [insufficientPrivilegesModalOpen, setInsufficientPrivilegesModalOpen] = useState(false);
   const [devicePrivileges, setDevicePrivileges] = useState({});
   const [deviceName, setDeviceName] = useState('');
+  const [controllerIp, setControllerIp] = useState('');
   const userType = props.userType;
   const userName = Cookies.get('user');
 
@@ -120,23 +119,35 @@ function CurrentMissions(props) {
 
   }, [videoAnalytic, videoCollectionDrone, supplyDeliveryDrone, videoAnalyticControllers, videoCollectionDrones, supplyDeliveryDrones]);
 
+  const handleSimulateCommunicationLoss = () => {
+    const payload = {
+      authToken: encodeURIComponent(Cookies.get('jwtToken')),
+      blockDevice: videoAnalytic, // Assuming you have the device names stored
+      hostDevice: videoCollectionDrone,    // You need to define the host device
+      hostPort: 3050              // Define the port number
+    };
+
+    fetch(`${API_URL}/mission/simulateBadNetwork`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+      .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+      })
+      .then(data => {
+        console.log('Simulation success:', data);
+      })
+      .catch(error => {
+        console.error('Error simulating network communication loss:', error);
+      });
+  };
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
-  };
-
-  const handleMissionSelect = (missionType) => {
-    setSelectedMission(missionType);
-    setActiveTab('Missions');
-  };
-
-  const handleSvgClick = (e) => {
-    const svg = e.target;
-    const svgRect = svg.getBoundingClientRect();
-    const x = (e.clientX - svgRect.left) / svgRect.width; // Calculate the relative position (0 to 1)
-    const y = (e.clientY - svgRect.top) / svgRect.height; // Calculate the relative position (0 to 1)
-
-    setSoldierPosition({ x, y });
   };
 
   // Define the handleChangeLocation function
@@ -164,64 +175,6 @@ function CurrentMissions(props) {
     setActiveTab('Mission Execution');
   };
 
-  const handleExecuteMissionClick = () => {
-    if (isExecuteMissionDisabled) {
-      setIsSelectionsIncompleteModalOpen(true); // Open the modal when the button is disabled
-    } else if (insufficientPrivileges) {
-      setInsufficientPrivilegesModalOpen(true);
-    } else {
-      // Find the drone objects based on their names
-      const surveillanceDrone = videoCollectionDrones.find(drone => drone.device_name === videoCollectionDrone);
-      const supplyDrone = supplyDeliveryDrones.find(drone => drone.device_name === supplyDeliveryDrone);
-
-      if (!surveillanceDrone || !supplyDrone) {
-        console.error('Could not find drones with the given names.');
-        return;
-      }
-
-      // Make API call to start mission
-      const payload = {
-        gcX: gcX,
-        gcY: gcY,
-        destX: soldierPosition.x * 1792,
-        destY: soldierPosition.y * 1024,
-        survDroneName: surveillanceDrone.device_name,
-        survDroneIp: surveillanceDrone.ip_address,
-        supplyDroneName: supplyDrone.device_name,
-        supplyDroneIp: supplyDrone.ip_address,
-        authToken: encodeURIComponent(Cookies.get('jwtToken'))
-      };
-
-      fetch(`${API_URL}/mission/startMission`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error('Failed to start mission');
-          }
-          // Continue with existing functionality
-          switchToExecuteTab();
-        })
-        .catch((error) => {
-          console.error('Error starting mission:', error);
-        });
-    }
-  };
-
-  // Function to close the modal
-  const closeModal = () => {
-    setIsSelectionsIncompleteModalOpen(false);
-  };
-
-  const closeInsufficientPrivilegesModal = () => {
-    setInsufficientPrivilegesModalOpen(false);
-  };
-
-
   return (
     <div className="missionPlanner">
       <Typography variant="h4" component="div" gutterBottom>
@@ -238,7 +191,7 @@ function CurrentMissions(props) {
         </button>
         <button
           className={activeTab === 'Mission Execution' ? 'tab-button active execute-button' : 'tab-button execute-button'}
-          // onClick={switchToExecuteTab}
+        // onClick={switchToExecuteTab}
         >
           Mission Execution
         </button>
@@ -249,24 +202,35 @@ function CurrentMissions(props) {
         {activeTab === 'Missions' && (
           <div>
             {selectedMission && <p>Selected Mission Type: {selectedMission}</p>}
-            <ListMissions authToken={encodeURIComponent(Cookies.get('jwtToken'))} setDeviceName={setDeviceName} setSelectedLocation={setSelectedLocation} setActiveTab={setActiveTab} userType={userType} />
+            <ListMissions authToken={encodeURIComponent(Cookies.get('jwtToken'))} setVideoCollectionDrone={setVideoCollectionDrone} setSupplyDeliveryDrone={setSupplyDeliveryDrone} setDeviceName={setDeviceName} setSelectedLocation={setSelectedLocation} setActiveTab={setActiveTab} userType={userType} />
             <br />
           </div>
         )}
 
         {activeTab === 'Mission Execution' && (
-          <><br></br>
+          <>
+            <br />
             <div className='container'>
-              <div className='tabs mission-container' style={{ border: '2px solid black', padding: '10px' }}>
-                <MissionExecution handleTabChange={handleTabChange} deviceName={deviceName} selectedLocation={selectedLocation} jwtToken={encodeURIComponent(Cookies.get('jwtToken'))} />
-                <div className="log-container" style={{ width: '20%' }}>
+              <div className='tabs mission-container' style={{ border: '2px solid black', padding: '10px', display: 'flex' }}>
+                <div style={{ width: '85%' }}>
+                  <MissionExecution handleTabChange={handleTabChange} deviceName={deviceName} selectedLocation={selectedLocation} jwtToken={encodeURIComponent(Cookies.get('jwtToken'))} />
+                </div>
+                <div className="log-container" style={{ width: '15%' }}>
                   <LogConsole />
                   <DroneRemote />
+                  <Button
+                    startIcon={<SignalWifiBadIcon />}
+                    onClick={handleSimulateCommunicationLoss}
+                    style={{ marginTop: '10px' }}
+                  >
+                    Simulate Communication Loss
+                  </Button>
                   <AlertButton userType={userType} />
                 </div>
               </div>
             </div>
-          </>)}
+          </>
+        )}
       </div>
     </div>
   );

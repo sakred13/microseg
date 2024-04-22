@@ -3,14 +3,15 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { API_URL } from '../../../config';
-import { getThemeProps } from '@mui/system';
-import MissionExecution from './MissionExecution';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-const ListMissions = ({ authToken, setSelectedLocation, setDeviceName, setActiveTab, userType }) => {
+// Add this state to track which mission's play button was clicked
+const ListMissions = ({ authToken, setSelectedLocation, setDeviceName, setActiveTab, userType, setVideoCollectionDrone, setSupplyDeliveryDrone }) => {
   const [missions, setMissions] = useState([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteMission, setDeleteMission] = useState(null);
-  const [missionId, setMissionId] = useState(null);
+  const [loadingMission, setLoadingMission] = useState(null);
 
   useEffect(() => {
     fetchMissions();
@@ -73,24 +74,18 @@ const ListMissions = ({ authToken, setSelectedLocation, setDeviceName, setActive
   };
 
   const handleExecuteMission = async (config, missionId) => {
+    setLoadingMission(missionId); // Set the loading state to the current mission ID
+
+    const { gcX, gcY, destX, destY, selections } = config;
+    const controller = selections['Video-Analytic Route Planner (Ground Control)'];
+    const supplyDrone = selections['Supply Delivery Drone'];
+    const surveillanceDrone = selections['Video Collection Surveillance Drone'];
+    const relayDrone = selections['Communication Relay Drone'];
+    const requestBody = {
+      gcX, gcY, destX, destY, controller, supplyDrone, surveillanceDrone, relayDrone, missionId
+    };
+
     try {
-      const { gcX, gcY, destX, destY, selections } = config;
-      console.log('config: ', config);
-      const controller = selections['Video-Analytic Route Planner (Ground Control)'];
-      const supplyDrone = selections['Supply Delivery Drone'];
-      const surveillanceDrone = selections['Video Collection Surveillance Drone'];
-
-      console.log('controller, supplyDrone, surveillanceDrone: ', controller, supplyDrone, surveillanceDrone)
-
-      const requestBody = {
-        gcX,
-        gcY,
-        destX, destY,
-        controller,
-        supplyDrone,
-        surveillanceDrone,
-        missionId
-      };
       const response = await fetch(`${API_URL}/mission/executeStealthyReconAndResupply`, {
         method: 'POST',
         headers: {
@@ -104,13 +99,18 @@ const ListMissions = ({ authToken, setSelectedLocation, setDeviceName, setActive
         throw new Error(`Error: ${response.status}`);
       }
 
-      setSelectedLocation(config.location);
-      setActiveTab('Mission Execution');
-      setDeviceName(config.selections['Video-Analytic Route Planner (Ground Control)']);
-      // Redirect to Mission Execution tab if the response is OK
-      // You can implement the redirection logic here
+      // Wait for 2 seconds after the API response before navigating to the execution tab
+      setTimeout(() => {
+        setSelectedLocation(config.location);
+        setVideoCollectionDrone(config.selections['Video Collection Surveillance Drone']);
+        setSupplyDeliveryDrone(config.selections['Supply Delivery Drone']);
+        setActiveTab('Mission Execution');
+        setDeviceName(controller);
+        setLoadingMission(null); // Reset the loading state
+      }, 3000);
     } catch (error) {
       console.error('Error executing mission:', error);
+      setLoadingMission(null); // Ensure loading state is cleared on error
     }
   };
 
@@ -136,44 +136,70 @@ const ListMissions = ({ authToken, setSelectedLocation, setDeviceName, setActive
                 <TableCell><b>Duration</b></TableCell>
                 <TableCell><b>Execute</b></TableCell>
                 <TableCell><b>Monitor</b></TableCell>
-                <TableCell><b>State</b></TableCell>
+                <TableCell><b>Status</b></TableCell>
+                {userType === 'Mission Creator' && (<TableCell><b>Delete</b></TableCell>)}
               </TableRow>
             </TableHead>
             <TableBody>
-              {missions.map((mission, index) => (
-                <TableRow key={index}>
-                  <TableCell>
-                    {(() => {
-                      const path = JSON.parse(mission.config).location;
-                      switch (path) {
-                        case '/murrietaHeights.png': return 'Murrieta Heights';
-                        case '/libertycity.png': return 'Liberty City';
-                        case '/forest.png': return 'Paleto Forest';
-                        case '/desert.png': return 'Grand Senora Desert';
-                        default: return 'Unknown Location';
-                      }
-                    })()}
-                  </TableCell>
-                  <TableCell>{JSON.parse(mission.config).mission_type}</TableCell>
-                  <TableCell>User admin</TableCell>
-                  <TableCell>{mission.supervisors.join(', ')}</TableCell>
-                  <TableCell>{mission.viewers.join(', ')}</TableCell>
-                  <TableCell>{JSON.parse(mission.config).create_time}</TableCell>
-                  <TableCell>{JSON.parse(mission.config).duration_sec}</TableCell>
-                  <TableCell>
-                    <IconButton aria-label="execute" disabled={['IN EXECUTION', "SUCCESSFUL", "FAILED"].includes(mission.state)} onClick={() => handleExecuteMission(JSON.parse(mission.config), mission.mission_id)}>
-                      <PlayArrowIcon />
-                    </IconButton>
-                  </TableCell>
-                  <TableCell>
-                    <IconButton aria-label="view" disabled={['CREATED', "SUCCESSFUL", "FAILED"].includes(mission.state)} onClick={() => { setSelectedLocation(mission.config.location); setActiveTab('Mission Execution'); setDeviceName(mission.config.selections['Video-Analytic Route Planner (Ground Control)']); }}>
-                      <VisibilityIcon />
-                    </IconButton>
-                  </TableCell>
-                  <TableCell>{mission.state}</TableCell> {/* Display state directly */}
-                </TableRow>
-              ))}
+              {
+                // Assuming 'missions' is already available in your component's scope
+                // Parse the `create_time` and sort missions in ascending order by date
+                missions.sort((a, b) => {
+                  const timeA = new Date(JSON.parse(a.config).create_time);
+                  const timeB = new Date(JSON.parse(b.config).create_time);
+                  return timeB - timeA;
+                }).map((mission, index) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      {(() => {
+                        const path = JSON.parse(mission.config).location;
+                        switch (path) {
+                          case '/murrietaHeights.png': return 'Murrieta Heights';
+                          case '/libertycity.png': return 'Liberty City';
+                          case '/forest.png': return 'Paleto Forest';
+                          case '/desert.png': return 'Grand Senora Desert';
+                          default: return 'Unknown Location';
+                        }
+                      })()}
+                    </TableCell>
+                    <TableCell>{JSON.parse(mission.config).mission_type}</TableCell>
+                    <TableCell>User admin</TableCell>
+                    <TableCell>{mission.supervisors.join(', ')}</TableCell>
+                    <TableCell>{mission.viewers.join(', ')}</TableCell>
+                    <TableCell>{JSON.parse(mission.config).create_time}</TableCell>
+                    <TableCell>{JSON.parse(mission.config).duration_sec} sec</TableCell>
+                    <TableCell>
+                      <IconButton
+                        aria-label="execute"
+                        disabled={loadingMission === mission.mission_id || ['IN EXECUTION', "SUCCESSFUL", "FAILED"].includes(mission.state)}
+                        onClick={() => handleExecuteMission(JSON.parse(mission.config), mission.mission_id)}
+                      >
+                        {loadingMission === mission.mission_id ? <HourglassEmptyIcon /> : <PlayArrowIcon />}
+                      </IconButton>
+                    </TableCell>
+                    <TableCell>
+                      <IconButton
+                        aria-label="view"
+                        disabled={['CREATED', "SUCCESSFUL", "FAILED"].includes(mission.state)}
+                        onClick={() => {
+                          setSelectedLocation(JSON.parse(mission.config).location);
+                          setDeviceName(JSON.parse(mission.config).selections['Video-Analytic Route Planner (Ground Control)']);
+                          setActiveTab('Mission Execution');
+                        }}
+                      >
+                        <VisibilityIcon />
+                      </IconButton>
 
+                    </TableCell>
+                    <TableCell>{mission.state}</TableCell> {/* Display state directly */}
+                    {userType === 'Mission Creator' && <TableCell>
+                      <IconButton aria-label="view" disabled={mission.state === 'IN EXECUTION'}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>}
+                  </TableRow>
+                ))
+              }
             </TableBody>
           </Table>
         </TableContainer>
