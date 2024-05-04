@@ -33,20 +33,38 @@ sudo docker build -t arculus-gcs-mysql:latest .
 sudo docker run -p 3306:3306 --name arculus-gcs-db arculus-gcs-mysql
 ```
 
-4. To turn up the node.js back-end application, navigate to `arculus-gcs/arculus-gcs-node/` and run the following commands to install the needed dependencies and start the API server on port 3001. 
+4. To turn up the node.js back-end application, navigate to `arculus-gcs/arculus-gcs-node/` and run the following commands to install the needed dependencies and start a development API server on port 3001. 
 ```bash
 #!/bin/bash
 npm install
 npm start
 ```
 
-5. Before starting the UI of the Ground Control Client, update `arculus-gcs/config.js` with the public IP address of the controller node for API access.
+5. To start a deployment server, run the following commands.
+```bash
+#!/bin/bash
+npm install
+pm2 start index.js
+```
 
-6. Start the ReactJS UI application, navigate to `arculus-gcs/arculus-gcs-ui/` and run the following commands again to install the needed dependencies and start the API server. 
+6. Follow instructions at https://communityhoneynetwork.readthedocs.io/en/stable/serverinstall/ to setup a CHN server for honeypots. Note down its URL, deploy key, user name, password, and API key, and update these in the honeypot_config.json of the node.js codebase. This lets our UI communicate with the CHN server's SDK APIs through our proxy honeypot server.
+
+7. Generate a hard encryption key and update the value in arculus-gcs-node/configs/ENCRYPTION_SECRET.txt. This key will be used for encryption for authorization and other purposes.
+ 
+8. Before starting the UI server of the Ground Control Client, update `arculus-gcs/config.js` with the public IP address of the controller node for API access. Update the PRIVATE_IP constant to the private IP address of the instance. Update the CHN_URL constant with the CHN server's URL.
+
+9. To start the ReactJS UI application, navigate to `arculus-gcs/arculus-gcs-ui/` and run the following commands again to install the needed dependencies and start the API server and start a development UI server. 
 ```bash
 #!/bin/bash
 npm install
 npm start
+```
+
+10. To start a deployment server, run the following commands.
+```bash
+#!/bin/bash
+npm install
+pm2 start server.js
 ```
 
 ### Adding a Node to the K3S Cluster
