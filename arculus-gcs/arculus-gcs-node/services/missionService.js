@@ -2,7 +2,11 @@ const { isUserOfType, getUserFromToken, getUserIdFromName } = require('./authSer
 const pool = require('../modules/arculusDbConnection');
 const fs = require('fs');
 const { execSync, exec } = require('child_process');
-const { addNetworkPolicyDuringMission } = require('./policyService');
+const { addNetworkPolicyDuringMission, deleteNetworkPolicyDuringMission } = require('./policyService');
+const async = require('async');
+const path = require('path');
+const crypto = require('crypto');
+const cryptSecret = fs.readFileSync('configs/ENCRYPTION_SECRET.txt', 'utf8').trim();
 
 // Define global variables
 let gcX = null;
@@ -435,64 +439,67 @@ exports.updateMission = (authToken, missionId, newData, callback) => {
     });
 };
 
-// Function to delete a mission
-exports.deleteMission = (authToken, missionId, callback) => {
+exports.deleteMission = (req, res) => {
+    const { authToken, missionId } = req.body;
+
     // Check if the user has a mission creator role
     isUserOfType(getUserFromToken(authToken), ['Mission Creator'], (roleErr, isMissionCreator) => {
         if (roleErr) {
             console.error(roleErr);
-            return callback({ message: 'Internal Server Error' });
+            return res.status(500).send({ message: 'Internal Server Error' });
         }
 
         if (!isMissionCreator) {
-            return callback({ message: 'Unauthorized: Only mission creators can delete missions' });
+            return res.status(403).send({ message: 'Unauthorized: Only mission creators can delete missions' });
         }
 
-        async.parallel([
+        // Use async waterfall to ensure sequential execution of database operations
+        async.waterfall([
             // Delete from supervisor table
-            (parallelCallback) => {
+            (waterfallCallback) => {
                 const deleteSupervisorQuery = 'DELETE FROM supervisor WHERE mission_id = ?';
                 pool.query(deleteSupervisorQuery, [missionId], (err, results) => {
                     if (err) {
                         console.error(err);
-                        return parallelCallback({ message: 'Internal Server Error' });
+                        return waterfallCallback({ message: 'Error deleting from supervisor table' });
                     }
-                    parallelCallback(null);
+                    waterfallCallback(null);
                 });
             },
             // Delete from viewer table
-            (parallelCallback) => {
+            (waterfallCallback) => {
                 const deleteViewerQuery = 'DELETE FROM viewer WHERE mission_id = ?';
                 pool.query(deleteViewerQuery, [missionId], (err, results) => {
                     if (err) {
                         console.error(err);
-                        return parallelCallback({ message: 'Internal Server Error' });
+                        return waterfallCallback({ message: 'Error deleting from viewer table' });
                     }
-                    parallelCallback(null);
+                    waterfallCallback(null);
                 });
             },
             // Delete from mission table
-            (parallelCallback) => {
+            (waterfallCallback) => {
                 const deleteMissionQuery = 'DELETE FROM mission WHERE mission_id = ?';
                 pool.query(deleteMissionQuery, [missionId], (err, results) => {
                     if (err) {
                         console.error(err);
-                        return parallelCallback({ message: 'Internal Server Error' });
+                        return waterfallCallback({ message: 'Error deleting from mission table' });
                     }
                     if (results.affectedRows === 0) {
-                        return parallelCallback({ message: 'Mission not found' });
+                        return waterfallCallback({ message: 'Mission not found' });
                     }
-                    parallelCallback(null);
+                    waterfallCallback(null);
                 });
             }
-        ], (parallelErr) => {
-            if (parallelErr) {
-                return callback(parallelErr);
+        ], (waterfallErr) => {
+            if (waterfallErr) {
+                return res.status(500).send(waterfallErr);
             }
-            callback(null); // Success
+            res.status(200).send({ message: 'Mission successfully deleted' });
         });
     });
 };
+
 
 exports.getMissionState = (req, res) => {
     const { deviceName } = req.query;
@@ -565,10 +572,10 @@ exports.executeStealthyReconAndResupply = (req, res) => {
                     console.log('Mission status updated to IN EXECUTION.');
 
                     Promise.all([
-                        addNetworkPolicyDuringMission(surveillanceDrone, [{"device": controller, "port": "3050", "protocol": 'TCP'}, {"device": relayDrone, "port": "3050", "protocol": 'TCP'}], []),
-                        addNetworkPolicyDuringMission(supplyDrone, [{"device": controller, "port": "4050", "protocol": 'TCP'}, {"device": relayDrone, "port": "4050", "protocol": 'TCP'}], []),
-                        addNetworkPolicyDuringMission(relayDrone, [{"device": controller, "port": "5050", "protocol": 'TCP'}], []),
-                        addNetworkPolicyDuringMission(controller, [], [{"device": relayDrone, "port": "5050", "protocol": 'TCP'}, {"device": surveillanceDrone, "port": "3050", "protocol": 'TCP'}, {"device": supplyDrone, "port": "4050", "protocol": 'TCP'}])
+                        addNetworkPolicyDuringMission(surveillanceDrone, [{ "device": controller, "port": "3050", "protocol": 'TCP' }, { "device": relayDrone, "port": "3050", "protocol": 'TCP' }], [{ "device": controller, "port": "6001", "protocol": 'UDP' }]),
+                        addNetworkPolicyDuringMission(supplyDrone, [{ "device": controller, "port": "4050", "protocol": 'TCP' }, { "device": relayDrone, "port": "4050", "protocol": 'TCP' }], [{ "device": controller, "port": "6002", "protocol": 'UDP' }]),
+                        addNetworkPolicyDuringMission(relayDrone, [{ "device": controller, "port": "5050", "protocol": 'TCP' }], [{ "device": controller, "port": "6003", "protocol": 'UDP' }]),
+                        addNetworkPolicyDuringMission(controller, [{ "device": supplyDrone, "port": "6002", "protocol": 'UDP' }, { "device": surveillanceDrone, "port": "6001", "protocol": 'UDP' }, { "device": relayDrone, "port": "6003", "protocol": 'UDP' }], [{ "device": relayDrone, "port": "5050", "protocol": 'TCP' }, { "device": surveillanceDrone, "port": "3050", "protocol": 'TCP' }, { "device": supplyDrone, "port": "4050", "protocol": 'TCP' }])
                     ]).then(() => {
                         // Introduce a 2-second delay before executing the next steps
                         ipCache[relayDrone] = relayDroneIP;
@@ -586,6 +593,10 @@ exports.executeStealthyReconAndResupply = (req, res) => {
                                         console.error('Database Error:', err);
                                         res.status(500).json({ message: 'Database error while updating mission to FAILED.' });
                                     } else {
+                                        deleteNetworkPolicyDuringMission(`policy-${controller}`);
+                                        deleteNetworkPolicyDuringMission(`policy-${relayDrone}`);
+                                        deleteNetworkPolicyDuringMission(`policy-${surveillanceDrone}`);
+                                        deleteNetworkPolicyDuringMission(`policy-${supplyDrone}`);
                                         console.log('Mission status updated to FAILED.');
                                         res.status(200).json({ message: 'Mission failed during execution.' });
                                     }
@@ -599,6 +610,10 @@ exports.executeStealthyReconAndResupply = (req, res) => {
                                     console.error('Database Error:', err);
                                     res.status(500).json({ message: 'Database error while updating mission to SUCCESSFUL.' });
                                 } else {
+                                    deleteNetworkPolicyDuringMission(`policy-${controller}`);
+                                    deleteNetworkPolicyDuringMission(`policy-${relayDrone}`);
+                                    deleteNetworkPolicyDuringMission(`policy-${surveillanceDrone}`);
+                                    deleteNetworkPolicyDuringMission(`policy-${supplyDrone}`);
                                     console.log('Mission status updated to SUCCESSFUL.');
                                     // res.status(200).json({ message: 'Mission executed successfully.' });
                                 }
@@ -656,6 +671,115 @@ exports.simulateBadNetwork = (req, res) => {
             console.log('Curl response:', stdout);
             res.status(200).json({ message: 'Block device IP successfully added to blocklist', response: stdout });
         });
+    });
+};
+
+exports.downloadMissionManifest = (req, res) => {
+    const authToken = req.query.authToken;
+
+    // Check if the user has a mission creator role
+    isUserOfType(getUserFromToken(authToken), ['Mission Creator'], (roleErr, isMissionCreator) => {
+        if (roleErr) {
+            console.error(roleErr);
+            return res.status(500).send({ message: 'Internal Server Error' });
+        }
+
+        if (!isMissionCreator) {
+            return res.status(403).send({ message: 'Unauthorized: Only mission creators can download manifests' });
+        }
+
+        const algorithm = 'aes-256-ctr';
+        const iv = crypto.randomBytes(16); // Initialization vector
+
+        // Encrypt function
+        const encrypt = (text) => {
+            const cipher = crypto.createCipheriv(algorithm, cryptSecret, iv);
+            const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
+            return encrypted;
+        };
+
+        // Encrypt the request body
+        const encryptedData = encrypt(JSON.stringify(req.body));
+
+        // Prepare the file path in a temp directory with timestamp
+        const timestamp = Date.now();
+        const directoryPath = path.join(__dirname, 'tmp');
+        const filePath = path.join(directoryPath, `manifest_${timestamp}.mconf`);
+
+        // Write the encrypted data to the file
+        fs.mkdir(directoryPath, { recursive: true }, (dirErr) => {
+            if (dirErr) {
+                console.error('Error creating directory:', dirErr);
+                return res.status(500).send('Internal Server Error');
+            }
+
+            fs.writeFile(filePath, Buffer.concat([iv, encryptedData]), (err) => {
+                if (err) {
+                    console.error('Error while writing encrypted file:', err);
+                    return res.status(500).send('Internal Server Error');
+                }
+
+                res.download(filePath, `manifest_${timestamp}.mconf`, (downloadErr) => {
+                    if (downloadErr) {
+                        console.error('Error while downloading the file:', downloadErr);
+                        res.status(500).send('Internal Server Error');
+                    }
+
+                    fs.unlink(filePath, (unlinkErr) => {
+                        if (unlinkErr) {
+                            console.error('Error while deleting the file:', unlinkErr);
+                        }
+                    });
+                });
+            });
+        });
+    });
+};
+
+exports.uploadMissionManifest = (req, res) => {
+    const authToken = req.query.authToken;
+
+    // Check if the user has a mission creator role
+    isUserOfType(getUserFromToken(authToken), ['Mission Creator'], (roleErr, isMissionCreator) => {
+        if (roleErr) {
+            console.error(roleErr);
+            return res.status(500).send({ message: 'Internal Server Error' });
+        }
+
+        if (!isMissionCreator) {
+            return res.status(403).send({ message: 'Unauthorized: Only mission creators can upload manifests' });
+        }
+
+        if (!req.files || Object.keys(req.files).length === 0) {
+            return res.status(400).send('No files were uploaded.');
+        }
+
+        const file = req.files.uploadedFile;
+        const fileBuffer = file.data;
+
+        const algorithm = 'aes-256-ctr';
+        const iv = fileBuffer.slice(0, 16);
+
+        if (iv.length !== 16) {
+            return res.status(400).send('Invalid IV length. Expected IV length: 16 bytes.');
+        }
+        const encryptedData = fileBuffer.slice(16);
+
+        const decrypt = (encryptedBuffer) => {
+            const decipher = crypto.createDecipheriv(algorithm, cryptSecret, iv);
+            const decrypted = Buffer.concat([decipher.update(encryptedBuffer), decipher.final()]);
+            return decrypted;
+        };
+
+        const decryptedData = decrypt(encryptedData);
+
+        try {
+            const jsonData = JSON.parse(decryptedData.toString());
+            res.json(jsonData);
+        } catch (parseErr) {
+            console.error('Error parsing JSON:', parseErr);
+            res.status(500).send('Error parsing JSON');
+        }
     });
 };
 

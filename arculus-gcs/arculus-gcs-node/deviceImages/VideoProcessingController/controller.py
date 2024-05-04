@@ -61,6 +61,10 @@ def update_mission_state():
     with open(MISSION_STATE_FILE, "w") as f:
         json.dump(mission_state, f)
 
+def clear_mission_state():
+    with open(MISSION_STATE_FILE, "w") as f:
+        f.write("")
+
 def is_home(x, y, move_distance):
     distance = math.sqrt((x - initX)**2 + (y - initY)**2)
     return returnFlag == -1 and distance <= move_distance
@@ -171,6 +175,8 @@ if response.ok:
             missionSuccess = True
             print("Mission Success")
             update_mission_state()
+            time.sleep(10)
+            clear_mission_state()
             break
         
         response = requests.post(supMoveCommand, json={'slope': turnPointDirection, 'distance': 40})

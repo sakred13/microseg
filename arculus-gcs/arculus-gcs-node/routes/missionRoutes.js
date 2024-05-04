@@ -14,5 +14,7 @@ router.delete('/deleteMission', missionService.deleteMission);
 router.get('getMissionState', missionService.getMissionState);
 router.post('/executeStealthyReconAndResupply', missionService.executeStealthyReconAndResupply);
 router.post('/simulateBadNetwork', missionService.simulateBadNetwork);
+router.post('/downloadMissionManifest', missionService.downloadMissionManifest);
+router.post('/uploadMissionManifest', missionService.uploadMissionManifest);
 
 module.exports = router;

@@ -10,7 +10,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 const ListMissions = ({ authToken, setSelectedLocation, setDeviceName, setActiveTab, userType, setVideoCollectionDrone, setSupplyDeliveryDrone }) => {
   const [missions, setMissions] = useState([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [deleteMission, setDeleteMission] = useState(null);
+  const [deleteMissionId, setDeleteMissionId] = useState(null);
   const [loadingMission, setLoadingMission] = useState(null);
 
   useEffect(() => {
@@ -39,37 +39,6 @@ const ListMissions = ({ authToken, setSelectedLocation, setDeviceName, setActive
       setMissions(data.missions);
     } catch (error) {
       console.error('Error fetching missions:', error);
-    }
-  };
-
-  const handleDeleteDialogOpen = (missionId) => {
-    setDeleteMission(missionId);
-    setShowDeleteDialog(true);
-  };
-
-  const handleDeleteDialogClose = () => {
-    setDeleteMission(null);
-    setShowDeleteDialog(false);
-  };
-
-  const handleDeleteMission = async () => {
-    try {
-      const response = await fetch(`${API_URL}/mission/deleteMission?id=${deleteMission}&authToken=${authToken}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
-
-      setShowDeleteDialog(false);
-      // Fetch missions again after deletion
-      fetchMissions();
-    } catch (error) {
-      console.error('Error deleting mission:', error);
     }
   };
 
@@ -107,12 +76,47 @@ const ListMissions = ({ authToken, setSelectedLocation, setDeviceName, setActive
         setActiveTab('Mission Execution');
         setDeviceName(controller);
         setLoadingMission(null); // Reset the loading state
-      }, 3000);
+      }, 4000);
     } catch (error) {
       console.error('Error executing mission:', error);
       setLoadingMission(null); // Ensure loading state is cleared on error
     }
   };
+
+  const handleDeleteDialogOpen = (missionId) => {
+    setDeleteMissionId(missionId);
+    setShowDeleteDialog(true);
+  };
+
+  const handleDeleteDialogClose = () => {
+    setShowDeleteDialog(false);
+  };
+
+  const handleDeleteMission = async () => {
+    try {
+      const response = await fetch(`${API_URL}/mission/deleteMission`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          authToken: authToken,
+          missionId: deleteMissionId
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP status ${response.status}`);
+      }
+
+      setShowDeleteDialog(false);
+      setDeleteMissionId(null);
+      fetchMissions();  // Refresh the list of missions after deletion
+    } catch (error) {
+      console.error('Error deleting mission:', error);
+    }
+  };
+
 
   return (
     <>
@@ -134,7 +138,7 @@ const ListMissions = ({ authToken, setSelectedLocation, setDeviceName, setActive
                 <TableCell><b>Viewers</b></TableCell>
                 <TableCell><b>Creation Time</b></TableCell>
                 <TableCell><b>Duration</b></TableCell>
-                <TableCell><b>Execute</b></TableCell>
+                {userType === 'Mission Creator' && (<TableCell><b>Execute</b></TableCell>)}
                 <TableCell><b>Monitor</b></TableCell>
                 <TableCell><b>Status</b></TableCell>
                 {userType === 'Mission Creator' && (<TableCell><b>Delete</b></TableCell>)}
@@ -168,7 +172,7 @@ const ListMissions = ({ authToken, setSelectedLocation, setDeviceName, setActive
                     <TableCell>{mission.viewers.join(', ')}</TableCell>
                     <TableCell>{JSON.parse(mission.config).create_time}</TableCell>
                     <TableCell>{JSON.parse(mission.config).duration_sec} sec</TableCell>
-                    <TableCell>
+                    {userType === 'Mission Creator' && <TableCell>
                       <IconButton
                         aria-label="execute"
                         disabled={loadingMission === mission.mission_id || ['IN EXECUTION', "SUCCESSFUL", "FAILED"].includes(mission.state)}
@@ -176,7 +180,7 @@ const ListMissions = ({ authToken, setSelectedLocation, setDeviceName, setActive
                       >
                         {loadingMission === mission.mission_id ? <HourglassEmptyIcon /> : <PlayArrowIcon />}
                       </IconButton>
-                    </TableCell>
+                    </TableCell>}
                     <TableCell>
                       <IconButton
                         aria-label="view"
@@ -192,11 +196,17 @@ const ListMissions = ({ authToken, setSelectedLocation, setDeviceName, setActive
 
                     </TableCell>
                     <TableCell>{mission.state}</TableCell> {/* Display state directly */}
-                    {userType === 'Mission Creator' && <TableCell>
-                      <IconButton aria-label="view" disabled={mission.state === 'IN EXECUTION'}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>}
+                    {userType === 'Mission Creator' && (
+                      <TableCell>
+                        <IconButton
+                          aria-label="delete"
+                          onClick={() => handleDeleteDialogOpen(mission.mission_id)}
+                          disabled={mission.state === 'IN EXECUTION'}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))
               }

@@ -9,6 +9,8 @@ const sgMail = require('@sendgrid/mail')
 const fs = require('fs');
 
 const apiKey = fs.readFileSync('configs/EMAIL_API_KEY.txt', 'utf8').trim();
+const cryptSecret = fs.readFileSync('configs/ENCRYPTION_SECRET.txt', 'utf8').trim();
+
 sgMail.setApiKey(apiKey);
 
 function getUserFromToken(token) {
@@ -17,7 +19,7 @@ function getUserFromToken(token) {
     }
 
     try {
-        const decoded = jwt.verify(token, 'secret');
+        const decoded = jwt.verify(token, cryptSecret);
 
         if (!decoded.username) {
             return 'Unauthorized';
@@ -270,7 +272,7 @@ exports.login = (req, res) => {
             }
 
             // Create JWT token and send it back to the client
-            const jwtToken = jwt.sign({ username, password }, 'secret', { expiresIn: '1h' });
+            const jwtToken = jwt.sign({ username, password }, cryptSecret, { expiresIn: '1h' });
 
             // Include the username in the response body
             res.json({ status: 200, message: 'Logged in successfully', jwtToken, user: username });

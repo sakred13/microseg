@@ -227,7 +227,7 @@ const EditDeviceModal = ({ isOpen, setIsOpen, deviceDetails, allowedTasks: allow
                                             required
                                             fullWidth
                                             id="ingressRules"
-                                            label="Ingress Rules"
+                                            label="Possible Ingress Rules"
                                             name="ingressRules"
                                             multiline
                                             rows={4}

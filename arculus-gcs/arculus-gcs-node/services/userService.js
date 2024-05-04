@@ -61,7 +61,6 @@ exports.updateUser = (req, res) => {
     });
 };
 
-
 exports.deleteUser = (req, res) => {
     const { username, authToken } = req.query;
     const user = getUserFromToken(authToken);
@@ -77,14 +76,56 @@ exports.deleteUser = (req, res) => {
             return res.status(403).json({ message: 'Unauthorized: Only admin users can delete users' });
         }
 
-        // Delete the user record from the database using the provided username
-        pool.query('DELETE FROM user WHERE username = ?', [username], (deleteErr) => {
-            if (deleteErr) {
-                console.error(deleteErr);
+        // Start a transaction to handle deletion from multiple tables
+        pool.getConnection((err, connection) => {
+            if (err) {
+                console.error('Error getting database connection:', err);
                 return res.status(500).json({ message: 'Internal Server Error' });
             }
+            connection.beginTransaction(err => {
+                if (err) {
+                    console.error('Error beginning transaction:', err);
+                    return res.status(500).json({ message: 'Internal Server Error' });
+                }
 
-            return res.status(200).json({ message: 'User deleted successfully' });
+                connection.query('DELETE FROM supervisor WHERE user_id = (SELECT user_id FROM user WHERE username = ?)', [username], (deleteErr) => {
+                    if (deleteErr) {
+                        connection.rollback(() => {
+                            console.error('Error deleting from supervisor table:', deleteErr);
+                            return res.status(500).json({ message: 'Internal Server Error' });
+                        });
+                    }
+
+                    connection.query('DELETE FROM viewer WHERE user_id = (SELECT user_id FROM user WHERE username = ?)', [username], (deleteErr) => {
+                        if (deleteErr) {
+                            connection.rollback(() => {
+                                console.error('Error deleting from viewer table:', deleteErr);
+                                return res.status(500).json({ message: 'Internal Server Error' });
+                            });
+                        }
+
+                        connection.query('DELETE FROM user WHERE username = ?', [username], (deleteErr) => {
+                            if (deleteErr) {
+                                connection.rollback(() => {
+                                    console.error('Error deleting user:', deleteErr);
+                                    return res.status(500).json({ message: 'Internal Server Error' });
+                                });
+                            }
+
+                            connection.commit(err => {
+                                if (err) {
+                                    connection.rollback(() => {
+                                        console.error('Error committing transaction:', err);
+                                        return res.status(500).json({ message: 'Internal Server Error' });
+                                    });
+                                }
+                                connection.release();
+                                return res.status(200).json({ message: 'User deleted successfully' });
+                            });
+                        });
+                    });
+                });
+            });
         });
     });
 };

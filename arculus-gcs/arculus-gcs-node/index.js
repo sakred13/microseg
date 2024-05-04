@@ -21,6 +21,8 @@ const { joinReqsWebSocket, joinStatusWebSocket } = require('./services/deviceSer
 const utilizationRoutes = require('./routes/utilizationRoutes');
 const hostIp = execSync("ifconfig eth0 | grep 'inet ' | awk '{print $2}'").toString().trim();
 const publicIp = execSync("curl -s ifconfig.me").toString().trim();
+const fileUpload = require('express-fileupload');
+
 console.log('Public IP: ', publicIp);
 
 const allowCors = [
@@ -34,6 +36,7 @@ const allowCors = [
 const app = express();
 const server = http.createServer(app);
 app.use(express.static('tools'));
+app.use(fileUpload());
 
 const joinReqsServer = http.createServer();
 const joinReqsWss = new WebSocket.Server({ server: joinReqsServer, path: '/joinRequests' });

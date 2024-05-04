@@ -256,7 +256,7 @@ const AddDeviceModal = ({ isOpen, setIsOpen, nodeName, nodeIP, allowedTasks: all
                                             required
                                             fullWidth
                                             id="ingressRules"
-                                            label="Ingress Rules"
+                                            label="Possible Ingress Rules"
                                             name="ingressRules"
                                             multiline
                                             rows={4} // Adjust the number of rows as needed

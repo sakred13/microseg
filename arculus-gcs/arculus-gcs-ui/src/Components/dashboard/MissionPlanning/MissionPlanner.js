@@ -9,6 +9,7 @@ import Cookies from 'js-cookie';
 import missionSettings from './missionSettings.json';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
+import DescriptionIcon from '@mui/icons-material/Description';
 
 const missionDomainMapping = {
   'Stealthy Reconnaissance and Resupply': 'Covert Operations Support',
@@ -44,6 +45,7 @@ function MissionPlanner() {
   const [viewersList, setViewersList] = useState([]);
   const [selectedSupervisors, setSelectedSupervisors] = useState([]);
   const [selectedViewers, setSelectedViewers] = useState([]);
+  const [isPointDestinationModalOpen, setIsPointDestinationModalOpen] = useState(false);
 
   const handleToggleSupervisor = (supervisorId) => {
     setSelectedSupervisors((prev) =>
@@ -267,7 +269,10 @@ function MissionPlanner() {
 
   const handleCreateMissionClick = () => {
     console.log(selections);
-
+    if (!soldierPosition) {
+      setIsPointDestinationModalOpen(true);
+      return; // Don't proceed further
+    }
     if (Object.keys(requiredPrivileges).length != Object.keys(selections).length) {
       setIsSelectionsIncompleteModalOpen(true); // Open the modal when the button is disabled
     } else if (insufficientPrivileges) {
@@ -309,6 +314,66 @@ function MissionPlanner() {
         });
     }
   };
+
+  const handleDownloadManifestClick = () => {
+    if (!soldierPosition) {
+      setIsPointDestinationModalOpen(true);
+      return; // Don't proceed further
+    }
+    if (Object.keys(requiredPrivileges).length != Object.keys(selections).length) {
+      setIsSelectionsIncompleteModalOpen(true); // Open the modal when the button is disabled
+    } else if (insufficientPrivileges) {
+      setInsufficientPrivilegesModalOpen(true);
+    } else {
+      const payload = {
+        mission_config: JSON.stringify({
+          location: selectedLocation,
+          mission_type: selectedMission,
+          gcX: gcX * 1792,
+          gcY: gcY * 1024,
+          destX: soldierPosition.x * 1792,
+          destY: soldierPosition.y * 1024,
+          selections: selections,
+          duration_sec: 120,
+        }),
+        supervisors: selectedSupervisors,
+        viewers: selectedViewers
+      };
+
+      fetch(`${API_URL}/mission/downloadMissionManifest?authToken=${encodeURIComponent(Cookies.get('jwtToken'))}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to download manifest');
+          }
+          return response.blob();
+        })
+        .then(blob => {
+          // Create a URL for the blob
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+          // Define the filename for the download
+          const timestamp = new Date().toISOString().replace(/:/g, '-');
+          const filename = `mission_manifest_${timestamp}.mconf`;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        })
+        .catch(error => {
+          console.error('Error downloading manifest:', error);
+        });
+    }
+  };
+
 
   const closeModal = () => {
     setIsSelectionsIncompleteModalOpen(false);
@@ -551,7 +616,24 @@ function MissionPlanner() {
               }}// Disable the button if any dropdown is empty
             >
               <SettingsSuggestIcon /> Create Mission
+            </Button>&nbsp;&nbsp;
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleDownloadManifestClick}
+              style={{
+                backgroundColor: 'blue',
+                padding: '10px 20px',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+              }}// Disable the button if any dropdown is empty
+            >
+              <DescriptionIcon /> Download Mission Manifest
             </Button>
+            <br />
 
             <Modal
               open={isSelectionsIncompleteModalOpen}
@@ -580,6 +662,40 @@ function MissionPlanner() {
                     display: 'block',
                     margin: '0 auto', // Center the button horizontally
                     marginTop: '20px', // Add some top margin for spacing
+                  }}
+                >
+                  OK
+                </Button>
+              </div>
+            </Modal>
+            <Modal
+              open={isPointDestinationModalOpen}
+              onClose={() => setIsPointDestinationModalOpen(false)}
+              aria-labelledby="modal-title"
+              aria-describedby="modal-description"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <div style={{
+                backgroundColor: 'white',
+                padding: '20px',
+                borderRadius: '5px',
+                outline: 'none',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                textAlign: 'center',
+              }}>
+                <h1 id="modal-title">Please point the destination on the map!</h1>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setIsPointDestinationModalOpen(false)}
+                  style={{
+                    display: 'block',
+                    margin: '0 auto',
+                    marginTop: '20px',
                   }}
                 >
                   OK

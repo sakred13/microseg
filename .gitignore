@@ -2,6 +2,7 @@
 # config
 arculus-gcs/arculus-gcs-node/configs/honeypot_config.json
 arculus-gcs/arculus-gcs-node/configs/EMAIL_API_KEY.txt
+arculus-gcs/arculus-gcs-node/configs/ENCRYPTION_SECRET.txt
 arculus-gcs/arculus-gcs-node/configs/dbconfigs.json
 arculus-gcs/arculus-gcs-node/configs/dbconfigs_linux.json
 arculus-gcs/arculus-gcs-ui/src/config.js

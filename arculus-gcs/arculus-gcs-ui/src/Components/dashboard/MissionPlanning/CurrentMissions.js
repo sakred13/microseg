@@ -1,11 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback  } from 'react';
 import './MissionPlanner.css';
-import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import MissionExecution from './MissionExecution';
-import ForestMission from './ForestMission';
 import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
-import Button from '@mui/material/Button';
 import { API_URL } from '../../../config';
 import Cookies from 'js-cookie';
 import DroneRemote from './DroneRemote';
@@ -13,7 +9,7 @@ import LogConsole from './LogConsole';
 import AlertButton from './AlertButton';
 import ListMissions from './ListMissions';
 // import ListMissions from './ListMissions';
-import SignalWifiBadIcon from '@mui/icons-material/SignalWifiBad';
+import ExecuteFromManifest from './ExecuteFromManifest';
 
 function CurrentMissions(props) {
   const [activeTab, setActiveTab] = useState('Missions');
@@ -146,9 +142,9 @@ function CurrentMissions(props) {
       });
   };
 
-  const handleTabChange = (tabName) => {
+  const handleTabChange = useCallback((tabName) => {
     setActiveTab(tabName);
-  };
+  }, [setActiveTab]);
 
   // Define the handleChangeLocation function
   const handleChangeLocation = (location) => {
@@ -189,6 +185,16 @@ function CurrentMissions(props) {
           {userType === "Mission Supervisor" && "Missions you supervise"}
           {userType === "Mission Viewer" && "Missions you monitor"}
         </button>
+        {
+          userType === "Mission Creator" && (
+            <button
+              className={activeTab === 'manifest' ? 'tab-button active' : 'tab-button'}
+              onClick={() => handleTabChange('manifest')}
+            >
+              Execute using Mission Manifest File
+            </button>
+          )
+        }
         <button
           className={activeTab === 'Mission Execution' ? 'tab-button active execute-button' : 'tab-button execute-button'}
         // onClick={switchToExecuteTab}
@@ -207,8 +213,28 @@ function CurrentMissions(props) {
           </div>
         )}
 
+        {activeTab === 'manifest' && (
+          <ExecuteFromManifest handleTabChange={handleTabChange} setDeviceName={setDeviceName} setSelectedLocation={setSelectedLocation} />
+        )}
+
         {activeTab === 'Mission Execution' && (
           <>
+            {/* <br /> */}
+            <button onClick={handleSimulateCommunicationLoss} style={{ marginTop: '10px' }}>
+              <b>Simulate Communication Loss</b>
+            </button>&nbsp;&nbsp;
+            <button onClick={handleSimulateCommunicationLoss} style={{ marginTop: '10px' }}>
+              <b>Simulate GPS Spoofing</b>
+            </button>&nbsp;&nbsp;
+            <button onClick={handleSimulateCommunicationLoss} style={{ marginTop: '10px' }}>
+              <b>Simulate Physical Capture</b>
+            </button>&nbsp;&nbsp;
+            <button onClick={handleSimulateCommunicationLoss} style={{ marginTop: '10px' }}>
+              <b>Simulate Denial of Service</b>
+            </button>&nbsp;&nbsp;
+            <button onClick={handleSimulateCommunicationLoss} style={{ marginTop: '10px' }}>
+              <b>Simulate Brute Force SSH</b>
+            </button>
             <br />
             <div className='container'>
               <div className='tabs mission-container' style={{ border: '2px solid black', padding: '10px', display: 'flex' }}>
@@ -218,17 +244,11 @@ function CurrentMissions(props) {
                 <div className="log-container" style={{ width: '15%' }}>
                   <LogConsole />
                   <DroneRemote />
-                  <Button
-                    startIcon={<SignalWifiBadIcon />}
-                    onClick={handleSimulateCommunicationLoss}
-                    style={{ marginTop: '10px' }}
-                  >
-                    Simulate Communication Loss
-                  </Button>
                   <AlertButton userType={userType} />
                 </div>
               </div>
             </div>
+            <br />
           </>
         )}
       </div>

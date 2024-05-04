@@ -68,6 +68,16 @@ const MissionExecution = (props) => {
                     setSupCommLost(data.supCommLost);
                     setSurvCommEstablished(data.survCommEst);
                     setSupCommEstablished(data.supCommEst);
+
+                    // If mission is successful, stop fetching mission state
+                    if (data.missionSuccess) {
+                        clearInterval(intervalId);
+
+                        // Navigate to /currentMissions after 10 seconds
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 10000);
+                    }
                 })
                 .catch(error => {
                     console.error('Error fetching mission state:', error);
