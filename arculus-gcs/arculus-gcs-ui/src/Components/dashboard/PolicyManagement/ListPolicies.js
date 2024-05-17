@@ -77,7 +77,7 @@ const ListPolicies = ({ authToken }) => {
                             style={{ marginTop: '20px', color: 'grey', fontSize: '4rem' }}
                         >
                             <br /><img src='firewall.png' style={{ width: '25%' }} /><br />
-                            No Active Network Policies
+                            No Active Network Policies (Deny By Default)
                         </Typography>
                     ) : (
                         <>

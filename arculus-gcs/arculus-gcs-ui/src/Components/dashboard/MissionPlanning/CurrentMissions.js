@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback  } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './MissionPlanner.css';
 import MissionExecution from './MissionExecution';
 import Typography from '@mui/material/Typography';
@@ -8,7 +8,6 @@ import DroneRemote from './DroneRemote';
 import LogConsole from './LogConsole';
 import AlertButton from './AlertButton';
 import ListMissions from './ListMissions';
-// import ListMissions from './ListMissions';
 import ExecuteFromManifest from './ExecuteFromManifest';
 
 function CurrentMissions(props) {
@@ -28,9 +27,15 @@ function CurrentMissions(props) {
   const [insufficientPrivileges, setInsufficientPrivileges] = useState(false);
   const [devicePrivileges, setDevicePrivileges] = useState({});
   const [deviceName, setDeviceName] = useState('');
-  const [controllerIp, setControllerIp] = useState('');
+  const [survCommEstablished, setSurvCommEstablished] = useState(false);
+  const [showSupplyDrone, setShowSupplyDrone] = useState(false);
+  const [survCommLost, setSurvCommLost] = useState(false);
+  const [showLowBattery, setShowLowBattery] = useState(false);
+  const [blinkLowBattery, setBlinkLowBattery] = useState(true);
+  const [missionAborted, setMissionAborted] = useState(false);
   const userType = props.userType;
   const userName = Cookies.get('user');
+  const [logs, setLogs] = useState([]);
 
   useEffect(() => {
     // Fetch trusted devices from your API using fetch
@@ -70,6 +75,20 @@ function CurrentMissions(props) {
         console.error('Error fetching trusted devices:', error);
       });
   }, []);
+
+  useEffect(() => {
+    console.log("Mission aborted status:", missionAborted);
+  }, [missionAborted]);
+
+  useEffect(() => {
+    // Check if communication with the surveillance drone has been established
+    if (survCommEstablished) {
+      setLogs(prevLogs => [...prevLogs, {
+        message: "Communication with Surveillance Drone Established",
+        color: "green"
+      }]);
+    }
+  }, [survCommEstablished]); // This effect runs only when survCommEstablished changes
 
   useEffect(() => {
     // Initialize an empty privileges object
@@ -115,12 +134,48 @@ function CurrentMissions(props) {
 
   }, [videoAnalytic, videoCollectionDrone, supplyDeliveryDrone, videoAnalyticControllers, videoCollectionDrones, supplyDeliveryDrones]);
 
+  const handleAbortMission = () => {
+    setMissionAborted(true);  // This sets the missionAborted state to true
+    console.log('Setting missionAborted to: ', !missionAborted)
+  };
+
+  const handleSimulatePhysicalCapture = () => {
+    const payload = {
+      device: deviceName
+    }
+    fetch(`${API_URL}/mission/simulatePhysicalCapture`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+      .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+      })
+      .then(data => {
+        console.log('Simulation success:', data);
+        setTimeout(() => {
+          setLogs(prevLogs => [...prevLogs, {
+            message: "Drone movement has unexpectedly stalled. Potential Physical Capture.",
+            color: "red"
+          }]);
+          setTimeout(() => {
+            setLogs(prevLogs => [...prevLogs, {
+              message: "Shutting down on-board container for data protection.",
+              color: "green"
+            }]);
+          }, 1500);
+        }, 2000);
+      });
+  };
+
   const handleSimulateCommunicationLoss = () => {
     const payload = {
       authToken: encodeURIComponent(Cookies.get('jwtToken')),
-      blockDevice: videoAnalytic, // Assuming you have the device names stored
-      hostDevice: videoCollectionDrone,    // You need to define the host device
-      hostPort: 3050              // Define the port number
+      controller: deviceName,
+      type: showSupplyDrone ? 'sup' : 'surv'
     };
 
     fetch(`${API_URL}/mission/simulateBadNetwork`, {
@@ -136,40 +191,141 @@ function CurrentMissions(props) {
       })
       .then(data => {
         console.log('Simulation success:', data);
+        setTimeout(() => {
+          setLogs(prevLogs => [...prevLogs, {
+            message: "Communication failure with the drone.",
+            color: "red"
+          }]);
+          setTimeout(() => {
+            setLogs(prevLogs => [...prevLogs, {
+              message: showSupplyDrone ? "Drone will take pre-planned flight path autonomously." : "Sending out Relay Drone.",
+              color: "green"
+            }]);
+          }, 1500);
+        }, 2000);
       })
       .catch(error => {
         console.error('Error simulating network communication loss:', error);
       });
   };
 
+  const handleSimulateGpsSpoofing = () => {
+    const payload = {
+      controller: deviceName,
+      device: showSupplyDrone ? 'sup' : 'surv',
+      slope: -9,
+      distance: 30,
+    };
+
+    fetch(`${API_URL}/mission/simulateGpsSpoofing`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+      })
+      .then(data => {
+        console.log('GPS spoofing simulation success:', data);
+        setTimeout(() => {
+          setLogs(prevLogs => [...prevLogs, {
+            message: "Unknown move commands received. Authentication Failed. Potential GPS Spoofing.",
+            color: "red"
+          }]);
+          setTimeout(() => {
+            setLogs(prevLogs => [...prevLogs, {
+              message: "Closing Drone Ingress and taking pre-planned flight path.",
+              color: "green"
+            }]);
+          }, 1500);
+        }, 2000);
+      })
+      .catch(error => {
+        console.error('Error simulating GPS spoofing:', error);
+      });
+  };
+
+  const handleSimulateDenialOfService = () => {
+    // Simulation API call can be made here, similar to other handlers
+    setTimeout(() => {
+      setLogs(prevLogs => [...prevLogs, {
+        message: "Unexpected flow of traffic from Controller IP. Authentication failed for some traffic.",
+        color: "red"
+      }]);
+      setTimeout(() => {
+        setLogs(prevLogs => [...prevLogs, {
+          message: "Closing Drone Ingress and taking pre-planned flight path.",
+          color: "green"
+        }]);
+      }, 1500);
+    }, 2000);
+  };
+
+  const handleSimulateLowBattery = () => {
+    setShowLowBattery(!showLowBattery);
+    // This can also trigger an API call to simulate the scenario
+    setTimeout(() => {
+      setLogs(prevLogs => [...prevLogs, {
+        message: "Battery draining faster than anticipated.",
+        color: "red"
+      }]);
+      setTimeout(() => {
+        setLogs(prevLogs => [...prevLogs, {
+          message: "Shifting to low power alternative for pre-planned flight path.",
+          color: "green"
+        }]);
+      }, 1500);
+    }, 2000);
+  };
+
+  const handleSimulateBruteForceSSH = () => {
+    // API call to simulate SSH brute force attack
+    setTimeout(() => {
+      setLogs(prevLogs => [...prevLogs, {
+        message: "Unauthorized SSH Connection Attempts detected. Authentication failed.",
+        color: "red"
+      }]);
+      setTimeout(() => {
+        setLogs(prevLogs => [...prevLogs, {
+          message: "Enforcing Defense By Pretense protocols. Diverting traffic to Cowrie Honeypot.",
+          color: "green"
+        }]);
+      }, 1500);
+    }, 2000);
+  };
+
   const handleTabChange = useCallback((tabName) => {
     setActiveTab(tabName);
   }, [setActiveTab]);
 
-  // Define the handleChangeLocation function
   const handleChangeLocation = (location) => {
     if (location === 'Battlefield 1: Paleto Forest') {
       setSelectedLocation('/forest.png');
-      // Calculate gcX and gcY based on the width and height ratio
-      setGcX(0.3867); // Example: 202 / 1792
-      setGcY(0.7031); // Example: 420 / 1024
+      setGcX(0.3867);
+      setGcY(0.7031);
     } else if (location === 'Battlefield 2: Grand Senora Desert') {
       setSelectedLocation('/desert.png');
-      // Calculate gcX and gcY based on the width and height ratio
-      setGcX(0.1129); // Example: 202 / 1792
-      setGcY(0.4102); // Example: 420 / 1024
+      setGcX(0.1129);
+      setGcY(0.4102);
     }
   };
 
-  // Use useEffect to listen for changes in missionLocation
   useEffect(() => {
     handleChangeLocation(missionLocation);
   }, [missionLocation]);
 
-  // Function to switch to the "Mission Execution" tab
-  const switchToExecuteTab = () => {
-    setActiveTab('Mission Execution');
-  };
+  useEffect(() => {
+    let blinkInterval;
+    if (showLowBattery) {
+      blinkInterval = setInterval(() => {
+        setBlinkLowBattery(prev => !prev);
+      }, 500);
+    } else {
+      setBlinkLowBattery(true);
+    }
+    return () => clearInterval(blinkInterval);
+  }, [showLowBattery]);
 
   return (
     <div className="missionPlanner">
@@ -204,7 +360,6 @@ function CurrentMissions(props) {
       </div>
 
       <div className="tab-content">
-
         {activeTab === 'Missions' && (
           <div>
             {selectedMission && <p>Selected Mission Type: {selectedMission}</p>}
@@ -219,32 +374,35 @@ function CurrentMissions(props) {
 
         {activeTab === 'Mission Execution' && (
           <>
-            {/* <br /> */}
             <button onClick={handleSimulateCommunicationLoss} style={{ marginTop: '10px' }}>
               <b>Simulate Communication Loss</b>
             </button>&nbsp;&nbsp;
-            <button onClick={handleSimulateCommunicationLoss} style={{ marginTop: '10px' }}>
+            <button onClick={handleSimulateGpsSpoofing} style={{ marginTop: '10px' }}>
               <b>Simulate GPS Spoofing</b>
-            </button>&nbsp;&nbsp;
-            <button onClick={handleSimulateCommunicationLoss} style={{ marginTop: '10px' }}>
+            </button>
+            &nbsp;&nbsp;
+            <button onClick={handleSimulatePhysicalCapture} style={{ marginTop: '10px' }}>
               <b>Simulate Physical Capture</b>
             </button>&nbsp;&nbsp;
-            <button onClick={handleSimulateCommunicationLoss} style={{ marginTop: '10px' }}>
+            <button onClick={handleSimulateDenialOfService} style={{ marginTop: '10px' }}>
               <b>Simulate Denial of Service</b>
             </button>&nbsp;&nbsp;
-            <button onClick={handleSimulateCommunicationLoss} style={{ marginTop: '10px' }}>
+            <button onClick={handleSimulateLowBattery} style={{ marginTop: '10px' }}>
+              <b>Simulate Low Battery</b>
+            </button>&nbsp;&nbsp;
+            <button onClick={handleSimulateBruteForceSSH} style={{ marginTop: '10px' }}>
               <b>Simulate Brute Force SSH</b>
             </button>
             <br />
             <div className='container'>
               <div className='tabs mission-container' style={{ border: '2px solid black', padding: '10px', display: 'flex' }}>
                 <div style={{ width: '85%' }}>
-                  <MissionExecution handleTabChange={handleTabChange} deviceName={deviceName} selectedLocation={selectedLocation} jwtToken={encodeURIComponent(Cookies.get('jwtToken'))} />
+                  <MissionExecution handleTabChange={handleTabChange} deviceName={deviceName} selectedLocation={selectedLocation} jwtToken={encodeURIComponent(Cookies.get('jwtToken'))} showSupplyDrone={showSupplyDrone} setShowSupplyDrone={setShowSupplyDrone} setSurvCommEstablished={setSurvCommEstablished} showLowBattery={showLowBattery} blinkLowBattery={blinkLowBattery} missionAborted={missionAborted} setSurvCommLost={setSurvCommLost} survCommEstablished={survCommEstablished} setLogs={setLogs} />
                 </div>
                 <div className="log-container" style={{ width: '15%' }}>
-                  <LogConsole />
+                  <LogConsole logs={logs} />
                   <DroneRemote />
-                  <AlertButton userType={userType} />
+                  <AlertButton userType={userType} handleAbortMission={handleAbortMission} />
                 </div>
               </div>
             </div>

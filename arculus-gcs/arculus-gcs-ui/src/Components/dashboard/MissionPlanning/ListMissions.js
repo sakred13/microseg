@@ -175,7 +175,7 @@ const ListMissions = ({ authToken, setSelectedLocation, setDeviceName, setActive
                     {userType === 'Mission Creator' && <TableCell>
                       <IconButton
                         aria-label="execute"
-                        disabled={loadingMission === mission.mission_id || ['IN EXECUTION', "SUCCESSFUL", "FAILED"].includes(mission.state)}
+                        // disabled={loadingMission === mission.mission_id || ['IN EXECUTION', "SUCCESSFUL", "ABORTED"].includes(mission.state)}
                         onClick={() => handleExecuteMission(JSON.parse(mission.config), mission.mission_id)}
                       >
                         {loadingMission === mission.mission_id ? <HourglassEmptyIcon /> : <PlayArrowIcon />}
@@ -184,7 +184,7 @@ const ListMissions = ({ authToken, setSelectedLocation, setDeviceName, setActive
                     <TableCell>
                       <IconButton
                         aria-label="view"
-                        disabled={['CREATED', "SUCCESSFUL", "FAILED"].includes(mission.state)}
+                        disabled={['CREATED', "SUCCESSFUL", "ABORTED"].includes(mission.state)}
                         onClick={() => {
                           setSelectedLocation(JSON.parse(mission.config).location);
                           setDeviceName(JSON.parse(mission.config).selections['Video-Analytic Route Planner (Ground Control)']);

@@ -33,6 +33,9 @@ import ZtModeDropdown from '../Components/dashboard/ZtModeDropdown';
 import { useLocation } from 'react-router-dom';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import AnnouncementIcon from '@mui/icons-material/Announcement';
+import Popover from '@mui/material/Popover';
+import IncidentsDotPlot from '../Components/dashboard/Incidents/IncidentsDotPlot';
+
 const drawerWidth = 260;
 
 const AppBar = styled(MuiAppBar, {
@@ -88,6 +91,17 @@ export function Layout(props) {
   const [pendingActionsCount, setPendingActionsCount] = useState(0);
   const [announcementCount, setAnnouncementCount] = useState(1); // State for announcement count
   const location = useLocation();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handlePopoverOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  const popoverOpen = Boolean(anchorEl);
 
   // Initialize ztMode from localStorage or default value
   const [ztMode, setZtMode] = useState(localStorage.getItem('ztMode') || 'no_zt');
@@ -196,16 +210,41 @@ export function Layout(props) {
               ARCULUS GROUND CONTROL CLIENT
             </Typography>
             <ZtModeDropdown currentMode={ztMode} />
-            <IconButton color="inherit">
+            <IconButton color="inherit" onClick={() => handleManageClick('/manageDevices')}>
               <Badge badgeContent={'' + pendingActionsCount} color="secondary">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
-            <IconButton color="inherit">
+            <IconButton color="inherit" onClick={handlePopoverOpen}>
               <Badge badgeContent={announcementCount} color="error">
                 <AnnouncementIcon />
               </Badge>
             </IconButton>
+            <Popover
+              open={popoverOpen}
+              anchorEl={anchorEl}
+              onClose={handlePopoverClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+            >
+              <Box sx={{
+                p: 2,
+                minWidth: 350,
+                minHeight: 200,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <IncidentsDotPlot />
+              </Box>
+            </Popover>
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>

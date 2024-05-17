@@ -1,6 +1,6 @@
 import React from 'react';
 
-function AlertButton({ userType }) {
+function AlertButton({ userType, handleAbortMission }) {  // Correctly destructure props here
   let buttonText = '';
 
   // Determine the button text based on the userType prop
@@ -22,6 +22,7 @@ function AlertButton({ userType }) {
   return (
     <button
       className="action-button"
+      onClick={handleAbortMission} // Attach the onClick event handler
       style={{
         fontWeight: 'bold',
         backgroundColor: '#d63838', // Creamish red color

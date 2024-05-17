@@ -509,17 +509,23 @@ exports.getMissionState = (req, res) => {
         const command = `kubectl exec ${deviceName} -n default -- cat mission_state.json`;
         const missionStateJson = execSync(command, { encoding: 'utf-8' });
 
-        // Parse mission state JSON
-        const missionState = JSON.parse(missionStateJson);
-
-        res.status(200).json(missionState);
+        // Attempt to parse mission state JSON
+        try {
+            const missionState = JSON.parse(missionStateJson);
+            res.status(200).json(missionState);
+        } catch (parseError) {
+            // If parsing fails, return the response as is
+            // console.error('Parsing Error:', parseError);
+            res.status(200).send(missionStateJson);
+        }
     } catch (error) {
+        // Handle other errors
         if (error.stderr) {
             console.error('Error:', error.stderr);
-            return res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({ error: 'Internal Server Error' });
         } else {
             console.error('Error:', error);
-            return res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({ error: 'Internal Server Error' });
         }
     }
 };
@@ -588,16 +594,19 @@ exports.executeStealthyReconAndResupply = (req, res) => {
                             if (error) {
                                 console.error('Error executing command:', stderr || error);
                                 const updateQueryFailed = 'UPDATE mission SET state = ? WHERE mission_id = ?';
-                                pool.query(updateQueryFailed, ['FAILED', missionId], (err, results) => {
+                                pool.query(updateQueryFailed, ['ABORTED', missionId], (err, results) => {
                                     if (err) {
                                         console.error('Database Error:', err);
-                                        res.status(500).json({ message: 'Database error while updating mission to FAILED.' });
+                                        res.status(500).json({ message: 'Database error while updating mission to ABORTED.' });
                                     } else {
                                         deleteNetworkPolicyDuringMission(`policy-${controller}`);
                                         deleteNetworkPolicyDuringMission(`policy-${relayDrone}`);
                                         deleteNetworkPolicyDuringMission(`policy-${surveillanceDrone}`);
                                         deleteNetworkPolicyDuringMission(`policy-${supplyDrone}`);
-                                        console.log('Mission status updated to FAILED.');
+                                        exec(`kubectl exec ${controller} -n default -- sh -c 'echo "" > mission_state.json'`);
+                                        exec(`kubectl exec ${controller} -n default -- sh -c 'echo "connected" > survState.txt'`);
+                                        exec(`kubectl exec ${controller} -n default -- sh -c 'echo "connected" > supState.txt'`);
+                                        console.log('Mission status updated to ABORTED.');
                                         res.status(200).json({ message: 'Mission failed during execution.' });
                                     }
                                 });
@@ -631,48 +640,30 @@ exports.executeStealthyReconAndResupply = (req, res) => {
 
 
 exports.simulateBadNetwork = (req, res) => {
-    const { blockDevice, hostDevice, hostPort } = req.body;
-
-    const executeKubectlExecAndGetIP = (device, callback) => {
-        const command = `kubectl get pod ${device} -n default -o json`;
-        exec(command, (error, stdout, stderr) => {
-            if (error) {
-                console.error('Error:', stderr || error);
-                callback(error);
-                return;
-            }
-            try {
-                const podInfo = JSON.parse(stdout);
-                const podIP = podInfo.status.podIP;
-                callback(null, podIP);
-            } catch (parseError) {
-                callback(parseError);
-            }
-        });
-    };
-
+    const { controller, type } = req.body;
+    const drone = `${type}State.txt`;
+    const command = `kubectl exec ${controller} -n default -- sh -c 'echo "disconnected" > ${drone}'`;
+    console.log(command);
+    exec(command);
     // Start the process and send an initial response
     res.status(200).json({ message: 'Network simulation initiated' });
-
-    executeKubectlExecAndGetIP(blockDevice, (error, blockDeviceIP) => {
-        if (error) {
-            console.error('Error fetching blockDevice IP:', error);
-            return res.status(500).json({ message: 'Failed to fetch IP for block device.' });
-        }
-
-        console.log('Block device IP:', blockDeviceIP);
-        const curlCommand = `kubectl exec ${hostDevice} -n default -- wget --header="Content-Type: application/json" --post-data='{"ip": "${blockDeviceIP}"}' http://localhost:${hostPort}/addToBlocklist -O -`;
-
-        exec(curlCommand, (error, stdout, stderr) => {
-            if (error) {
-                console.error('Error executing curl command:', stderr || error);
-                return res.status(500).json({ message: 'Failed to add IP to blocklist.', error: stderr || error });
-            }
-            console.log('Curl response:', stdout);
-            res.status(200).json({ message: 'Block device IP successfully added to blocklist', response: stdout });
-        });
-    });
 };
+
+exports.simulateGpsSpoofing = (req, res) => {
+    const { controller, device, slope, distance } = req.body;
+    const drone = device == 'surv' ? "spoofGpsSurv.txt" : "spoofGpsSup.txt";
+    const command = `kubectl exec ${controller} -n default -- sh -c 'echo "${slope},${distance}" > ${drone}'`;
+    console.log(command);
+    exec(command);
+    // Start the process and send an initial response
+    res.status(200).json({ message: 'GPS Spoofing simulation initiated' });
+};
+
+exports.simulatePhysicalCapture = (req, res) => {
+    const {device} = req.body;
+    deleteNetworkPolicyDuringMission(`policy-${device}`);
+    res.status(200).json({message: "Physical Capture simulation successful"});
+}
 
 exports.downloadMissionManifest = (req, res) => {
     const authToken = req.query.authToken;

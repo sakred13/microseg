@@ -5,6 +5,7 @@ import { API_URL } from '../../../config';
 
 const MissionExecution = (props) => {
     // State for surveillance drone
+    let intervalId;
     const [position, setPosition] = useState({ x: 202, y: 420 });
     const [path, setPath] = useState([]); //Done
     const [showSurveillanceDrone, setShowSurveillanceDrone] = useState(true);
@@ -12,14 +13,11 @@ const MissionExecution = (props) => {
     // State for supply drone
     const [supplyDronePosition, setSupplyDronePosition] = useState({ x: 202, y: 420 });
     const [supplyPath, setSupplyPath] = useState([]);
-    const [showSupplyDrone, setShowSupplyDrone] = useState(false);
 
     const [relayPosition, setRelayPosition] = useState({ x: 202, y: 420 });
     const [relayPath, setRelayPath] = useState([]);
     const [showRelayDrone, setShowRelayDrone] = useState(false);
-    const [survCommEstablished, setSurvCommEstablished] = useState(false);
     const [supCommEstablished, setSupCommEstablished] = useState(false);
-    const [survCommLost, setSurvCommLost] = useState(false);
     const [supCommLost, setSupCommLost] = useState(false);
     // State for air defense
     const [showAirDefense, setShowAirDefense] = useState(false);
@@ -33,7 +31,7 @@ const MissionExecution = (props) => {
 
     const [showMissionAccomplished, setShowMissionAccomplished] = useState(false);
 
-    const { handleTabChange } = props;
+    const { handleTabChange, setSurvCommEstablished, setSurvCommLost, showSupplyDrone, setShowSupplyDrone, showLowBattery, blinkLowBattery, missionAborted, survCommEstablished, setLogs } = props;
 
     useEffect(() => {
         const threatTextInterval = setInterval(() => {
@@ -42,55 +40,71 @@ const MissionExecution = (props) => {
 
         return () => clearInterval(threatTextInterval);
     }, []);
+    
+    useEffect(() => {
+        if (survCommEstablished) {
+          setLogs(logs => [...logs, { message: "Communication with Surveillance Drone Established", color: "green" }]);
+        }
+      }, [survCommEstablished, setLogs]);
 
     useEffect(() => {
-        // Function to fetch mission state from the API
-        const fetchMissionState = () => {
-            fetch(`${API_URL}/mission/getMissionState?deviceName=${props.deviceName}`)
-                .then(response => response.json())
-                .then(data => {
-                    // Update state variables based on the response
-                    setShowAirDefense(data.enemyFound);
-                    setAirDefensePosition({ x: data.enemyX, y: data.enemyY });
-                    setPath(data.survPath);
-                    setSupplyPath(data.supPath);
-                    setSupplyDronePosition({ x: data.supX, y: data.supY });
-                    setAirDefenseRadius(data.enemyRadius);
-                    setShowSurveillanceDrone(!data.survHome);
-                    setPosition({ x: data.survX, y: data.survY });
-                    setEndPosition({ x: data.destX, y: data.destY });
-                    setShowSupplyDrone(data.survHome);
-                    setShowMissionAccomplished(data.missionSuccess);
-                    setRelayPosition({ x: data.relayX, y: data.relayY });
-                    setRelayPath(data.relayPath);
-                    setShowRelayDrone(data.survCommLost || data.supCommLost);
-                    setSurvCommLost(data.survCommLost);
-                    setSupCommLost(data.supCommLost);
-                    setSurvCommEstablished(data.survCommEst);
-                    setSupCommEstablished(data.supCommEst);
+        setShowMissionAccomplished(missionAborted);
+    }, [missionAborted]);
+    
+    const fetchMissionState = () => {
+        fetch(`${API_URL}/mission/getMissionState?deviceName=${props.deviceName}`)
+            .then(response => {
+                if (!response.ok) {
+                    // If the response is not okay, throw an error that will skip the following then block
+                    throw new Error(`HTTP status ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Update all your state variables only if the response was successful
+                setShowAirDefense(data.enemyFound);
+                setAirDefensePosition({ x: data.enemyX, y: data.enemyY });
+                setPath(data.survPath);
+                setSupplyPath(data.supPath);
+                setSupplyDronePosition({ x: data.supX, y: data.supY });
+                setAirDefenseRadius(data.enemyRadius);
+                setShowSurveillanceDrone(!data.survHome);
+                setPosition({ x: data.survX, y: data.survY });
+                setEndPosition({ x: data.destX, y: data.destY });
+                setShowSupplyDrone(data.survHome);
+                setShowMissionAccomplished(data.missionSuccess);
+                setRelayPosition({ x: data.relayX, y: data.relayY });
+                setRelayPath(data.relayPath);
+                setShowRelayDrone(data.survCommLost || data.supCommLost);
+                setSurvCommLost(data.survCommLost);
+                setSupCommLost(data.supCommLost);
+                setSurvCommEstablished(data.survCommEst);
+                setSupCommEstablished(data.supCommEst);
 
-                    // If mission is successful, stop fetching mission state
-                    if (data.missionSuccess) {
-                        clearInterval(intervalId);
+                if (data.missionSuccess) {
+                    // If mission is successful, stop the interval and reload the page after 10 seconds
+                    clearInterval(intervalId);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 10000);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching mission state:', error);
+                // Do not set any state, just log the error. The interval will keep running.
+            });
+    };
 
-                        // Navigate to /currentMissions after 10 seconds
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 10000);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching mission state:', error);
-                });
-        };
+    // Initially call and set up interval in useEffect
+    useEffect(() => {
+        intervalId = setInterval(fetchMissionState, 1000); // adjust the interval as needed
+        fetchMissionState(); // also call immediately to start the cycle
 
-        // Call fetchMissionState immediately and then every 2 seconds
-        fetchMissionState(); // Call immediately
-        const intervalId = setInterval(fetchMissionState, 1000); // Call every 2 seconds
-
-        // Clean-up function to clear the interval when the component unmounts or when the effect is re-run
+        // Clear the interval on cleanup
         return () => clearInterval(intervalId);
-    }, []);
+    }, []); // Make sure this effect does not have dependencies that might cause it to re-run unnecessarily
+
+
 
     const missionAccomplishedStyle = {
         display: showMissionAccomplished ? 'block' : 'none',
@@ -98,7 +112,7 @@ const MissionExecution = (props) => {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        backgroundColor: 'green',
+        backgroundColor: missionAborted ? 'red' : 'green',
         color: 'white',
         padding: '20px',
         borderRadius: '10px',
@@ -141,7 +155,9 @@ const MissionExecution = (props) => {
             {showRelayDrone && (
                 <>
                     <polyline points={relayPathString} fill="none" stroke="cyan" strokeWidth="2" strokeDasharray="5,5" />
-                    <image href="drone.png" x={relayPosition.x} y={relayPosition.y} width="70" height="70" />
+                    <image href="signalsLeft.png" x={relayPosition.x - 60} y={relayPosition.y - 20} width="90" height="90" />
+                    <image href="relayDrone.png" x={relayPosition.x} y={relayPosition.y} width="70" height="70" />
+                    <image href="signalsRight.png" x={relayPosition.x + 40} y={relayPosition.y - 20} width="90" height="90" />
                     <rect x={relayPosition.x - 25} y={relayPosition.y + 60} width="150" height="30" fill="black" stroke="white" strokeWidth="2" rx="15" ry="15" />
                     <text x={relayPosition.x + 50} y={relayPosition.y + 80} fill="white" fontSize="15" textAnchor="middle" fontWeight="bold">Comm Relay Drone</text>
                 </>
@@ -150,6 +166,9 @@ const MissionExecution = (props) => {
             {showSupplyDrone && (
                 <>
                     <polyline points={supplyPathString} fill="none" stroke="blue" strokeWidth="2" strokeDasharray="5,5" />
+                    {showLowBattery && blinkLowBattery && (
+                        <image href="lowBattery.png" x={supplyDronePosition.x + 15} y={supplyDronePosition.y - 20} width="40" height="40" />
+                    )}
                     <image href="supplydrone.png" x={supplyDronePosition.x} y={supplyDronePosition.y} width="70" height="70" />
                     <rect x={supplyDronePosition.x - 25} y={supplyDronePosition.y + 60} width="150" height="30" fill="black" stroke="white" strokeWidth="2" rx="15" ry="15" />
                     <text x={supplyDronePosition.x + 50} y={supplyDronePosition.y + 80} fill="white" fontSize="15" textAnchor="middle" fontWeight="bold">Supply Drone</text>
@@ -190,7 +209,7 @@ const MissionExecution = (props) => {
                 </div>
             </foreignObject>
         </svg>
-            {showMissionAccomplished && (
+            {(showMissionAccomplished || missionAborted) && (
                 <div style={missionAccomplishedStyle}>
                     <button
                         className="close-button"
@@ -213,8 +232,10 @@ const MissionExecution = (props) => {
                         X
                     </button>
 
-                    Mission Accomplished! Supplies Have Been Delivered!
-                </div>
+                    {missionAborted
+                        ? "Mission Aborted in Safe Mode. All compromised drones have turned their containers down."
+                        : "Mission Accomplished! Supplies Have Been Delivered!"
+                    }                </div>
             )}
         </>
     );

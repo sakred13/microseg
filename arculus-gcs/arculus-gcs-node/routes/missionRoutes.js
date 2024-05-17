@@ -16,5 +16,7 @@ router.post('/executeStealthyReconAndResupply', missionService.executeStealthyRe
 router.post('/simulateBadNetwork', missionService.simulateBadNetwork);
 router.post('/downloadMissionManifest', missionService.downloadMissionManifest);
 router.post('/uploadMissionManifest', missionService.uploadMissionManifest);
+router.post('/simulateGpsSpoofing', missionService.simulateGpsSpoofing);
+router.post('/simulatePhysicalCapture', missionService.simulatePhysicalCapture);
 
 module.exports = router;
