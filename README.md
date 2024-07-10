@@ -99,7 +99,7 @@ The documentation of the workflow and its respective code (for developers) has b
 
 2. The docs web application launches on port 6006 of the host machine. Access the docs at `{hostIp}:6006`.
 
-### Watch mission execution demos under various scenarios below:
+### Watch tutorials of application usage below:
 [![User and Device Management (Video)](http://img.youtube.com/vi/nwDFrQLYTA8/0.jpg)](https://youtu.be/nwDFrQLYTA8)
 [![Mission Planning (Video)](http://img.youtube.com/vi/J8Y1VbJu18g/0.jpg)](https://youtu.be/J8Y1VbJu18g)
 [![Normal Scenario](http://img.youtube.com/vi/OabGbvjsLhY/0.jpg)](https://youtu.be/OabGbvjsLhY) 
