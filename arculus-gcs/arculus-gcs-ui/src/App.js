@@ -21,6 +21,7 @@ import UtilizationGraphs from './Components/dashboard/UtilizationGraphs';
 import CurrentMissions from './Components/dashboard/MissionPlanning/CurrentMissions';
 import ManagePolicies from './Components/dashboard/PolicyManagement/ManagePolicies';
 import AccountDashboard from './Components/dashboard/UserManagement/AccountDashboard';
+import NewSetup from './Pages/NewSetup';
 
 function App() {
 
@@ -30,6 +31,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Routing />} />
           <Route path='/signIn' element={<SignInPage />} />
+          <Route path='/newSetup' element={<NewSetup />} />
           <Route path='/downloadTools' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor']} component={<DownloadTools />} />} />}/>
           <Route path='/loggedIn' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor', 'Mission Viewer']} component={<IntroDashboard />} />} />} />
           <Route path='/about' element={<Layout component={<AccessWrapper allowedUserTypes={['Mission Creator', 'Mission Supervisor', 'Mission Viewer']} component={<IntroDashboard />} />} />} />

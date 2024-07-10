@@ -66,9 +66,9 @@ const ZtModeDropdown = ({ currentMode }) => {
                 value={mode}
                 onChange={(e) => handleChange(e.target.value)}
             >
+                <option value="risk_based_zt">Enforce Risk-based Zero Trust Security</option>
                 <option value="no_zt">Do not enforce Zero Trust Security</option>
                 <option value="full_zt">Enforce Full Zero Trust Security</option>
-                <option value="risk_based_zt">Enforce Risk-based Zero Trust Security</option>
             </select>
         </div>
     );

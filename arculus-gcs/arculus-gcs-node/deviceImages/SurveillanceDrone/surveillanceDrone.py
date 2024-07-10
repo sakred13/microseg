@@ -92,9 +92,9 @@ def generate_random_coordinates():
     # if ENEMY_X is not None and ENEMY_Y is not None and ENEMY_RADIUS_MIN is not None and ENEMY_RADIUS_MAX is not None:
     #     return ENEMY_X, ENEMY_Y, random.uniform(ENEMY_RADIUS_MIN, ENEMY_RADIUS_MAX)
     # Define the boundaries of the inner square
-    top_boundary = 0.8 * 1024  # 100% - 20% from the top
-    bottom_boundary = 0.2 * 1024  # 20% from the bottom
-    side_boundary = 0.25 * 1792 # 25% inwards from the sides
+    top_boundary = 0.7 * 1024  # 100% - 20% from the top
+    bottom_boundary = 0.3 * 1024  # 20% from the bottom
+    side_boundary = 0.3 * 1792 # 25% inwards from the sides
     # Calculate the range for X and Y coordinates
     x_range = (side_boundary, 1792 - side_boundary)
     y_range = (bottom_boundary, top_boundary)

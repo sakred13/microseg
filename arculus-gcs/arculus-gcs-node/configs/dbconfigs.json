@@ -1,7 +1,7 @@
 {
-  "host": "",
-  "user": "",
-  "password": "",
-  "database": "",
+  "host": "localhost",
+  "user": "root",
+  "password": "vimanlab",
+  "database": "policymanager",
   "connectionLimit": 10
 }

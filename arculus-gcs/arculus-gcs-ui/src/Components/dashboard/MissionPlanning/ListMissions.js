@@ -175,7 +175,7 @@ const ListMissions = ({ authToken, setSelectedLocation, setDeviceName, setActive
                     {userType === 'Mission Creator' && <TableCell>
                       <IconButton
                         aria-label="execute"
-                        // disabled={loadingMission === mission.mission_id || ['IN EXECUTION', "SUCCESSFUL", "ABORTED"].includes(mission.state)}
+                        disabled={loadingMission === mission.mission_id || ['IN EXECUTION', "SUCCESSFUL", "ABORTED"].includes(mission.state)}
                         onClick={() => handleExecuteMission(JSON.parse(mission.config), mission.mission_id)}
                       >
                         {loadingMission === mission.mission_id ? <HourglassEmptyIcon /> : <PlayArrowIcon />}

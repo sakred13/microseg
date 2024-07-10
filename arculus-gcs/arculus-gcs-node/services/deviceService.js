@@ -9,6 +9,8 @@ var requestList = {};
 var acceptedList = {};
 var blockList = {};
 
+const imageMap = JSON.parse(fs.readFileSync('configs/dockerImageConfig.json'));
+
 // WebSocket server
 // joinReqsWss.on('connection', 
 exports.joinReqsWebSocket = (ws, req) => {
@@ -418,17 +420,6 @@ exports.addTrustedDevice = (req, res) => {
         }
 
         if (isAdmin) {
-            // Define Docker images based on deviceType
-            const imageMap = {
-                "Video Capture Drone": "sakred22/surv-drone:v1",
-                "Video Analytic Controller": "sakred22/controller:v1",
-                "Video Capture Rover": "39dj29dl2d9l2/vcc:latest",
-                "Freight Drone": "sakred22/sup-drone:v1",
-                "Freight UGV": "sakred22/sup-drone:v1",
-                "Sensor-Integrated Drone": "39dj29dl2d9l2/vcc:latest",
-                "Communication Relay Drone": "sakred22/relay-drone:v1",
-                "Communication Relay Rover": "39dj29dl2d9l2/vcc:latest",
-            };
 
             const commandMap = {
                 "Video Capture Drone": ["python3", "surveillanceDrone.py"],

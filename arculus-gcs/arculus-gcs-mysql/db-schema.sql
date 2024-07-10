@@ -189,13 +189,7 @@ CREATE TABLE `user` (
 
 --
 -- Dumping data for table `user`
---
-
-LOCK TABLES `user` WRITE;
-/*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'admin@umsystem.edu','admin',1,'$2b$10$H6W0865NkOsLCjSZ1fME7eym05sUZfH8NeoYFrMrmgzXlRGr2JcJy'),(5,'saketh.reddy1307@gmail.coms','Saketh',1,'$2b$10$aGSJbbrReDRAeBLS4nkcGOT1uST.evWKTvYfNazkvU1aWcl1CCGJ.');
-/*!40000 ALTER TABLE `user` ENABLE KEYS */;
-UNLOCK TABLES;
+-
 
 --
 -- Table structure for table `blacklist`

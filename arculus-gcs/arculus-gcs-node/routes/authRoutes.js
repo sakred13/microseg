@@ -10,5 +10,6 @@ router.get('/authenticate', authService.authenticate)
 router.get('/runExperimentInPod', authService.runExperimentInPod);
 router.post('/sendEmailForAuth', authService.sendEmailForAuth);
 router.post('/verifyOtp', authService.verifyOtp);
+router.get('/isNewSetup', authService.isNewSetup);
 
 module.exports = router;

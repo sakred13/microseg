@@ -88,53 +88,90 @@ const getUserIdFromName = async (username) => {
 };
 exports.getUserIdFromName = getUserIdFromName;
 
-exports.signup = (req, res) => {
-    const { jwtToken, username, email, password, role, domains } = req.body;
-
-    // Check if the user has an admin role
-    isUserOfType(getUserFromToken(jwtToken), ['Mission Creator'], (roleErr, isAdmin) => {
-        if (roleErr) {
-            console.error(roleErr);
+exports.isNewSetup = (req, res) => {
+    // Query the user table to check if there are any records
+    pool.query('SELECT COUNT(*) AS userCount FROM user', (queryErr, results) => {
+        if (queryErr) {
+            console.error(queryErr);
             return res.status(500).json({ message: 'Internal Server Error' });
         }
 
-        if (isAdmin) {
-            // Fetch role_id based on role_name
-            pool.query('SELECT role_id FROM role WHERE role_name = ?', [role], (selectErr, results) => {
-                if (selectErr) {
-                    console.error(selectErr);
-                    return res.status(500).json({ message: 'Internal Server Error' });
-                }
-
-                if (results.length === 0) {
-                    // Role not found
-                    return res.status(400).json({ message: 'Invalid role specified' });
-                }
-
-                const role_id = results[0].role_id;
-
-                // Hash the password using bcrypt
-                bcrypt.hash(password, 10, (hashErr, hash) => {
-                    if (hashErr) {
-                        console.error(hashErr);
-                        return res.status(500).json({ message: 'Internal Server Error' });
-                    }
-
-                    // Insert the user into the database
-                    pool.query('INSERT INTO user (username, email, role_id, password_hash, domains) VALUES (?, ?, ?, ?, ?)', [username, email, role_id, hash, domains], (insertErr) => {
-                        if (insertErr) {
-                            console.error(insertErr);
-                            return res.status(500).json({ message: 'An Account is already present with the given email or username. Please try to login or create a new account using a different email.' });
-                        }
-
-                        return res.status(200).json({ message: 'User account created successfully' });
-                    });
-                });
-            });
+        // Check the count of users
+        if (results[0].userCount === 0) {
+            // No users found, likely a new setup
+            return res.status(200).json({ newSetup: true });
         } else {
-            return res.status(403).json({ message: 'Unauthorized: Only users with admin role can perform this action' });
+            // Users exist in the database
+            return res.status(200).json({ newSetup: false });
         }
     });
+};
+
+exports.signup = (req, res) => {
+    const { jwtToken, username, email, password, role, domains } = req.body;
+
+    // Function to insert user into the database
+    const createUser = (role_id) => {
+        bcrypt.hash(password, 10, (hashErr, hash) => {
+            if (hashErr) {
+                console.error(hashErr);
+                return res.status(500).json({ message: 'Internal Server Error' });
+            }
+
+            // Insert the user into the database
+            pool.query('INSERT INTO user (username, email, role_id, password_hash, domains) VALUES (?, ?, ?, ?, ?)',
+                [username, email, role_id, hash, domains],
+                (insertErr) => {
+                    if (insertErr) {
+                        console.error(insertErr);
+                        return res.status(500).json({ message: 'An Account is already present with the given email or username. Please try to login or create a new account using a different email.' });
+                    }
+                    return res.status(200).json({ message: 'User account created successfully' });
+                }
+            );
+        });
+    };
+
+    // Check for a valid JWT token
+    if (jwtToken) {
+        verifyToken(jwtToken, (err, decoded) => {
+            if (err) {
+                console.error('Token verification failed:', err);
+                checkForEmptyDatabaseAndCreateUser();
+            } else {
+                isUserOfType(decoded.userId, ['Mission Creator'], (roleErr, isAdmin) => {
+                    if (roleErr || !isAdmin) {
+                        console.error(roleErr);
+                        return res.status(403).json({ message: 'Unauthorized: Only users with admin role can perform this action' });
+                    }
+
+                    fetchRoleIdAndCreateUser(role);
+                });
+            }
+        });
+    } else {
+        checkForEmptyDatabaseAndCreateUser();
+    }
+
+    function checkForEmptyDatabaseAndCreateUser() {
+        pool.query('SELECT COUNT(*) AS count FROM user', (err, results) => {
+            if (err || results[0].count > 0) {
+                return res.status(403).json({ message: 'Unauthorized: No valid JWT provided and users exist in the database' });
+            }
+            fetchRoleIdAndCreateUser(role);
+        });
+    }
+
+    function fetchRoleIdAndCreateUser(roleName) {
+        pool.query('SELECT role_id FROM role WHERE role_name = ?', [roleName], (selectErr, results) => {
+            if (selectErr || results.length === 0) {
+                console.error(selectErr);
+                return res.status(500).json({ message: 'Internal Server Error or Invalid role specified' });
+            }
+            const role_id = results[0].role_id;
+            createUser(role_id);
+        });
+    }
 };
 
 exports.sendEmailForAuth = (req, res) => {
