@@ -1,0 +1,8 @@
+{
+  "label": "Arculus ReactJS Components",
+  "position": 10,
+  "link": {
+    "type": "generated-index",
+    "description": "Here, each of the ReactJS components used by Arculus and their hierarchies are documented."
+  }
+}

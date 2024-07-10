@@ -95,7 +95,7 @@ These commands list all the nodes and pods on the cluster. Make sure that all th
 
 The documentation of the workflow and its respective code (for developers) has been documented as a Docusaurus web app for docs. To read the docs, follow the below steps:
 
-1. Go to the `arculus-docs` directory and run `npm start`.
+1. Go to the `arculus-docs` directory and run `npm install` and `npm start`.
 
 2. The docs web application launches on port 6006 of the host machine. Access the docs at `{hostIp}:6006`.
 

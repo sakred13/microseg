@@ -1,0 +1,8 @@
+{
+  "label": "Arculus Database",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Refer this documentation to understand the database schema of Arclus and the various purposes of the relations and their columns."
+  }
+}

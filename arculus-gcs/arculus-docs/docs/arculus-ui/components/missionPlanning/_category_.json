@@ -1,0 +1,8 @@
+{
+  "label": "Mission Planning",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "These are the components used to plan, create, execute and abort missions on Arculus."
+  }
+}

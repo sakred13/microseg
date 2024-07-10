@@ -1,0 +1,8 @@
+{
+  "label": "Arculus API",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "This documentation outlines the various APIs used by the Arculus backend to achieve functionalities and effective state management of the system."
+  }
+}

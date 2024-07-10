@@ -1,0 +1,8 @@
+{
+  "label": "Auth",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "These are the authorization components used to display/hide contents according to user's authorization"
+  }
+}

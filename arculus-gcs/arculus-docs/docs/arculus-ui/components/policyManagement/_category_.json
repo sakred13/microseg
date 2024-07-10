@@ -1,0 +1,8 @@
+{
+  "label": "Policy Management",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "These are the components used to manage network policies among devices in the Arculus cluster."
+  }
+}

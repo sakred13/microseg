@@ -1,0 +1,8 @@
+{
+  "label": "HoneyNet",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "These components are used to deploy and undeploy honeypots, and visualize the attack data monitored by the honeypots on Arculus devices."
+  }
+}

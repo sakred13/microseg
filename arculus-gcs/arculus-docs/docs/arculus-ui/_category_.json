@@ -1,0 +1,8 @@
+{
+  "label": "Arculus User Interface",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "This documentation walks you through the flow of the Arculus UI, various pages navigated by each feature, and the ReactJS components utilized by them."
+  }
+}
