@@ -1,0 +1,2560 @@
+{
+	"info": {
+		"_postman_id": "63351d12-94ae-4c53-b25e-e28e2db4e36b",
+		"name": "Arculus API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12892641"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "POST Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"Arculus\",\r\n    \"password\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://44.202.251.161:3001/auth/login",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "The login API accepts the username and password of the user, verifies them, and issues an encrypted JWT token with a one-hour access session."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"Arculus\",\r\n    \"password\": \"password\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://44.202.251.161:3001/auth/login",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "268"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"10c-Q6AebAxiP/soE4eYAv84NdpZkt4\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 00:29:41 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Logged in successfully\",\n    \"jwtToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk3ODEsImV4cCI6MTcxODkzMzM4MX0.Tk3StLwQ4tOfzmmX6PNb_BcAd45kUt-hZZ7Ht0bWye8\",\n    \"user\": \"Arculus\"\n}"
+						}
+					]
+				},
+				{
+					"name": "GET Authorize",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://44.202.251.161:3001/auth/authorize?authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"auth",
+								"authorize"
+							],
+							"query": [
+								{
+									"key": "authToken",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug"
+								}
+							]
+						},
+						"description": "The /authorize API checks the authorization token and returns the user type for the UI to render content based on the user role."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://44.202.251.161:3001/auth/authorize?authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"auth",
+										"authorize"
+									],
+									"query": [
+										{
+											"key": "authToken",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "61"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3d-lyAF7VQXppDRISkj4p27Y2eeNUA\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 00:27:53 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"User is authorized\",\n    \"userType\": \"Mission Creator\"\n}"
+						}
+					]
+				},
+				{
+					"name": "POST Signup",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"jwtToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug\",\r\n    \"username\": \"newuser\",\r\n    \"email\": \"newuser@gmail.com\",\r\n    \"role\": \"Mission Supervisor\",\r\n    \"password\": \"qwertyuiop\",\r\n    \"domains\": \"Explosive Ordnance Reconnaissance,Structural Integrity Assessment\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://44.202.251.161:3001/auth/signup",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"auth",
+								"signup"
+							]
+						},
+						"description": "The /signup API accepts new user information, verifies there is no duplication of user information, creates the new user, and returns success/failure status."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"jwtToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug\",\r\n    \"username\": \"newuser\",\r\n    \"email\": \"newuser@gmail.com\",\r\n    \"role\": \"Mission Supervisor\",\r\n    \"password\": \"qwertyuiop\",\r\n    \"domains\": \"Explosive Ordnance Reconnaissance,Structural Integrity Assessment\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://44.202.251.161:3001/auth/signup",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"auth",
+										"signup"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "47"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2f-7s/iNiiw2OTNvlymlzN80tYHuyo\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 00:32:31 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"User account created successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "POST SendEmailForAuth",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://44.202.251.161:3001/auth/sendEmailForAuth",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"auth",
+								"sendEmailForAuth"
+							]
+						},
+						"description": "The /sendEmailForAuth API sends an authentication e-mail to the user's address with a one-time password (OTP)."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://44.202.251.161:3001/auth/sendEmailForAuth",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"auth",
+										"sendEmailForAuth"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "37"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"25-vsHxvdWogldDQI5vhZODv3iDJLg\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 00:38:57 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Email successfully sent\"\n}"
+						}
+					]
+				},
+				{
+					"name": "PUT SetZTMode",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://44.202.251.161:3001/auth/setZtMode?mode=no_zt",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"auth",
+								"setZtMode"
+							],
+							"query": [
+								{
+									"key": "mode",
+									"value": "no_zt"
+								}
+							]
+						},
+						"description": "The /setZtMode API changes the Zero Trust mode used by the backend based on the dropdown option chosen by the user."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://44.202.251.161:3001/auth/setZtMode?mode=no_zt",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"auth",
+										"setZtMode"
+									],
+									"query": [
+										{
+											"key": "mode",
+											"value": "no_zt"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "50"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"32-XfNPd6Xb+i5Azcl6m43MTNQ2wKY\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 01:33:38 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Zero Trust mode changed successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "POST VerifyOTP",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug\",\r\n    \"otp\": \"836657\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://44.202.251.161:3001/auth/verifyOtp",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"auth",
+								"verifyOtp"
+							]
+						},
+						"description": "The /verifyOtp API checks the input OTP and verifies it against the issues code. It returns a failure status if the OTP is incorrect."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug\",\r\n    \"otp\": \"836657\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://44.202.251.161:3001/auth/verifyOtp",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"auth",
+										"verifyOtp"
+									]
+								}
+							},
+							"status": "Forbidden",
+							"code": 403,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "27"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1b-mPUPnSDAfkzkyxDJVFlXWnxKDw4\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 00:40:17 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Incorrect OTP\"\n}"
+						}
+					]
+				}
+			],
+			"description": "The Authorization APIs handle the user creation, sign-in and session management of the application."
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "DELETE DeleteUser",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://44.202.251.161:3001/user/deleteUser?username=newuser&authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"user",
+								"deleteUser"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "newuser"
+								},
+								{
+									"key": "authToken",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug"
+								}
+							]
+						},
+						"description": "The /deleteUser API can be used by authorized Mission Creator users to delete other users."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://44.202.251.161:3001/user/deleteUser?username=newuser&authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"user",
+										"deleteUser"
+									],
+									"query": [
+										{
+											"key": "username",
+											"value": "newuser"
+										},
+										{
+											"key": "authToken",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "39"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"27-27o4zzUjhHNmthTJyia4gBCjpos\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 00:34:11 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"User deleted successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "GET GetUsers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://44.202.251.161:3001/user/getUsers?authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"user",
+								"getUsers"
+							],
+							"query": [
+								{
+									"key": "authToken",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug"
+								}
+							]
+						},
+						"description": "The /getUsers API fetches all the users in Arculus accepting a valid Mission Creator user."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://44.202.251.161:3001/user/getUsers?authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"user",
+										"getUsers"
+									],
+									"query": [
+										{
+											"key": "authToken",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "956"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3bc-KKQ4/phBIBcSM5uBpLtM0atToSI\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 01:22:22 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"username\": \"Arculus\",\n        \"email\": \"arculus@demo.com\",\n        \"user_id\": 25,\n        \"role_name\": \"Mission Creator\",\n        \"domains\": \"Explosive Ordnance Reconnaissance,Covert Operations Support,Structural Integrity Assessment,Crisis Response and Restoration\"\n    },\n    {\n        \"username\": \"mizzouceri\",\n        \"email\": \"mizzouceri@umsystem.edu\",\n        \"user_id\": 26,\n        \"role_name\": \"Mission Creator\",\n        \"domains\": \"Covert Operations Support,Structural Integrity Assessment,Crisis Response and Restoration\"\n    },\n    {\n        \"username\": \"Vamsi\",\n        \"email\": \"vpkmp@umsystem.edu\",\n        \"user_id\": 29,\n        \"role_name\": \"Mission Creator\",\n        \"domains\": \"Explosive Ordnance Reconnaissance,Covert Operations Support\"\n    },\n    {\n        \"username\": \"cerisupervisor\",\n        \"email\": \"cerisupervisor@missouri.edu\",\n        \"user_id\": 28,\n        \"role_name\": \"Mission Supervisor\",\n        \"domains\": \"Covert Operations Support,Structural Integrity Assessment\"\n    },\n    {\n        \"username\": \"ceriviewer\",\n        \"email\": \"ceriviewer@missouri.edu\",\n        \"user_id\": 27,\n        \"role_name\": \"Mission Viewer\",\n        \"domains\": \"Covert Operations Support,Structural Integrity Assessment\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "POST UpdateUser",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM\",\r\n    \"user\": \"mizzouceri\",\r\n    \"updated_username\": \"mizzouceri\",\r\n    \"email_id\": \"mizzouceri@umsystem.edu\",\r\n    \"role\": \"Mission Creator\",\r\n    \"domains\": \"Covert Operations Support,Structural Integrity Assessment,Crisis Response and Restoration,Explosive Ordnance Reconnaissance\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://44.202.251.161:3001/user/updateUser",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"user",
+								"updateUser"
+							]
+						},
+						"description": "The /updateUser API is used to edit user information and configuration by an authorized Mission Creator user."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM\",\r\n    \"user\": \"mizzouceri\",\r\n    \"updated_username\": \"mizzouceri\",\r\n    \"email_id\": \"mizzouceri@umsystem.edu\",\r\n    \"role\": \"Mission Creator\",\r\n    \"domains\": \"Covert Operations Support,Structural Integrity Assessment,Crisis Response and Restoration,Explosive Ordnance Reconnaissance\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://44.202.251.161:3001/user/updateUser",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"user",
+										"updateUser"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "39"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"27-dfFyQgR3GE+Pkj6o/3TrBgkhH1g\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 01:32:56 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"User updated successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "GET GetCurrentUser",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://44.202.251.161:3001/user/getCurrentUser?authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"user",
+								"getCurrentUser"
+							],
+							"query": [
+								{
+									"key": "authToken",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug"
+								}
+							]
+						},
+						"description": "This API fetches the information of the current user using his/her authorization token."
+					},
+					"response": []
+				}
+			],
+			"description": "The User APIs handle the user management functionalities like updating, deleting, and fetching user information."
+		},
+		{
+			"name": "Device",
+			"item": [
+				{
+					"name": "GET GetTrustedDevices",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://44.202.251.161:3001/device/getTrustedDevices?authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"device",
+								"getTrustedDevices"
+							],
+							"query": [
+								{
+									"key": "authToken",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug"
+								}
+							]
+						},
+						"description": "This API fetches the list of devices configured with K3s pods when provided with an authorized Mission Creator user."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://44.202.251.161:3001/device/getTrustedDevices?authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"device",
+										"getTrustedDevices"
+									],
+									"query": [
+										{
+											"key": "authToken",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1507"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"5e3-4D5AzAsUbjEsI+fCHL1215u1tlg\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 00:43:08 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"device_id\": 70,\n        \"device_name\": \"survdrone\",\n        \"ip_address\": \"10.42.16.11\",\n        \"personnel_rank\": null,\n        \"device_type\": \"Freight Drone\",\n        \"allowedTasks\": [\n            \"send_sensordata\",\n            \"send_posdata\",\n            \"receive_command\"\n        ]\n    },\n    {\n        \"device_id\": 77,\n        \"device_name\": \"relaydrone\",\n        \"ip_address\": \"10.42.21.8\",\n        \"personnel_rank\": null,\n        \"device_type\": \"Communication Relay Drone\",\n        \"allowedTasks\": [\n            \"send_command\",\n            \"send_video\",\n            \"send_sensordata\",\n            \"send_posdata\",\n            \"receive_posdata\",\n            \"receive_sensordata\",\n            \"receive_video\",\n            \"receive_command\"\n        ]\n    },\n    {\n        \"device_id\": 78,\n        \"device_name\": \"surveillancedrone\",\n        \"ip_address\": \"10.42.20.9\",\n        \"personnel_rank\": null,\n        \"device_type\": \"Video Capture Drone\",\n        \"allowedTasks\": [\n            \"send_video\",\n            \"send_sensordata\",\n            \"send_posdata\",\n            \"receive_command\"\n        ]\n    },\n    {\n        \"device_id\": 79,\n        \"device_name\": \"dronelatest\",\n        \"ip_address\": \"10.42.24.3\",\n        \"personnel_rank\": null,\n        \"device_type\": \"Communication Relay Drone\",\n        \"allowedTasks\": [\n            \"send_command\",\n            \"send_sensordata\",\n            \"send_posdata\",\n            \"receive_sensordata\",\n            \"receive_command\"\n        ]\n    },\n    {\n        \"device_id\": 80,\n        \"device_name\": \"newdemodrone\",\n        \"ip_address\": \"10.42.23.8\",\n        \"personnel_rank\": null,\n        \"device_type\": \"Freight Drone\",\n        \"allowedTasks\": [\n            \"send_sensordata\",\n            \"send_posdata\",\n            \"receive_command\"\n        ]\n    },\n    {\n        \"device_id\": 81,\n        \"device_name\": \"armdevice\",\n        \"ip_address\": \"10.42.25.3\",\n        \"personnel_rank\": null,\n        \"device_type\": \"Video Capture Drone\",\n        \"allowedTasks\": [\n            \"send_video\",\n            \"send_sensordata\",\n            \"send_posdata\",\n            \"receive_command\"\n        ]\n    },\n    {\n        \"device_id\": 82,\n        \"device_name\": \"killerdrone\",\n        \"ip_address\": \"10.42.26.3\",\n        \"personnel_rank\": null,\n        \"device_type\": \"Freight Drone\",\n        \"allowedTasks\": [\n            \"send_command\",\n            \"receive_sensordata\"\n        ]\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "GET GetMoreNodes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://44.202.251.161:3001/device/getMoreNodes?authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"device",
+								"getMoreNodes"
+							],
+							"query": [
+								{
+									"key": "authToken",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug"
+								}
+							]
+						},
+						"description": "This API fetches devices in the cluster that aren't configured with functions and K3s pods."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://44.202.251.161:3001/device/getMoreNodes?authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"device",
+										"getMoreNodes"
+									],
+									"query": [
+										{
+											"key": "authToken",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "51"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"33-c/ixYyePf+no9Vi00hDUMwyVyqY\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 00:43:56 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"nodeName\": \"controller\",\n        \"nodeIP\": \"172.31.88.29\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "DELETE RemoveTrustedDevice",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://44.202.251.161:3001/device/removeTrustedDevice?authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug&deviceName=controller",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"device",
+								"removeTrustedDevice"
+							],
+							"query": [
+								{
+									"key": "authToken",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug"
+								},
+								{
+									"key": "deviceName",
+									"value": "controller"
+								}
+							]
+						},
+						"description": "This API accepts an authorization token and device name, and deletes the device on the user being an authorized Mission Creator."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://44.202.251.161:3001/device/removeTrustedDevice?authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug&deviceName=controller",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"device",
+										"removeTrustedDevice"
+									],
+									"query": [
+										{
+											"key": "authToken",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug"
+										},
+										{
+											"key": "deviceName",
+											"value": "controller"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "68"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"44-J0T6kRWqOVs88M22fOBShUuvIVs\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 00:50:15 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Trusted device and associated pod removed successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "POST AddTrustedDevice",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug\",\r\n    \"deviceName\": \"controller\",\r\n    \"ipAddress\": \"172.31.88.29\",\r\n    \"deviceType\": \"Video Analytic Controller\",\r\n    \"tasks\": [\r\n        \"send_command\",\r\n        \"receive_posdata\",\r\n        \"receive_sensordata\",\r\n        \"receive_video\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://44.202.251.161:3001/device/addTrustedDevice",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"device",
+								"addTrustedDevice"
+							]
+						},
+						"description": "This API is used to configure a node with virtualized functionality for a specific device type and its allowed functions."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug\",\r\n    \"deviceName\": \"controller\",\r\n    \"ipAddress\": \"172.31.88.29\",\r\n    \"deviceType\": \"Video Analytic Controller\",\r\n    \"tasks\": [\r\n        \"send_command\",\r\n        \"receive_posdata\",\r\n        \"receive_sensordata\",\r\n        \"receive_video\"\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://44.202.251.161:3001/device/addTrustedDevice",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"device",
+										"addTrustedDevice"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "47"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2f-s6g3ukiMK0wHp62bCeU9WwKcvJk\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 01:02:35 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Trusted device added successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "PUT UpdateTrustedDevice",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug\",\r\n    \"deviceName\": \"controller\",\r\n    \"ipAddress\": \"10.42.0.232\",\r\n    \"currentName\": \"controller\",\r\n    \"tasks\": [\r\n        \"send_command\",\r\n        \"receive_sensordata\",\r\n        \"receive_posdata\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://44.202.251.161:3001/device/updateTrustedDevice",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"device",
+								"updateTrustedDevice"
+							]
+						},
+						"description": "This API updates the allowed functions for a configured device."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug\",\r\n    \"deviceName\": \"controller\",\r\n    \"ipAddress\": \"10.42.0.232\",\r\n    \"currentName\": \"controller\",\r\n    \"tasks\": [\r\n        \"send_command\",\r\n        \"receive_sensordata\",\r\n        \"receive_posdata\"\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://44.202.251.161:3001/device/updateTrustedDevice",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"device",
+										"updateTrustedDevice"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "49"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"31-vVijHbTdbUZHJWUqL8kFe3dslOQ\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 01:05:11 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Trusted device updated successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "POST AddToCluster",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ipAddress\": \"162.219.62.167\",\r\n    \"nodeName\": \"newDrone1\",\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://44.202.251.161:3001/device/addToCluster",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"device",
+								"addToCluster"
+							]
+						},
+						"description": "This API adds a device to the Arculus cluster when an authorized user accepts a join cluster request."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"ipAddress\": \"162.219.62.167\",\r\n    \"nodeName\": \"newDrone1\",\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://44.202.251.161:3001/device/addToCluster",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"device",
+										"addToCluster"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "44"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2c-efRanmaB1EB0EA9hdhrvIt5ynXc\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 01:10:59 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Added to cluster successfully.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "DELETE RemoveFromCluster",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug\",\r\n    \"nodeName\": \"dronex\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://44.202.251.161:3001/device/removeFromCluster",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"device",
+								"removeFromCluster"
+							]
+						},
+						"description": "This API removes devices from the K3s cluster when an authorized user removes it using the \"Remove from cluster\" button."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5Mjk1MzAsImV4cCI6MTcxODkzMzEzMH0.3l8GFdBJyng8CZ8GU7nBS-d4BJ1JiTyuZ9WEWp1Cgug\",\r\n    \"nodeName\": \"dronex\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://44.202.251.161:3001/device/removeFromCluster",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"device",
+										"removeFromCluster"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "35"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"23-OBw6E4FLjYQt4mo8ArqhWH0VGJs\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 01:19:03 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Internal Server Error\"\n}"
+						}
+					]
+				}
+			],
+			"description": "The Device APIs are used to add devices to the Arculus cluster, configure and deconfigure them, and remove them from the cluster."
+		},
+		{
+			"name": "Policy",
+			"item": [
+				{
+					"name": "GET GetNetworkPolicies",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://44.202.251.161:3001/policy/getNetworkPolicies?authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"policy",
+								"getNetworkPolicies"
+							],
+							"query": [
+								{
+									"key": "authToken",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM"
+								}
+							]
+						},
+						"description": "The /getNetworkPolicies API fetches all the network policies among devices when an authorized user requests it."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://44.202.251.161:3001/policy/getNetworkPolicies?authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"policy",
+										"getNetworkPolicies"
+									],
+									"query": [
+										{
+											"key": "authToken",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "430"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1ae-Z0isjLyLd59Vfl/4eOj1auxmQF0\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 01:29:48 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"name\": \"default-deny\",\n        \"podSelector\": {},\n        \"policyTypes\": [\n            \"Ingress\",\n            \"Egress\"\n        ]\n    },\n    {\n        \"name\": \"policy-survdrone\",\n        \"podSelector\": {\n            \"matchLabels\": {\n                \"app\": \"survdrone\"\n            }\n        },\n        \"policyTypes\": [\n            \"Ingress\",\n            \"Egress\"\n        ],\n        \"ingress\": [\n            {\n                \"from\": [\n                    {\n                        \"podSelector\": {\n                            \"matchLabels\": {\n                                \"app\": \"surveillancedrone\"\n                            }\n                        }\n                    }\n                ],\n                \"ports\": [\n                    {\n                        \"port\": 8080,\n                        \"protocol\": \"TCP\"\n                    }\n                ]\n            }\n        ],\n        \"egress\": [\n            {\n                \"ports\": [\n                    {\n                        \"port\": 8000,\n                        \"protocol\": \"UDP\"\n                    }\n                ],\n                \"to\": [\n                    {\n                        \"podSelector\": {\n                            \"matchLabels\": {\n                                \"app\": \"newdemodrone\"\n                            }\n                        }\n                    }\n                ]\n            }\n        ]\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "POST AddNetworkPolicy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM\",\r\n    \"device\": \"survdrone\",\r\n    \"ingress\": [\r\n        {\r\n            \"device\": \"surveillancedrone\",\r\n            \"port\": \"8080\",\r\n            \"protocol\": \"TCP\"\r\n        }\r\n    ],\r\n    \"egress\": [\r\n        {\r\n            \"device\": \"newdemodrone\",\r\n            \"port\": \"8000\",\r\n            \"protocol\": \"UDP\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://44.202.251.161:3001/policy/addNetworkPolicy",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"policy",
+								"addNetworkPolicy"
+							]
+						},
+						"description": "This API is used to create a new network policy with ingress and egress rules for a device."
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteNetworkPolicy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM\",\r\n    \"policyName\": \"policy-survdrone\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://44.202.251.161:3001/policy/deleteNetworkPolicy",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"policy",
+								"deleteNetworkPolicy"
+							]
+						},
+						"description": "This API is used to delete an existing network policy."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM\",\r\n    \"policyName\": \"policy-survdrone\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://44.202.251.161:3001/policy/deleteNetworkPolicy",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"policy",
+										"deleteNetworkPolicy"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "48"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"30-Bhlwr8zIpmYu8EdW5YyMdip1ojg\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 01:31:11 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"NetworkPolicy deleted successfully\"\n}"
+						}
+					]
+				}
+			],
+			"description": "The Policy APIs are used to create network policies between devices to control their network ingress and egress using Software-Defined Networking (SDN)."
+		},
+		{
+			"name": "Task",
+			"item": [
+				{
+					"name": "GET GetTasks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://44.202.251.161:3001/task/getTasks?authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"task",
+								"getTasks"
+							],
+							"query": [
+								{
+									"key": "authToken",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM"
+								}
+							]
+						},
+						"description": "The task API fetches the list of available functions from the database to configure them for devices."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://44.202.251.161:3001/task/getTasks?authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"task",
+										"getTasks"
+									],
+									"query": [
+										{
+											"key": "authToken",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "149"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"95-XYEIGSMREjJ85oLMV1SwT8rK+kk\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 01:37:49 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"taskNames\": [\n        \"send_command\",\n        \"send_video\",\n        \"send_sensordata\",\n        \"send_posdata\",\n        \"receive_posdata\",\n        \"receive_sensordata\",\n        \"receive_video\",\n        \"receive_command\"\n    ]\n}"
+						}
+					]
+				}
+			],
+			"description": "The task API fetches the list of available functions from the database to configure them for devices."
+		},
+		{
+			"name": "Utilization",
+			"item": [
+				{
+					"name": "GET GetUtilizationData",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://44.202.251.161:3001/utilization/getUtilizationData",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"utilization",
+								"getUtilizationData"
+							]
+						},
+						"description": "The utilization API is used to fetch the CPU and memory utilization on the Arculus server for monitoring purposes."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://44.202.251.161:3001/utilization/getUtilizationData",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"utilization",
+										"getUtilizationData"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "34801"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"87f1-4XisR8r3Wtzxv8LLrfxSULvKWjY\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 01:39:23 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.23\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.23\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.72\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.39\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.39\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.23\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.23\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.23\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.23\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.23\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.23\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.23\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.23\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.24\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.71\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.28\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.30\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.30\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.25\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.26\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.27\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.70\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.29\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.69\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.36\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.37\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.68\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.38\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.40\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.42\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.42\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.42\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.42\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.42\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.42\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.42\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.42\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.42\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.42\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.67\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.66\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.65\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.55\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.46\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.46\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.46\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.46\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.46\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.46\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.46\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.46\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.56\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.56\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.56\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.56\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.56\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.56\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.57\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.57\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.57\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.57\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.57\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.57\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.65\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.65\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.64\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.69\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.63\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.62\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.71\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.72\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.73\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.73\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.73\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.73\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.73\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.73\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.74\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.74\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.74\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.74\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.74\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.74\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.74\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.74\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.75\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.80\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.80\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.42\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.42\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.61\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.43\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.44\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.60\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.45\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.46\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.46\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.46\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.46\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.59\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.48\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.59\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.59\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.59\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.59\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.59\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.59\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.59\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.59\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.59\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.59\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.59\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.59\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.59\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.59\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.58\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.60\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.57\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    },\n    {\n        \"cpu\": \"3.56\",\n        \"ram\": \"32.61\"\n    }\n]"
+						}
+					]
+				}
+			],
+			"description": "The utilization API is used to fetch the CPU and memory utilization on the Arculus server for monitoring purposes."
+		},
+		{
+			"name": "Mission",
+			"item": [
+				{
+					"name": "GET GetMissionByCreatorId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://44.202.251.161:3001/mission/getMissionsByCreatorId?authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"mission",
+								"getMissionsByCreatorId"
+							],
+							"query": [
+								{
+									"key": "authToken",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM"
+								}
+							]
+						},
+						"description": "This API fetches the list of all missions created by a certain Mission Creator user by fetching his/her user ID."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://44.202.251.161:3001/mission/getMissionsByCreatorId?authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"mission",
+										"getMissionsByCreatorId"
+									],
+									"query": [
+										{
+											"key": "authToken",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "3366"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"d26-A31f5AAgi2MCxKnfSs7oMEgDRgQ\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 01:42:27 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"missions\": [\n        {\n            \"config\": \"{\\\"location\\\":\\\"/desert.png\\\",\\\"mission_type\\\":\\\"Stealthy Reconnaissance and Resupply\\\",\\\"gcX\\\":202.3168,\\\"gcY\\\":420.0448,\\\"destX\\\":1316.422566055701,\\\"destY\\\":477.75291597238754,\\\"selections\\\":{\\\"Video-Analytic Route Planner (Ground Control)\\\":\\\"controller\\\",\\\"Video Collection Surveillance Drone\\\":\\\"surveillancedrone\\\",\\\"Supply Delivery Drone\\\":\\\"newdemodrone\\\",\\\"Communication Relay Drone\\\":\\\"relaydrone\\\"},\\\"create_time\\\":\\\"2024-06-04 18:22:38\\\",\\\"duration_sec\\\":120}\",\n            \"state\": \"SUCCESSFUL\",\n            \"supervisors\": [\n                \"cerisupervisor\"\n            ],\n            \"viewers\": [\n                \"ceriviewer\"\n            ],\n            \"mission_id\": 450\n        },\n        {\n            \"config\": \"{\\\"location\\\":\\\"/desert.png\\\",\\\"mission_type\\\":\\\"Stealthy Reconnaissance and Resupply\\\",\\\"gcX\\\":202.3168,\\\"gcY\\\":420.0448,\\\"destX\\\":1377.262937395858,\\\"destY\\\":368.55224946441325,\\\"selections\\\":{\\\"Video-Analytic Route Planner (Ground Control)\\\":\\\"controller\\\",\\\"Video Collection Surveillance Drone\\\":\\\"surveillancedrone\\\",\\\"Supply Delivery Drone\\\":\\\"newdemodrone\\\",\\\"Communication Relay Drone\\\":\\\"relaydrone\\\"},\\\"duration_sec\\\":120,\\\"create_time\\\":\\\"2024-06-04 18:30:54\\\"}\",\n            \"state\": \"SUCCESSFUL\",\n            \"supervisors\": [],\n            \"viewers\": [],\n            \"mission_id\": 451\n        },\n        {\n            \"config\": \"{\\\"location\\\":\\\"/desert.png\\\",\\\"mission_type\\\":\\\"Stealthy Reconnaissance and Resupply\\\",\\\"gcX\\\":202.3168,\\\"gcY\\\":420.0448,\\\"destX\\\":1377.262937395858,\\\"destY\\\":368.55224946441325,\\\"selections\\\":{\\\"Video-Analytic Route Planner (Ground Control)\\\":\\\"controller\\\",\\\"Video Collection Surveillance Drone\\\":\\\"surveillancedrone\\\",\\\"Supply Delivery Drone\\\":\\\"newdemodrone\\\",\\\"Communication Relay Drone\\\":\\\"relaydrone\\\"},\\\"duration_sec\\\":120,\\\"create_time\\\":\\\"2024-06-04 18:55:13\\\"}\",\n            \"state\": \"SUCCESSFUL\",\n            \"supervisors\": [],\n            \"viewers\": [],\n            \"mission_id\": 459\n        },\n        {\n            \"config\": \"{\\\"location\\\":\\\"/desert.png\\\",\\\"mission_type\\\":\\\"Stealthy Reconnaissance and Resupply\\\",\\\"gcX\\\":202.3168,\\\"gcY\\\":420.0448,\\\"destX\\\":1377.262937395858,\\\"destY\\\":368.55224946441325,\\\"selections\\\":{\\\"Video-Analytic Route Planner (Ground Control)\\\":\\\"controller\\\",\\\"Video Collection Surveillance Drone\\\":\\\"surveillancedrone\\\",\\\"Supply Delivery Drone\\\":\\\"newdemodrone\\\",\\\"Communication Relay Drone\\\":\\\"relaydrone\\\"},\\\"duration_sec\\\":120,\\\"create_time\\\":\\\"2024-06-04 18:58:58\\\"}\",\n            \"state\": \"SUCCESSFUL\",\n            \"supervisors\": [],\n            \"viewers\": [],\n            \"mission_id\": 461\n        },\n        {\n            \"config\": \"{\\\"location\\\":\\\"/desert.png\\\",\\\"mission_type\\\":\\\"Stealthy Reconnaissance and Resupply\\\",\\\"gcX\\\":202.3168,\\\"gcY\\\":420.0448,\\\"destX\\\":1377.262937395858,\\\"destY\\\":368.55224946441325,\\\"selections\\\":{\\\"Video-Analytic Route Planner (Ground Control)\\\":\\\"controller\\\",\\\"Video Collection Surveillance Drone\\\":\\\"surveillancedrone\\\",\\\"Supply Delivery Drone\\\":\\\"newdemodrone\\\",\\\"Communication Relay Drone\\\":\\\"relaydrone\\\"},\\\"duration_sec\\\":120,\\\"create_time\\\":\\\"2024-06-04 19:09:37\\\"}\",\n            \"state\": \"SUCCESSFUL\",\n            \"supervisors\": [],\n            \"viewers\": [],\n            \"mission_id\": 468\n        },\n        {\n            \"config\": \"{\\\"location\\\":\\\"/desert.png\\\",\\\"mission_type\\\":\\\"Stealthy Reconnaissance and Resupply\\\",\\\"gcX\\\":202.3168,\\\"gcY\\\":420.0448,\\\"destX\\\":1377.262937395858,\\\"destY\\\":368.55224946441325,\\\"selections\\\":{\\\"Video-Analytic Route Planner (Ground Control)\\\":\\\"controller\\\",\\\"Video Collection Surveillance Drone\\\":\\\"surveillancedrone\\\",\\\"Supply Delivery Drone\\\":\\\"newdemodrone\\\",\\\"Communication Relay Drone\\\":\\\"relaydrone\\\"},\\\"duration_sec\\\":120,\\\"create_time\\\":\\\"2024-06-04 19:12:26\\\"}\",\n            \"state\": \"SUCCESSFUL\",\n            \"supervisors\": [],\n            \"viewers\": [],\n            \"mission_id\": 470\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "POST CreateMission",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM\",\r\n    \"mission_config\": \"{\\\"location\\\":\\\"/desert.png\\\",\\\"mission_type\\\":\\\"Stealthy Reconnaissance and Resupply\\\",\\\"gcX\\\":202.3168,\\\"gcY\\\":420.0448,\\\"destX\\\":1370.660164933668,\\\"destY\\\":465.848404446038,\\\"selections\\\":{\\\"Video-Analytic Route Planner (Ground Control)\\\":\\\"controller\\\",\\\"Video Collection Surveillance Drone\\\":\\\"surveillancedrone\\\",\\\"Supply Delivery Drone\\\":\\\"survdrone\\\",\\\"Communication Relay Drone\\\":\\\"relaydrone\\\"},\\\"create_time\\\":\\\"2024-06-21 01:43:44\\\",\\\"duration_sec\\\":120}\",\r\n    \"supervisors\": [],\r\n    \"viewers\": []\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://44.202.251.161:3001/mission/createMission",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"mission",
+								"createMission"
+							]
+						},
+						"description": "This API authorizes if the user requesting is a Mission Creator and on success, it creates a new mission."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"authToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFyY3VsdXMiLCJwYXNzd29yZCI6IkJ1cm5pdGUuMjQiLCJpYXQiOjE3MTg5MzMxNzYsImV4cCI6MTcxODkzNjc3Nn0.MMGXVLY9-F7zACJc_70L5IQeAjKzcxb2my2_4X_AxEM\",\r\n    \"mission_config\": \"{\\\"location\\\":\\\"/desert.png\\\",\\\"mission_type\\\":\\\"Stealthy Reconnaissance and Resupply\\\",\\\"gcX\\\":202.3168,\\\"gcY\\\":420.0448,\\\"destX\\\":1370.660164933668,\\\"destY\\\":465.848404446038,\\\"selections\\\":{\\\"Video-Analytic Route Planner (Ground Control)\\\":\\\"controller\\\",\\\"Video Collection Surveillance Drone\\\":\\\"surveillancedrone\\\",\\\"Supply Delivery Drone\\\":\\\"survdrone\\\",\\\"Communication Relay Drone\\\":\\\"relaydrone\\\"},\\\"create_time\\\":\\\"2024-06-21 01:43:44\\\",\\\"duration_sec\\\":120}\",\r\n    \"supervisors\": [],\r\n    \"viewers\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://44.202.251.161:3001/mission/createMission",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"mission",
+										"createMission"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "17"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"11-2rgYdh6R8AA0w+JCVt+g2lyf3OY\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 01:44:34 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"missionId\": 473\n}"
+						}
+					]
+				},
+				{
+					"name": "POST ExecuteStealthyReconAndResupply",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"gcX\": 202.3168,\r\n    \"gcY\": 420.0448,\r\n    \"destX\": 1370.660164933668,\r\n    \"destY\": 465.848404446038,\r\n    \"controller\": \"controller\",\r\n    \"supplyDrone\": \"survdrone\",\r\n    \"surveillanceDrone\": \"surveillancedrone\",\r\n    \"relayDrone\": \"relaydrone\",\r\n    \"missionId\": 472\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://44.202.251.161:3001/mission/executeStealthyReconAndResupply",
+							"protocol": "http",
+							"host": [
+								"44",
+								"202",
+								"251",
+								"161"
+							],
+							"port": "3001",
+							"path": [
+								"mission",
+								"executeStealthyReconAndResupply"
+							]
+						},
+						"description": "This API is used to execute the Stealthy Reconnaissance and Resupply mission with the mission information."
+					},
+					"response": [
+						{
+							"name": "Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"gcX\": 202.3168,\r\n    \"gcY\": 420.0448,\r\n    \"destX\": 1370.660164933668,\r\n    \"destY\": 465.848404446038,\r\n    \"controller\": \"controller\",\r\n    \"supplyDrone\": \"survdrone\",\r\n    \"surveillanceDrone\": \"surveillancedrone\",\r\n    \"relayDrone\": \"relaydrone\",\r\n    \"missionId\": 472\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://44.202.251.161:3001/mission/executeStealthyReconAndResupply",
+									"protocol": "http",
+									"host": [
+										"44",
+										"202",
+										"251",
+										"161"
+									],
+									"port": "3001",
+									"path": [
+										"mission",
+										"executeStealthyReconAndResupply"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "36"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"24-ziKIxH5MV3lTJp/VcV4hSVQhRBA\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 21 Jun 2024 01:46:24 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"IP retrieval initiated\"\n}"
+						}
+					]
+				}
+			],
+			"description": "The Mission APIs are used for the web simulation of various phases of a mission from its creation to its execution or abortion."
+		},
+		{
+			"name": "Honeypot",
+			"item": [],
+			"description": "The honeypot APIs are used to deploy and undeploy honeypots on the devices in the cluster."
+		}
+	]
+}
